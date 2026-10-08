@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03. What the Robot Can Feel &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 03 &middot; 60 minutes</p>
+  <h1>What the Robot Can Feel</h1>
+  <p class="subtitle">Reading real sensors, including the broken ones</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Name every sensor on the robot and predict what its number does before you test it.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>A sensor turns something physical into a number</li><li>Predict first, then measure &mdash; being wrong on purpose is the fastest way to learn</li><li>Sensors lie: sunlight, dark carpet, and shiny walls all fool them</li><li>Raw values versus meaning: 720 is raw, 'bright' is interpretation</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>All SENSE today. No driving at all, so nothing distracts from the numbers.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Open the Workshop app, press <b>Read sensors</b>. Every display lights up with live numbers.</li><li>Line sensors: slide a black strip under each one. Predict which dot fills first.</li><li>Proximity: bring a hand in slowly. Measure the distance where it first triggers &mdash; it is only a few inches.</li><li>Light sensors: cover one with a thumb. Which bar shrinks? Now shine a phone torch on it.</li><li>Distance sensor: hold a book at 10 cm, 30 cm, 100 cm. Write down the readings and the errors.</li><li>Break it on purpose: point the distance sensor at a soft jumper, then at an angled wall. Watch it fail. That failure is real and it will bite you in the maze.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Find a surface the distance sensor cannot see at all. Explain why sound bounces away from it.</li><li>Make the light sensors read equal without turning the robot &mdash; move the light instead.</li><li>Guess a distance, then measure. Get within 5 cm three times in a row.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Distance always reads 'clear'</td><td>The sonar is not answering. Press Read sensors and look for NOECHO climbing &mdash; that is the robot telling you the sensor never replied.</td></tr><tr><td>Proximity triggers at 3&ndash;4 inches only</td><td>That is normal for these sensors. They are whiskers, not eyes.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>Have them write predictions on paper before each test. The gap between prediction and measurement is where the learning lands, and it is invisible if they only ever read the answer off a screen.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="02-driving-and-the-remote.html">&larr; Driving &amp; the Remote</a><a class="page-turn" href="04-calibration.html">Every Robot Is Different &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

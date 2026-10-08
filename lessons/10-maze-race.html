@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10. The Maze Race &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 10 &middot; 60 minutes</p>
+  <h1>The Maze Race</h1>
+  <p class="subtitle">Everything at once, against the clock</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Get your robot through a maze it has never seen, using a strategy you can explain.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Dead reckoning: fast, but every error adds up</li><li>Wall following: slower, but solves mazes you have not seen</li><li>The right-hand rule always escapes a simple maze &mdash; and here is why</li><li>Choosing a strategy is engineering: fast versus reliable</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>The full loop, under time pressure, with a maze nobody has calibrated for.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Teams assemble their 2&times;2 room modules. Modules get rearranged between runs, so nobody can memorise the answer.</li><li>Open the <b>Maze Lab</b> and try both strategies in simulation before touching a robot.</li><li>Load a dead-reckoning program into Slot 1 and a wall-follower into Slot 2.</li><li>Practice run. Note where each one fails and why.</li><li>Race. Pick your slot at the start line by pressing 1 or 2 on the remote &mdash; no phone allowed on the floor.</li><li>Debrief: whose strategy won, and would it win again on a different maze?</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Sample program</h2>
+    <p>The right-hand rule. Turn right, then check up to three times whether a wall is in the way and turn back left if so, then drive forward. Repeat. This escapes any maze whose walls are all connected &mdash; slowly, but it always gets out.</p>
+    <pre class="program" id="samplePlain">V 5
+P 20
+R 350
+I 5
+L 350
+Z
+I 5
+L 350
+Z
+I 5
+L 350
+Z
+F 900
+Q</pre>
+    <button class="copy-button" data-copy="samplePlain">Copy to clipboard</button>
+    <p class="hint">Paste it into the Workshop's <b>Robot language</b> box, then press
+    <b>Text &rarr; blocks</b> to see it as blocks &mdash; or just send it straight to the robot.</p>
+  </section>
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Hybrid: blast down the first known straight, then switch to wall following. Where do you put the switch?</li><li>Add a finish detector so the robot stops when it sees the exit line instead of driving on.</li><li>Prove the right-hand rule cannot work on a maze with a free-standing island in the middle. Draw the counter-example.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>The dead-reckoning run drifts more each room</td><td>That is accumulated error. It is not fixable by trying harder &mdash; it is why sensors exist.</td></tr><tr><td>Wall follower loops forever in a circle</td><td>Check the maze actually has an exit reachable from the start. A sealed maze defeats a correct algorithm.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>Insist every team can state their strategy in one sentence before racing. The team that says 'we tuned the numbers until it worked' has learned less than the team that says 'we follow the right wall and accept it is slow', and the maze rearrangement will prove it in public.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="09-avoid-and-seek.html">&larr; Avoiding &amp; Seeking</a><a class="page-turn" href="11-speed-and-traction.html">Getting Off the Line &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>01. Robot or Not? - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 01 &middot; 60 minutes</p>
+  <h1>Robot or Not?</h1>
+  <p class="subtitle">What makes a machine a robot</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Decide whether something is a robot using a test you can defend, then put our mecanum robot through that same test.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Sense &rarr; Think &rarr; Do: the loop every robot runs</li><li>A remote-control car does, but YOU are doing the thinking</li><li>The same robot can be a robot one minute and a toy the next</li><li>Autonomy is a slider, not a switch</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>Driven from the IR remote, the robot is all DO: you sense with your eyes and think with your head. Following a line, it senses the tape, decides how far off it is, and steers. Same wheels, same battery, different answer.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Open <a href="https://makerlabkids.com/robot-or-not.html">Robot or Not</a> on the big screen. Argue about five things: toaster, thermostat, Roomba, remote-control car, self-driving car. Write down the reason, not just the verdict.</li><li>Look at the Sense / Think / Do columns and the exclusions (piloted, unbuilt, grown). Agree a class test: it senses something, it decides something, it acts on the world, and nobody is steering it.</li><li>Meet the robot. Power it on and connect the Mecanum Workshop app: the status line says Connected, with the firmware version (fw 0.10.20), and the start-up messages scroll through the console. That is the robot saying 'my parts are here'.</li><li>Drive it with the IR remote: hold an arrow to move, let go and it stops. Ask: who is sensing? Who is thinking? Who is doing? (Piloted: not a robot right now.)</li><li>Press 9 on the remote for circle strafe: it circles a point ahead with its nose locked on it. Ask the questions again. Nobody is steering, but does it know where it is in the room? (No: with an IMU it only checks which way it is facing. Mostly a very good wind-up toy.)</li><li>Put it on a line of tape and run line following (Sensors tab, Follow, or * on the remote). Ask the three questions one last time. Something changed.</li><li>Vote: is our robot a robot? The honest answer is 'it depends what it is doing'. Mark it on the autonomy slider for each of the three runs.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Find a machine at home that senses but does not think. Bring it to the argument next week.</li><li>Is a thermostat a robot? Defend either answer: both can be right if the reason is good.</li><li>Add our robot to the Robot or Not table three times: remote, circle strafe, line following. Where does each land?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>The robot ignores the remote</td><td>Check the receiver's LED flickers when you press a key. No flicker: the remote battery or the receiver's power. Flicker but nothing happens: the signal wire is not on D2.</td></tr><tr><td>The app shows an orange re-flash notice</td><td>The robot runs an older sketch than the app needs. Flash mecanum_holonomic/mecanum_holonomic.ino; the status line then shows fw 0.10.15.</td></tr><tr><td>Line following stops at once</td><td>Expected on day one: the sensors are not set up or calibrated yet. Use it as a question: why did the robot give up?</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>Resist settling the argument. The disagreement is the lesson: you want them to leave with a test they built, because they will use it against you later when the robot does something clever.</p>
+    <p><strong>Ages:</strong> K-5: stick to toaster / remote car / robot vacuum and act out Sense, Think, Do with three kids holding cards. 6-12: use the full Robot or Not table, including the hair-splitting notes, and have them argue the borderline rows.</p>
+    <p><strong>Materials:</strong> Robot (charged), IR remote, a 1 m strip of black electrical tape on a light floor, projector or big screen for the Robot or Not page, paper for verdicts.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="index.html">&larr; All lessons</a><a class="page-turn" href="02-sensing.html">Same Job, Different Physics &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

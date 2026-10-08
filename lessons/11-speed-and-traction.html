@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11. Getting Off the Line &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 11 &middot; 60 minutes</p>
+  <h1>Getting Off the Line</h1>
+  <p class="subtitle">Acceleration, slip, and why fast starts are slow</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Find the fastest launch your robot can make without slipping, and prove it is faster overall than a harder launch.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Traction is a budget: spend it all on acceleration and none is left for steering</li><li>A wheel that slips is doing no useful work</li><li>Fastest to full speed is not the same as fastest to the far wall</li><li>Acceleration curves: gentle at the start, brisk once rolling</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>DO, examined closely. Same command, different ramp, different outcome.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Open <b>Calibrate</b> &rarr; Step 0. Set the seed slider low and watch a launch. The robot should creep, then build.</li><li>Turn the seed up until you can hear a chirp or see the nose twitch sideways at the start. That is slip.</li><li>Back off one notch. Write down the two numbers.</li><li>Race two settings over three metres: the slipping launch versus the clean one. Time both.</li><li>Explain the result. Most groups find the clean launch wins or ties &mdash; the slipping robot spent its first moments going nowhere and pointing wrong.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Sample program</h2>
+    <p>Full speed to the far end and back. Run it at a gentle ramp and at a harsh one, and time both round trips.</p>
+    <pre class="program" id="samplePlain">V 9
+F 3000
+W 500
+B 3000</pre>
+    <button class="copy-button" data-copy="samplePlain">Copy to clipboard</button>
+    <p class="hint">Paste it into the Workshop's <b>Robot language</b> box, then press
+    <b>Text &rarr; blocks</b> to see it as blocks &mdash; or just send it straight to the robot.</p>
+  </section>
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Does the best setting change on carpet? Predict first, then measure.</li><li>Add a passenger (a book taped on top). Does the extra weight help traction or hurt acceleration?</li><li>Time a straight sprint and a slalom with the same settings. Does the best launch differ for the two?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>The robot lurches sideways at the start</td><td>One wheel gripped before the other. Lower the seed until both wheels start together.</td></tr><tr><td>It takes forever to reach speed</td><td>Growth is too low. The seed controls the first push; growth controls how quickly it builds after.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The counter-intuitive result is the point: the aggressive setting feels faster and loses. This is the same trade-off as a dragster wheelie or a sprinter's start, and kids who have raced anything will recognise it immediately.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="10-maze-race.html">&larr; The Maze Race</a><a class="page-turn" href="12-when-sensors-lie.html">When Sensors Lie &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

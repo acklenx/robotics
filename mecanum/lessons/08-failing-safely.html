@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>08. When in Doubt, Stop - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 08 &middot; 60 minutes</p>
+  <h1>When in Doubt, Stop</h1>
+  <p class="subtitle">Designing a robot that fails safely</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>List every way our robot stops itself, test each one, and invent one more safety rule.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>A robot must assume something will go wrong</li><li>Dead-man controls: let go and it stops</li><li>Sensors can be a safety net (the wall stop)</li><li>Stopping is the default answer when the robot is not sure</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>Safety is a SENSE / THINK / DO loop of its own: sense danger (a wall, a lost signal, a lost line), decide it is not sure, do the safest thing, which is usually stop.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Hold the up arrow on the IR remote, then let go. The robot stops about a quarter second after the last signal. Why not keep going until told to stop?</li><li>On the two-stick controller page, lift your thumb: that stick springs back to the middle and its part of the motion stops.</li><li>Drive forward toward a wall (w, or the up arrow). The laser stops it about 120 mm away and the console says 'tof: wall at N mm'.</li><li>Try driving forward again while close: it refuses. Drive backward or sideways: allowed. Why only forward?</li><li>Start line following and lift the robot off the line. It stops after the lost-stop time.</li><li>Start a demo, then press any remote key. Every key aborts a demo.</li><li>In the app, start a demo: the red STOP bar sits at the bottom of every tab, and it keeps sending stop until the robot confirms.</li><li>Group task: invent one more safety rule. What should the robot do if its battery is low? If someone picks it up?</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>What is the slowest you would let a robot near a little kid? Why?</li><li>The wall stop only looks forward. Where else could the robot crash?</li><li>Is 'stop' always the safest thing? Think of a self-driving car on a motorway.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Wall stop never triggers</td><td>No laser fitted, or it was not found at start-up (Sensors tab says 'not found').</td></tr><tr><td>Robot keeps going after letting go of the remote</td><td>The receiver still sees repeats (another remote nearby?), or it was a key that runs a demo: press any key to abort.</td></tr><tr><td>STOP bar does not go away</td><td>It waits for the robot to confirm 'stop'. Check the connection.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>This lesson connects to the Robot or Not ethics rows. Kids are surprisingly good at inventing safety rules once they see three real ones. Keep the wall test slow (speed 3 or 4).</p>
+    <p><strong>Ages:</strong> K-5: the let-go test and the wall test, with a soft box as the wall. 6-12: discuss failure modes (sensor dead, signal lost, software stuck) and which stop catches which.</p>
+    <p><strong>Materials:</strong> Robot with IR receiver and laser, IR remote, a box or soft wall, tape line, app.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="07-buses-and-addresses.html">&larr; Roll Call on Two Wires</a><a class="page-turn" href="09-robots-go-wrong.html">Robots Go Wrong &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

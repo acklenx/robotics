@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>09. Robots Go Wrong - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 09 &middot; 60 minutes</p>
+  <h1>Robots Go Wrong</h1>
+  <p class="subtitle">Debugging like an engineer</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Find and fix three planted faults using the robot's own messages and Watch mode, and write down how you found each one.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Every robot goes wrong; engineers just get faster at finding why</li><li>Read the message before you touch a wire</li><li>Change one thing at a time</li><li>The robot can tell you a lot: Watch mode, pin clashes, 'not found', 'not mapped'</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>Debugging is sensing the robot itself: its messages are clues. 'none found' is a sense problem, 'PIN CLASH' is a think problem, a wheel going backwards is a do problem.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Before class, plant three faults on different robots: swap SDA and SCL; set a line sensor channel to the wrong pin in the Sensors tab; unplug one motor.</li><li>Teach the routine on the board: 1 read the console, 2 guess, 3 change one thing, 4 test, 5 write it down.</li><li>Clues to show: 'imu: none found' (I2C wiring), 'PIN CLASH: line sensor and light sensor both on pin a2', the app's pin map in red, Watch (lw) with a channel that never moves, t0-t3 to find a dead motor.</li><li>Groups rotate between robots, 10 minutes each, logging clue, guess, fix.</li><li>Share the real stories from building this robot: the cheap BNO055 that needed its PS0/PS1 pads checked and its address moved; a remote key that printed 'ir: key 0x.. not mapped'; a sensor whose label was hard to read.</li><li>Each group presents its fastest find and its slowest find.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Plant a fault for another group (with the teacher's OK).</li><li>Which faults could the robot detect by itself? Which needed a human?</li><li>Write a 'when it goes wrong' table for your own robot.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Fixed one thing, broke another</td><td>Change one thing at a time and test after each change.</td></tr><tr><td>Can't find it at all</td><td>Go back to a known-good state: re-flash, restart, check the console banner.</td></tr><tr><td>Readings look fine but behaviour is wrong</td><td>Watch mode shows raw numbers with the robot standing still. Compare with what you expect.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>Make debugging the hero, not the embarrassment. The course promise is 'robots go wrong, and working around that builds creative tenacity'. Celebrate good guesses even when they were wrong.</p>
+    <p><strong>Ages:</strong> K-5: one obvious fault (unplugged motor, swapped remote batteries) and a 'detective' sheet. 6-12: subtle faults (wrong polarity setting, swapped I2C) and a written bug report.</p>
+    <p><strong>Materials:</strong> Two or three robots, app on each, small screwdriver, labels, bug-log worksheet.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="08-failing-safely.html">&larr; When in Doubt, Stop</a><a class="page-turn" href="10-trade-offs.html">The 32 KB Backpack &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

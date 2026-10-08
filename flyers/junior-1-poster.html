@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robots That Think — Grades 3-5</title>
+<style>
+  /* One page, every time. The dashed outline on screen shows where the paper
+     ends, so nothing sneaks onto a second sheet without you noticing. */
+  @page { size: letter portrait; margin: 0.4in; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; padding: 24px 12px; }
+  .sheet {
+    width: 7.7in; min-height: 10.2in; padding: 0.34in 0.4in;
+    position: relative;
+    /* Deliberately NOT overflow:hidden. If your real dates and prices run
+       longer than the placeholders, the flyer should visibly spill onto a
+       second page so you notice, rather than quietly swallowing a line. */
+    overflow: visible;
+  }
+  @media screen { .sheet { outline: 1px dashed #bbb; outline-offset: 10px; } }
+  @media print {
+    body { padding: 0; display: block; }
+    .sheet { width: auto; height: auto; outline: none; }
+  }
+  .fill { white-space: nowrap; }
+
+  body { background: #f4f1ea; font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif; }
+  .sheet { background: #ffffff; color: #14161a; }
+  .band {
+    position: absolute; top: 0; left: 0; right: 0; height: 3.5in;
+    background: linear-gradient(115deg, #e65300 0%, #f26a00 58%, #ffb04d 100%);
+  }
+  .band:after {
+    content: ""; position: absolute; bottom: -0.75in; left: 0; right: 0; height: 1.1in;
+    background: #fff; transform: skewY(-4.2deg);
+  }
+  .top { position: relative; padding-top: 0.16in; color: #fff; }
+  /* Dark brown, like "THAT THINK": white is too faint on the pale end of the band. */
+  .kicker { font-size: 13pt; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: #2a1400; }
+  h1 { font-size: 58pt; line-height: 0.92; font-weight: 900; letter-spacing: -0.02em; margin: 10px 0 6px; }
+  h1 em { font-style: normal; display: block; color: #2a1400; }
+  .sub { font-size: 15pt; font-weight: 700; max-width: 5.4in; color: #2a1400; }
+  .row { display: flex; gap: 0.22in; margin-top: 1.55in; }
+  .step {
+    flex: 1; background: #fff6ec; border: 3px solid #ffb56b; border-radius: 16px;
+    padding: 13px 12px; text-align: center;
+  }
+  .step .n {
+    display: inline-block; width: 30px; height: 30px; line-height: 30px; border-radius: 50%;
+    background: #e05500; color: #fff; font-weight: 900; font-size: 14pt; margin-bottom: 7px;
+  }
+  .step h3 { font-size: 13.5pt; margin-bottom: 3px; }
+  .step p { font-size: 10pt; line-height: 1.35; color: #4a4038; }
+  .big {
+    margin-top: 0.24in; background: #14161a; color: #fff; border-radius: 18px;
+    padding: 17px 20px; display: flex; align-items: center; gap: 18px;
+  }
+  .big .huge { font-size: 34pt; font-weight: 900; color: #ff9d29; line-height: 1; }
+  .big p { font-size: 11.5pt; line-height: 1.4; }
+  .facts { display: flex; gap: 0.2in; margin-top: 0.24in; }
+  .fact { flex: 1; border-top: 5px solid #14161a; padding-top: 8px; }
+  .fact b { display: block; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #6b6158; }
+  .fact span { font-size: 13pt; font-weight: 800; }
+  .footer {
+    position: absolute; left: 0.4in; right: 0.4in; bottom: 0.34in;
+    border-top: 3px solid #ffb56b; padding-top: 10px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .footer .org { font-size: 15pt; font-weight: 900; }
+  .footer .org small { display: block; font-size: 9.5pt; font-weight: 700; color: #b84c00; letter-spacing: 0.14em; }
+  .footer .cta { text-align: right; font-size: 11pt; font-weight: 800; }
+  .footer .cta span { display: block; font-size: 9.5pt; font-weight: 600; color: #4a4038; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="band"></div>
+  <div class="top">
+    <div class="kicker">After school &middot; Grades 3&ndash;5</div>
+    <h1>ROBOTS<em>THAT THINK</em></h1>
+    <div class="sub">Start with a buzzing brushbot. Finish racing a robot that
+    finds its own way through a maze.</div>
+  </div>
+
+  <div class="row">
+    <div class="step"><span class="n">1</span><h3>Brushbots</h3>
+      <p>A motor, a battery, a toothbrush head. It moves in week one and it
+      goes home with you.</p></div>
+    <div class="step"><span class="n">2</span><h3>Light chasers</h3>
+      <p>Add eyes. Now it hunts a flashlight across the floor &mdash; and you
+      can explain exactly why.</p></div>
+    <div class="step"><span class="n">3</span><h3>Maze racers</h3>
+      <p>Build the maze. Pick the robot's strategy. Find out whose idea
+      actually wins.</p></div>
+  </div>
+
+  <div class="big">
+    <div class="huge">SENSE<br>THINK<br>DO</div>
+    <p>Every robot on earth runs the same loop, and by week three your kid can
+    spot it in a dishwasher, a drone and a self&#8209;driving car. That is the
+    real thing we are teaching. The robots are how we make it stick.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><b>When</b><span class="fill">[ DAY &amp; TIME ]</span></div>
+    <div class="fact"><b>Starts</b><span class="fill">[ START DATE ]</span></div>
+    <div class="fact"><b>Where</b><span class="fill">[ LOCATION ]</span></div>
+    <div class="fact"><b>Cost</b><span class="fill">[ PRICE ]</span></div>
+  </div>
+
+  <div class="footer">
+    <div class="org"><img src="../img/lockup.png" alt="Maker Lab Kids" style="height:30pt;width:auto;display:inline-block;vertical-align:middle;background:#fff;border-radius:5pt;padding:2pt 5pt"><small>Make. Learn. Share.</small></div>
+    <div class="cta">Save a seat: [ SIGN-UP LINK ]<span>[ EMAIL / PHONE ] &middot; 15 weeks, one hour a week</span></div>
+  </div>
+
+</div>
+</body>
+</html>

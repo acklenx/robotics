@@ -1,0 +1,254 @@
+/* ==========================================================================
+   Site styling for the hub and the lesson pages.
+   Same palette as the Workshop app so the whole thing feels like one place.
+   Mobile first: everything is readable on a phone held one-handed, and the
+   layout only widens when there is room.
+   ========================================================================== */
+
+:root {
+  --bg: #15181c;
+  --panel: #1e2329;
+  --panel-edge: #2b323b;
+  --ink: #e8ecef;
+  --ink-dim: #8a949e;
+  --orange: #ff7a1a;
+  --orange-dim: #b35008;
+  --green: #45d483;
+  --blue: #4db8ff;
+  --purple: #c9a0ff;
+  --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --link: #ffa45c;   /* light orange: readable on --bg and --panel, visited or not */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Links in running text. Without this the browser's blue (purple once
+   visited) lands on the dark background. Nav items, tiles and buttons set
+   their own colour further down. */
+a { color: var(--link); text-underline-offset: 2px; }
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+/* ---- header and navigation ---------------------------------------------- */
+
+.site-header {
+  border-bottom: 1px solid var(--panel-edge);
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 5;
+}
+
+/* The Maker Lab Kids lockup (gear + wordmark image). Its background is
+   transparent and the gear outline is dark, so it sits on a white tab. */
+.mlk-lockup {
+  display: inline-flex;
+  background: #fff;
+  border-radius: 8px;
+  padding: 3px 8px;
+  line-height: 0;
+}
+.mlk-lockup img { height: 34px; width: auto; display: block; }
+@media (max-width: 480px) {
+  .mlk-lockup img { height: 26px; }
+}
+
+.wordmark {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.wordmark small {
+  display: block;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
+  font-size: 10px;
+  margin-top: 2px;
+  text-transform: none;
+}
+
+.site-nav { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.site-nav a {
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+.site-nav a:hover { color: var(--ink); border-color: var(--panel-edge); }
+.site-nav a.active { color: var(--bg); background: var(--orange); }
+
+/* ---- page shell ---------------------------------------------------------- */
+
+.page { max-width: 780px; margin: 0 auto; padding: 20px 16px 60px; }
+
+h1 { font-size: 27px; line-height: 1.25; margin-bottom: 8px; }
+h2 { font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase;
+     color: var(--orange); margin-bottom: 10px; }
+
+.eyebrow {
+  font-family: var(--mono); font-size: 12px; color: var(--ink-dim);
+  letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px;
+}
+.subtitle { color: var(--ink-dim); font-size: 16px; margin-bottom: 20px; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.card ul, .card ol { margin-left: 20px; }
+.card li { margin-bottom: 7px; }
+.card li:last-child { margin-bottom: 0; }
+
+.card.goal { border-left: 4px solid var(--green); }
+.card.goal p { font-size: 17px; font-weight: 600; }
+.card.sense { border-left: 4px solid var(--blue); }
+.card.teacher { border-left: 4px solid var(--purple); }
+.card.teacher summary {
+  cursor: pointer; font-size: 15px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--purple); font-weight: 700;
+}
+.card.teacher p { margin-top: 10px; }
+
+code {
+  font-family: var(--mono); font-size: 0.92em;
+  background: #12151a; padding: 2px 6px; border-radius: 5px;
+}
+
+pre.program {
+  font-family: var(--mono); font-size: 14px; line-height: 1.7;
+  background: #12151a; border: 1px solid var(--panel-edge);
+  border-radius: 9px; padding: 12px 14px; margin: 12px 0;
+  overflow-x: auto; white-space: pre; color: var(--green);
+}
+
+.copy-button {
+  font: inherit; font-size: 13px; font-weight: 700;
+  color: var(--bg); background: var(--orange);
+  border: none; border-radius: 9px; padding: 11px 18px; cursor: pointer;
+}
+.hint { font-size: 13px; color: var(--ink-dim); margin-top: 10px; }
+
+table.watch { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.watch th {
+  text-align: left; color: var(--ink-dim); font-size: 11px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding-bottom: 8px; border-bottom: 1px solid var(--panel-edge);
+}
+table.watch td { padding: 9px 0; border-bottom: 1px solid #262c34; vertical-align: top; }
+table.watch td:first-child { padding-right: 16px; font-weight: 600; width: 42%; }
+table.watch td:last-child { color: var(--ink-dim); }
+
+/* ---- lesson index -------------------------------------------------------- */
+
+.lesson-grid { display: grid; gap: 10px; margin-bottom: 20px; }
+
+.lesson-card {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--panel); border: 1px solid var(--panel-edge);
+  border-left: 4px solid var(--orange);
+  border-radius: 12px; padding: 14px 16px;
+}
+.lesson-card:hover { border-color: var(--orange); }
+.lesson-number {
+  font-family: var(--mono); font-size: 12px; color: var(--orange); font-weight: 700;
+}
+.lesson-title { display: block; font-size: 19px; font-weight: 800; margin: 2px 0; }
+.lesson-sub { display: block; font-size: 13px; color: var(--ink-dim); }
+.lesson-goal { display: block; font-size: 13px; margin-top: 8px; }
+
+/* ---- hub tiles ----------------------------------------------------------- */
+
+.tile-grid { display: grid; gap: 12px; margin: 22px 0; }
+.tile {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--panel); border: 1px solid var(--panel-edge);
+  border-radius: 14px; padding: 18px;
+}
+.tile:hover { border-color: var(--orange); }
+.tile-primary { border-color: var(--orange); background: #241a12; }
+.tile-title { display: block; font-size: 21px; font-weight: 800; margin-bottom: 6px; }
+.tile-note { display: block; font-size: 14px; color: var(--ink-dim); }
+.tile-go { display: block; margin-top: 12px; font-weight: 700; color: var(--orange); }
+
+.plain-list { margin-left: 20px; }
+.plain-list a { color: var(--ink); }
+
+/* ---- page turns ---------------------------------------------------------- */
+
+.page-turns { display: flex; justify-content: space-between; gap: 10px; margin-top: 24px; }
+.page-turn {
+  flex: 1; text-decoration: none; color: var(--ink);
+  background: var(--panel); border: 1px solid var(--panel-edge);
+  border-radius: 10px; padding: 13px 14px; font-size: 13px; font-weight: 700;
+}
+.page-turn:last-child { text-align: right; }
+.page-turn:hover { border-color: var(--orange); }
+
+/* ---- wider screens ------------------------------------------------------- */
+
+@media (min-width: 720px) {
+  h1 { font-size: 34px; }
+  .lesson-grid { grid-template-columns: repeat(2, 1fr); }
+  .tile-grid { grid-template-columns: repeat(3, 1fr); }
+  .page { padding: 30px 20px 80px; }
+}
+
+/* ---- cheat sheet --------------------------------------------------------- */
+
+.sheet-title { margin-bottom: 4px; }
+.sheet-note { font-size: 12px; color: var(--ink-dim); margin-bottom: 8px; }
+.sheet-columns { display: grid; gap: 12px; margin-top: 16px; }
+.sheet .card h2 { margin-bottom: 8px; }
+.sheet table.watch td { padding: 5px 0; font-size: 13px; }
+.sheet table.watch td:first-child { font-family: var(--mono); width: 38%; font-weight: 400; }
+
+@media (min-width: 720px) {
+  .sheet-columns { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---- printing -----------------------------------------------------------
+   Lesson pages get printed for the table and the cheat sheet gets taped to
+   it. Dark themes waste toner and read badly on paper, so print flips to
+   ink-on-white and drops anything that is only useful on screen.
+   ------------------------------------------------------------------------- */
+
+@media print {
+  html, body { background: #fff; color: #000; font-size: 11pt; }
+  .no-print, .site-nav, .site-header, .page-turns, .copy-button { display: none !important; }
+  .page { max-width: none; padding: 0; }
+  .card {
+    background: #fff; border: 1px solid #999; border-radius: 0;
+    padding: 10px 12px; margin-bottom: 10px;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .card.goal, .card.sense, .card.teacher { border-left: 3px solid #000; }
+  h1 { font-size: 20pt; }
+  h2 { color: #000; font-size: 10pt; }
+  .subtitle, .sheet-note, .hint, .lesson-sub { color: #444; }
+  pre.program { background: #f2f2f2; color: #000; border: 1px solid #999; }
+  table.watch td:last-child { color: #333; }
+  .sheet-columns { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  /* Teacher notes are collapsed on screen; on paper they should be readable. */
+  details.teacher > summary { color: #000; }
+  details.teacher > p { display: block; }
+  details.teacher > summary::after { content: " (printed for the grown-up)"; font-weight: 400; }
+  a { color: #000; text-decoration: none; }
+}

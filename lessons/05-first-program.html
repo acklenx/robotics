@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05. Your First Program &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 05 &middot; 60 minutes</p>
+  <h1>Your First Program</h1>
+  <p class="subtitle">Blocks, and what the robot actually receives</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Build a program from blocks, send it, run it, and read the same program back off the robot.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>A program is a list of instructions, run in order, with nobody watching</li><li>The robot has no eyes on your intentions &mdash; only your steps</li><li>Blocks and text are two views of the same thing</li><li>The robot remembers: programs survive being switched off</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>THINK, written down in advance. The robot does exactly what you wrote, which is the whole joy and the whole problem.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Open the <b>Blocks</b> tab. Tap 'set speed', then 'drive rooms'. Watch the text box fill in underneath.</li><li>Look at the robot language: <code>V 5</code> then <code>F 900</code>. Every block is one line.</li><li>Press <b>Send to robot</b>. Watch for SAVED steps=2 &mdash; that number must match your block count.</li><li>Press <b>Run</b>. Watch each step announce itself as it happens.</li><li>Now press <b>1</b> on the IR remote. The same program runs, with no phone at all.</li><li>Save a different program to Slot 2 and switch between them from the remote.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Sample program</h2>
+    <p>Drive one room, turn a quarter turn left, drive one more room. An L-shaped path &mdash; the smallest program that goes somewhere interesting.</p>
+    <pre class="program" id="samplePlain">V 5
+F 900
+L 350
+F 900</pre>
+    <button class="copy-button" data-copy="samplePlain">Copy to clipboard</button>
+    <p class="hint">Paste it into the Workshop's <b>Robot language</b> box, then press
+    <b>Text &rarr; blocks</b> to see it as blocks &mdash; or just send it straight to the robot.</p>
+  </section>
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Write a program that draws a triangle. What angle do you need, and how do you get it from quarter turns?</li><li>Write the shortest program that returns the robot exactly to its starting spot.</li><li>Put a program in each of the three slots so a partner can run them from the remote without knowing what they do.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>SAVED steps= does not match your block count</td><td>Some of the program was lost on the way. Send it again; if it keeps happening, say so &mdash; that is a real bug, not your mistake.</td></tr><tr><td>Robot runs the wrong program</td><td>Check which slot is selected. The slot button glows.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The read-back is the moment worth pausing on: press Read back and watch their program appear from the robot's own memory. That is when 'the robot stored it' stops being a claim and becomes a fact.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="04-calibration.html">&larr; Every Robot Is Different</a><a class="page-turn" href="06-loops.html">Doing It Again &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

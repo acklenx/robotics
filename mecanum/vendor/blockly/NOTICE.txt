@@ -1,0 +1,5 @@
+Blockly 13.2.1, copied unchanged from the npm package "blockly" (https://www.npmjs.com/package/blockly).
+Copyright Google LLC and the Raspberry Pi Foundation. Licensed under the Apache License 2.0:
+https://www.apache.org/licenses/LICENSE-2.0
+
+Files here: blockly_compressed.js, blocks_compressed.js, javascript_compressed.js, msg/en.js, media/

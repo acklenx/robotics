@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06. Doing It Again &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 06 &middot; 60 minutes</p>
+  <h1>Doing It Again</h1>
+  <p class="subtitle">Loops, and why repetition is not copy-paste</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Use a repeat block to make a square, then change the square's size by editing one number.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>A loop says 'do this N times' instead of writing it N times</li><li>One number to change instead of many &mdash; fewer chances to be wrong</li><li>Loops can hold loops</li><li>The robot's memory is finite: 100 steps, so loops buy you room</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>THINK, compressed. The same behaviour in fewer instructions.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Build a square the long way: eight blocks, drive-turn-drive-turn-drive-turn-drive-turn. Run it.</li><li>Now build it with a repeat block: repeat 4 times, containing drive and turn. Two blocks inside one.</li><li>Compare the robot language. Same behaviour, a third of the lines.</li><li>Change the repeat count to 3. Predict the shape before running it.</li><li>Change the drive distance to 2 rooms. One number, bigger square.</li><li>Put a repeat inside a repeat and see what happens. Predict first.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Sample program</h2>
+    <p>A square. P 4 starts 'repeat four times', Q ends it. Everything between them happens four times.</p>
+    <pre class="program" id="samplePlain">V 5
+P 4
+F 900
+L 350
+Q</pre>
+    <button class="copy-button" data-copy="samplePlain">Copy to clipboard</button>
+    <p class="hint">Paste it into the Workshop's <b>Robot language</b> box, then press
+    <b>Text &rarr; blocks</b> to see it as blocks &mdash; or just send it straight to the robot.</p>
+  </section>
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Make a staircase: forward, turn, forward, turn back &mdash; repeated. Get the turns to alternate.</li><li>Make a spiral where each side is longer than the last. Can a loop do that, or do you need something else?</li><li>What is the fewest blocks that can make a hexagon? Is it even possible with quarter turns?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Blocks land after the repeat instead of inside it</td><td>Tap the dotted area inside the repeat block first, then tap the palette. The dotted area glows when it is aimed.</td></tr><tr><td>The square drifts into a spiral</td><td>Turns are not exactly 90&deg;. Back to calibration &mdash; or use it: a deliberate spiral is a fine challenge.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The hexagon challenge is a good trap: quarter turns cannot make 60&deg;, so they have to notice the limitation and ask for timed spins instead. Let them hit the wall before offering the tool.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="05-first-program.html">&larr; Your First Program</a><a class="page-turn" href="07-if-sensor.html">Making Decisions &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

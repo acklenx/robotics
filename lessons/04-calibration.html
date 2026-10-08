@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04. Every Robot Is Different &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 04 &middot; 60 minutes</p>
+  <h1>Every Robot Is Different</h1>
+  <p class="subtitle">Measuring your own robot's numbers</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Produce two numbers &mdash; milliseconds per room and milliseconds per quarter turn &mdash; that are true for YOUR robot, and explain why one measurement was not enough.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Identical robots are not identical: wheels, motors, batteries, floor</li><li>Measure, do not guess</li><li>Repeat a measurement to see how much it wobbles</li><li>Differential measurement: subtract two runs to cancel out what they share</li><li>Multiply the error to see it: four turns show a mistake four times bigger</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>THINK, with a stopwatch. The robot does the same thing every time; you are measuring what 'the same thing' actually means.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Open the <b>Calibrate</b> tab. Start at Step 0 and watch a launch: it should creep off the line, not chirp.</li><li>Step 1: two runs from the same start line &mdash; one second, then three seconds. Measure both in centimetres and add them as one trial. Do it three times.</li><li>Why two runs? Both start from a standstill, so both contain the same speeding-up. Subtract them and the speeding-up cancels out, leaving pure cruising. This trick has a name in science: a differential measurement.</li><li>Look at the spread. If the three trials disagree by a lot, something is inconsistent &mdash; find out what before continuing.</li><li>Step 2: the quadruple spin. Four quarter turns should land the arrow back where it started. Read the miss like a clock face.</li><li>Step 3: the drift test. Three seconds straight, then measure how far off the line it ended up, and apply the trim.</li><li>Step 4: victory lap. A square, using YOUR numbers. If it comes home, you are calibrated.</li><li>Name and save your robot. Write the two numbers on tape and stick it to the chassis.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Sample program</h2>
+    <p>The victory lap: repeat four times &mdash; drive half a room, quarter turn left. If your numbers are right, the robot ends where it started, facing the way it started.</p>
+    <pre class="program" id="samplePlain">V 5
+W 200
+P 4
+F 450
+L 350
+Q</pre>
+    <button class="copy-button" data-copy="samplePlain">Copy to clipboard</button>
+    <p class="hint">Paste it into the Workshop's <b>Robot language</b> box, then press
+    <b>Text &rarr; blocks</b> to see it as blocks &mdash; or just send it straight to the robot.</p>
+  </section>
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Run the same test on a hard floor and on carpet. Which numbers change, and why?</li><li>Swap in a fresh battery pack and re-measure. How much did speed change?</li><li>Predict the distance for a 2.5-second drive, then test your prediction. (Careful: the ramp is in there too.)</li><li>Work out how far the robot loses to speeding up. You have the numbers: how far it went in one second, and how far it would have gone at full speed for one second.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Trials disagree by more than about 120 ms</td><td>Something is loose, the battery is tired, or the surface changed. The app warns you about this.</td></tr><tr><td>Robot swerves during the very first moment</td><td>Acceleration is too sharp &mdash; one wheel is breaking traction. Slow the launch on Step 0 first, then re-measure everything.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>This is the most important lesson in the whole club and the least exciting. Sell it by refusing to accept a maze run later that was not calibrated &mdash; the kids who skip today will fail visibly in week 10 and re-learn it the hard way.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="03-sensors.html">&larr; What the Robot Can Feel</a><a class="page-turn" href="05-first-program.html">Your First Program &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

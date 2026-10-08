@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flyers &mdash; Maker Lab Kids</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #15181c; color: #e8ecef; font-family: system-ui, "Segoe UI", sans-serif;
+         padding: 28px 20px 60px; line-height: 1.55; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 6px; }
+  .sub { color: #8a949e; margin-bottom: 8px; }
+  .todo { background: #241a12; border: 1px solid #ff7a1a; border-radius: 10px;
+          padding: 12px 14px; font-size: 14px; margin: 16px 0 22px; }
+  .todo b { color: #ff7a1a; }
+  code { font-family: ui-monospace, Consolas, monospace; background: #12151a;
+         padding: 1px 5px; border-radius: 4px; }
+  .grid { display: grid; gap: 12px; }
+  @media (min-width: 700px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .card { display: block; text-decoration: none; color: inherit; background: #1e2329;
+          border: 1px solid #2b323b; border-radius: 12px; padding: 15px; }
+  .card:hover { border-color: #ff7a1a; }
+  .band { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #ff7a1a; font-weight: 700; }
+  .name { display: block; font-size: 19px; font-weight: 800; margin: 3px 0 6px; }
+  .note { display: block; font-size: 13px; color: #8a949e; }
+  .open { display: block; margin-top: 10px; font-size: 13px; font-weight: 700; color: #ff7a1a; }
+  h2 { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: #8a949e;
+       margin: 26px 0 10px; }
+  .top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .mlk-lockup { display: inline-flex; background: #fff; border-radius: 8px; padding: 3px 8px; line-height: 0; }
+  .mlk-lockup img { height: 34px; width: auto; display: block; }
+  .back { color: #8a949e; font-size: 13px; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="top"><a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <a class="back" href="../index.html">&larr; Robot Workshop</a></p>
+  <h1>Flyers for the after-school program</h1>
+  <p class="sub">Six one-pagers: three for Grades 3&ndash;5, three for
+  Grades 6&ndash;12. Different looks and different arguments, so you can see
+  which one works before printing a hundred.</p>
+
+  <div class="todo">
+    <b>Before printing:</b> every bracketed field &mdash; day and time, start
+    date, location, price, contact, sign-up link, class size &mdash; is filled in
+    from one place. Edit <code>DETAILS</code> at the top of
+    <code>build-flyers.py</code> and run <code>python3 build-flyers.py</code>, or
+    just edit the HTML by hand if you prefer.
+  </div>
+
+  <h2>Grades 3&ndash;5 &mdash; run the programs, build the mazes</h2>
+  <div class="grid">
+    <a class="card" href="junior-1-poster.html" target="_blank">
+      <span class="band">Grades 3&ndash;5</span>
+      <span class="name">Poster</span>
+      <span class="note">Loud and visual. Big type, three steps, almost no reading. For a table at a fair or a noticeboard.</span>
+      <span class="open">Open &amp; print &rarr;</span>
+    </a>
+    <a class="card" href="junior-2-infosheet.html" target="_blank">
+      <span class="band">Grades 3&ndash;5</span>
+      <span class="name">Information sheet</span>
+      <span class="note">Calm and specific. Serif, two columns, a full details table and the questions parents actually ask.</span>
+      <span class="open">Open &amp; print &rarr;</span>
+    </a>
+    <a class="card" href="junior-3-journey.html" target="_blank">
+      <span class="band">Grades 3&ndash;5</span>
+      <span class="name">The journey</span>
+      <span class="note">Warm and narrative. A dotted track down the page, week by week, ending on why it matters.</span>
+      <span class="open">Open &amp; print &rarr;</span>
+    </a></div>
+
+  <h2>Grades 6&ndash;12 &mdash; write the programs, extend the robot</h2>
+  <div class="grid">
+    <a class="card" href="senior-1-buildbay.html" target="_blank">
+      <span class="band">Grades 6&ndash;12</span>
+      <span class="name">Build bay</span>
+      <span class="note">Dark, technical, high-energy. Blueprint grid and terminal green. Aimed at the teenager as much as the parent.</span>
+      <span class="open">Open &amp; print &rarr;</span>
+    </a>
+    <a class="card" href="senior-2-syllabus.html" target="_blank">
+      <span class="band">Grades 6&ndash;12</span>
+      <span class="name">Course outline</span>
+      <span class="note">Reads like a syllabus: week-by-week arc, skills list, homeschool notes, instructor background.</span>
+      <span class="open">Open &amp; print &rarr;</span>
+    </a>
+    <a class="card" href="senior-3-editorial.html" target="_blank">
+      <span class="band">Grades 6&ndash;12</span>
+      <span class="name">Editorial</span>
+      <span class="note">One argument, made properly. Magazine layout with a drop cap and a pull quote. For the parent choosing between four activities.</span>
+      <span class="open">Open &amp; print &rarr;</span>
+    </a></div>
+
+  <h2>Printing</h2>
+  <p class="sub">Each flyer is sized for US Letter with a dashed outline on
+  screen showing where the paper ends. Print at 100%, background graphics on
+  (Chrome: More settings &rarr; Background graphics), otherwise the coloured
+  panels vanish. After you fill in the real details, open Chrome's print
+  preview once per flyer: if a long location or price pushes content past the
+  outline it will spill to a second sheet rather than disappear, which is
+  deliberate &mdash; you want to see it.</p>
+
+  <h2>What differs between the two tracks</h2>
+  <p class="sub">The junior flyers promise <b>running and choosing</b> programs:
+  kids explore what the ready-made behaviours do, build maze sections, and
+  discover that picking the right strategy beats picking the fastest one. The
+  senior flyers promise <b>writing</b> programs and <b>changing the robot</b>:
+  their own block programs, their own sensors, their own mounts and arms, and
+  defending the trade-offs. Both start on brushbots for the first month, which
+  is worth saying out loud to parents &mdash; the first thing their child makes
+  moves on day one.</p>
+</div>
+</body>
+</html>

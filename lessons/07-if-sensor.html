@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07. Making Decisions &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 07 &middot; 60 minutes</p>
+  <h1>Making Decisions</h1>
+  <p class="subtitle">If, else, and the robot thinking for itself</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Write a program that behaves differently depending on what the sensor sees.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>A condition is a question with a yes/no answer</li><li>'If' runs a block only when the answer is yes</li><li>Our robot has no 'else', so we ask the opposite question instead</li><li>Now the robot is doing the thinking &mdash; this is the autonomy slider moving</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>SENSE feeding THINK feeding DO, for the first time, all inside the robot.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Look at the sensor list in the if-block: line sensors, proximity, wall-closer-than-25cm, and their opposites.</li><li>Build: if wall closer than 25 cm, then back up. Run it while holding a book in front.</li><li>Notice sensors 6, 7 and 8 are the opposites of 5, 4 and 3. That is how we fake an 'else'.</li><li>Build a pair: if wall close, spin left; if path clear, drive forward. Two ifs, opposite questions.</li><li>Wrap the pair in a repeat so it keeps checking. Now it is a behaviour, not a one-shot.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Sample program</h2>
+    <p>Repeat ten times: IF a wall is closer than 25 cm, turn left; IF the way ahead is clear, drive forward. Two opposite questions do the job of if/else.</p>
+    <pre class="program" id="samplePlain">V 5
+P 10
+I 5
+L 350
+Z
+I 6
+F 400
+Z
+Q</pre>
+    <button class="copy-button" data-copy="samplePlain">Copy to clipboard</button>
+    <p class="hint">Paste it into the Workshop's <b>Robot language</b> box, then press
+    <b>Text &rarr; blocks</b> to see it as blocks &mdash; or just send it straight to the robot.</p>
+  </section>
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Make the robot follow a wall on its right without touching it.</li><li>Make it stop dead if BOTH line sensors see black (a finish line).</li><li>The robot only checks the sensor when it reaches the if-block. What does it miss in between? Design an experiment to prove it.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>The robot ignores the sensor completely</td><td>The check happens at the instant the if-block runs, not continuously. A long drive before it means a stale answer.</td></tr><tr><td>Both branches run</td><td>That cannot happen if the questions are true opposites. Check you used 5 and 6, not 5 and 5.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The last challenge is the deep one: sampling versus continuous awareness. It is the same reason a self-driving car needs to check often, and it is a genuinely hard idea, so leave time.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="06-loops.html">&larr; Doing It Again</a><a class="page-turn" href="08-line-following.html">Following the Line &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

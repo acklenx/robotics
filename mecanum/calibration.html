@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#15181c">
+<title>Robot Calibration 0.1.31 - Maker Lab Kids</title>
+<style>
+  :root {
+    --bg: #15181c;
+    --panel: #1e2329;
+    --panel-edge: #2b323b;
+    --ink: #e8ecef;
+    --ink-dim: #9aa4ae;
+    --orange: #ff7a1a;
+    --green: #45d483;
+    --green-dark: #123d24;
+    --red: #ff5a5a;
+    --red-dark: #4a1414;
+    --yellow: #ffd23f;
+    --blue: #4db8ff;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 17px; line-height: 1.45;
+  }
+  a { color: #ffa45c; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 120px; }
+  header {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 10px 16px; padding-top: max(10px, env(safe-area-inset-top));
+    background: var(--panel); border-bottom: 1px solid var(--panel-edge);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .mlk-lockup { display: inline-flex; background: #fff; border-radius: 6px; padding: 2px 6px; line-height: 0; }
+  .mlk-lockup img { height: 24px; width: auto; display: block; }
+  .title { font-weight: 900; font-size: 16px; }
+  .title span { color: var(--orange); font-weight: 700; font-size: 13px; }
+  .status { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-dim); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--red); flex: none; }
+  .dot.on { background: var(--green); }
+  .spacer { flex: 1 1 auto; }
+  #stopButton {
+    font: inherit; font-weight: 900; letter-spacing: 0.12em; font-size: 15px;
+    color: #fff; background: #cc2b2b; border: none; border-radius: 10px; padding: 10px 18px; cursor: pointer;
+  }
+  .banner { margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; font-weight: 700; }
+  .banner[hidden] { display: none; }
+  .banner.bad { background: var(--red-dark); border: 2px solid var(--red); color: #ffd0d0; }
+  .banner.info { background: #1d2a3a; border: 1px solid var(--blue); color: #cfe9ff; }
+  h1 { font-size: 22px; margin: 18px 0 4px; }
+  .lead { color: var(--ink-dim); margin: 0 0 12px; font-size: 15px; }
+
+  /* Steps: one open at a time */
+  .step { background: var(--panel); border: 2px solid var(--panel-edge); border-radius: 14px; margin: 12px 0; overflow: hidden; }
+  .step.current { border-color: var(--orange); }
+  .step.done { border-color: #2f6b47; }
+  .step > summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  }
+  .step > summary::-webkit-details-marker { display: none; }
+  .num {
+    width: 38px; height: 38px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px; background: #2b323b; color: var(--ink);
+  }
+  .step.current .num { background: var(--orange); color: var(--bg); }
+  .step.done .num { background: var(--green); color: var(--bg); }
+  .step-title { font-weight: 800; font-size: 18px; flex: 1 1 auto; }
+  .step-state { font-size: 13px; font-weight: 700; color: var(--ink-dim); white-space: nowrap; }
+  .step.done .step-state { color: var(--green); }
+  .step-body { padding: 0 14px 14px; }
+  .say { font-size: 18px; margin: 4px 0 12px; }
+  .say b { color: var(--yellow); }
+
+  .big {
+    display: block; width: 100%; font: inherit; font-weight: 900; font-size: 19px;
+    color: var(--bg); background: var(--orange); border: none; border-radius: 12px;
+    padding: 16px 10px; cursor: pointer; margin: 8px 0;
+  }
+  .big.blue { background: var(--blue); }
+  .big.green { background: var(--green); font-size: 24px; padding: 26px 10px; }
+  .big.quiet { background: #2b323b; color: var(--ink); font-size: 16px; padding: 12px 10px; }
+  .big:disabled { background: #2b323b; color: var(--ink-dim); cursor: default; }
+  .big[hidden] { display: none; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .row > * { flex: 1 1 160px; }
+  label.field { display: flex; flex-direction: column; gap: 4px; font-size: 15px; font-weight: 700; }
+  label.field input {
+    font: inherit; font-size: 22px; font-weight: 700; color: var(--ink); background: #11151a;
+    border: 2px solid #3a434e; border-radius: 10px; padding: 10px 12px; width: 100%;
+  }
+  label.field input:focus { outline: none; border-color: var(--orange); }
+  .surfaces { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 8px 0; }
+  .surfaces button {
+    font: inherit; font-weight: 800; font-size: 16px; color: var(--ink); background: #2b323b;
+    border: 2px solid #3a434e; border-radius: 12px; padding: 14px 6px; cursor: pointer;
+  }
+  .surfaces button.active { background: var(--orange); color: var(--bg); border-color: var(--orange); }
+  .working { color: var(--blue); font-weight: 700; min-height: 1.4em; margin: 6px 0; }
+
+  /* Result of a step: done (green), not on the robot (red) */
+  .result { border-radius: 12px; padding: 12px 14px; margin: 12px 0 8px; }
+  .result[hidden] { display: none; }
+  .result.done { background: var(--green-dark); border: 2px solid var(--green); }
+  .result.bad { background: var(--red-dark); border: 2px solid var(--red); }
+  .result .headline { font-weight: 900; font-size: 19px; }
+  .result.done .headline { color: var(--green); }
+  .result.bad .headline { color: var(--red); }
+  .values { font-family: var(--mono); font-size: 14px; margin-top: 6px; display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; }
+  .values .k { color: var(--ink-dim); }
+  .values .changed { color: var(--yellow); }
+
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .tools button {
+    font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: none;
+    border: 1px solid #3a434e; border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  }
+  .tools button:disabled { opacity: 0.4; cursor: default; }
+  .confirm { background: #2a2414; border: 2px solid var(--yellow); border-radius: 12px; padding: 12px; margin-top: 10px; }
+  .confirm[hidden] { display: none; }
+  .confirm p { margin: 0 0 8px; }
+  .confirm .row button { font: inherit; font-weight: 800; border-radius: 10px; padding: 10px; cursor: pointer; border: none; }
+  .confirm .yes { background: var(--yellow); color: var(--bg); }
+  .confirm .no { background: #2b323b; color: var(--ink); }
+
+  .more { margin-top: 10px; }
+  .more > summary { cursor: pointer; color: #ffa45c; font-size: 15px; font-weight: 700; }
+  .more-text { font-size: 15px; color: #c9d1d8; }
+  .more-text h4 { margin: 10px 0 2px; color: var(--ink); font-size: 15px; }
+  .more-text p { margin: 4px 0; }
+  .gyro { border-top: 1px dashed #3a434e; margin-top: 12px; padding-top: 8px; }
+  .history { font-family: var(--mono); font-size: 13px; color: var(--ink-dim); margin: 6px 0; }
+  .history div { padding: 2px 0; border-bottom: 1px solid #262c34; }
+  .history .ok { color: var(--green); }
+  .history .fix { color: var(--yellow); }
+  .gyro[hidden] { display: none; }
+  .gyro .note { font-size: 14px; color: var(--ink-dim); }
+  #log { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); white-space: pre-wrap; max-height: 220px; overflow: auto; background: #11151a; border-radius: 8px; padding: 8px; }
+</style>
+<style>
+  .question { font-size: 22px; font-weight: 800; margin: 12px 0 6px; }
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .answers .big { font-size: 26px; padding: 26px 10px; }
+  .big.no { background: #cc2b2b; color: #fff; }
+  .bignum { font-size: 64px; font-weight: 900; color: var(--green); line-height: 1.1; }
+  .code { font-family: var(--mono); font-size: 15px; background: #11151a; border-radius: 8px; padding: 10px; margin: 8px 0; white-space: pre; overflow-x: auto; }
+  .tried { font-family: var(--mono); font-size: 14px; color: var(--ink-dim); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="title">Robot Calibration <span id="versionLabel"></span></div>
+  <div class="status"><div class="dot" id="statusDot"></div><span id="statusText">Not connected</span></div>
+  <div class="spacer"></div>
+  <button id="stopButton">STOP</button>
+</header>
+
+<div class="wrap">
+  <div class="banner bad" id="programBanner" hidden></div>
+  <h1>Calibrate by hand</h1>
+  <p class="lead">The code holds the numbers for every robot. Each step below measures one of them; Tune this robot tries a number live
+  and saves it on this robot, so it keeps its own corrections without flashing.</p>
+
+  <!-- 1 Connect -->
+  <details class="step" data-step="connect" open>
+    <summary><span class="num">1</span><span class="step-title">Connect</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">Flash <b>calibration.ino</b> and turn the robot on. Tap <b>Bluetooth</b> and pick your robot.</p>
+      <div id="connectButtons">
+        <button class="big blue" id="connectBleButton">Bluetooth</button>
+        <button class="big blue" id="connectUsbButton">Bluetooth, paired (HC-06), or USB</button>
+      </div>
+      <button class="big quiet" id="showAllButton">Robot not in the list? Show every Bluetooth device</button>
+      <div class="working" id="connectWorking"></div>
+      <div class="result" id="connectResult" hidden></div>
+    </div>
+  </details>
+
+  <!-- Tune this robot -->
+  <details class="step" data-step="tune">
+    <summary><span class="num">&#9881;</span><span class="step-title">Tune this robot</span><span class="step-state" id="tuneState"></span></summary>
+    <div class="step-body">
+      <p class="say">Change a number, tap <b>Try</b>: the robot uses it at once. Happy? Tap <b>Save to the robot</b>: it keeps it, even switched off, over the code's number. Works with the driving program too.</p>
+      <div id="tuneRows"></div>
+      <div class="row">
+        <button class="big green" id="tuneSaveButton" style="font-size:18px;padding:16px 10px">Save to the robot</button>
+        <button class="big quiet" id="tuneResetButton">Back to the code's numbers</button>
+      </div>
+      <div class="working" id="tuneWorking"></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>Every number the robot drives with, as it has them right now. Try sends one to the robot's memory; Save writes them all to the robot's EEPROM, which survives power-off and uploads; the robot reads them at power-on instead of the code's numbers.</p>
+        <h4>Why</h4><p>Robots differ, batteries differ, floors differ. The code holds the numbers that fit the fleet; each robot keeps its own corrections here, set from the steps below or by hand.</p>
+        <h4>How</h4><p>The steps below (5 to 10) each measure one number and show the value to put in; type it here, Try, check, Save. Back to the code's numbers forgets the saved set and the robot runs on the code again. The header of this panel says which the robot is using.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 2 Start power -->
+  <details class="step" data-step="start">
+    <summary><span class="num">2</span><span class="step-title">Start power</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">Put the robot on the floor, battery charged. Stick a piece of tape on the floor at one front corner.</p>
+      <p class="say">Tap <b>Find it</b>. The robot spins for a moment, then asks you a question. Answer it. It spins again, a bit stronger, until it turns the robot 3 times out of 3.</p>
+      <button class="big" id="findButton">Find it</button>
+      <button class="big quiet" id="checkButton">Check the code (after flashing the new number)</button>
+      <div class="working" id="startWorking"></div>
+      <div id="questionBox" hidden>
+        <div class="question" id="questionText"></div>
+        <div class="answers">
+          <button class="big green" id="yesButton">Yes</button>
+          <button class="big no" id="noButton">No</button>
+        </div>
+      </div>
+      <div class="result" id="startResult" hidden></div>
+      <div class="tried" id="triedList"></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>The start power: the smallest power (0 to 255) that turns the whole robot. Below it the motors only hum.</p>
+        <h4>Why</h4><p>Every move starts with a jump straight to this power, so all four wheels turn from the first moment (a wheel that does not turn makes the robot twist as it starts). Turning in place needs the most push of all moves, so its start power works for every move.</p>
+        <h4>How</h4><p>Each test spins all four wheels at one power for 0.6 seconds. "Yes" means the whole robot turned at least 2 cm away from the tape: humming does not count, one wheel creeping does not count. It goes up 5 at a time; a power counts once it turns the robot 3 times out of 3 (near the edge a power works only sometimes, and the robot needs one that always works). Tired batteries need more: put a few more in the code than it found.</p>
+        <p>The number goes into the code as CURVE_LOW_PWM, and one less as PWM_DEADBAND (anything below that is "off").</p>
+        <h4>Check the code</h4><p>After the new number is in the code and flashed: it spins 3 times at the code's start power, and each must turn the robot. Then 2 times at 5 lower, just to show how close to the edge the number is.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 3 Slowest speed -->
+  <details class="step" data-step="slow">
+    <summary><span class="num">3</span><span class="step-title">Slowest speed</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">You need about <b>2 metres</b> clear in front, and a tape measure. Put a mark on the floor at the robot's <b>back edge</b>.</p>
+      <p class="say">Tap <b>Run 2 seconds</b>. Measure from the mark to the back edge, in mm. Put the robot back on the mark, tap <b>Run 4 seconds</b>, measure again.</p>
+      <div class="row">
+        <button class="big" id="run2Button">Run 2 seconds</button>
+        <label class="field">It went (mm)<input type="number" id="run2Input" inputmode="decimal" placeholder="e.g. 700"></label>
+      </div>
+      <div class="row">
+        <button class="big" id="run4Button">Run 4 seconds</button>
+        <label class="field">It went (mm)<input type="number" id="run4Input" inputmode="decimal" placeholder="e.g. 1450"></label>
+      </div>
+      <div class="result" id="slowRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
+        <div class="working" id="slowRecommendText" style="color:var(--ink)"></div>
+        <div class="row" id="slowRecommendRow"></div>
+        <div class="row">
+          <button class="big green" id="slowSaveStepButton" style="font-size:16px;padding:12px 10px">Save to the robot</button>
+        </div>
+        <div class="working" id="slowTryWorking"></div>
+      </div>
+      <button class="big quiet" id="slowWorkButton">Explain the result</button>
+      <div class="working" id="slowWorking"></div>
+      <div class="result" id="slowResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>How fast the robot really goes at its start power (step 2): its slowest speed, in mm per second.</p>
+        <h4>Why</h4><p>Slow moves run at exactly this speed, and the robot works out how long to drive from it. If it believes it is faster than it is, every move falls short; slower, every move goes too far.</p>
+        <h4>How</h4><p>Both runs are the start power on all four wheels (no ramps, no corrections). Getting going and rolling on after the motors stop add the same bit to both runs, so the difference between them is pure speed: speed = (4 seconds distance - 2 seconds distance) / 2 seconds. That bit itself is the next step.</p>
+        <p>Work it out compares the result with the number in the code: within 5 % it is VERIFIED; otherwise it shows the line to put in the code (SPEED_AT_LOW_PWM, in both sketches). After flashing, run both again and Work it out: it should say VERIFIED.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 4 Faster speeds -->
+  <details class="step" data-step="curve">
+    <summary><span class="num">4</span><span class="step-title">Faster speeds</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">You need about <b>2 metres</b> clear in front. Mark the floor at the robot's <b>back edge</b>. For each power, tap <b>1 second</b>, measure, put the robot back on the mark, tap <b>2 seconds</b>, measure.</p>
+      <div id="curveRows"></div>
+      <button class="big blue" id="curveWorkButton">Work it out</button>
+      <div class="working" id="curveWorking"></div>
+      <div class="result" id="curveResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>How fast the robot really goes at half power (128), three-quarter power (192) and full power (255). With the slowest speed from step 3 that is the whole speed curve.</p>
+        <h4>Why</h4><p>Motors are not straight lines: half power is a lot more than half speed. The robot picks a power for every speed it needs from this curve, so every move and every turn depends on it. It also lets programs drive at a steady power instead of the stall edge, where speed wanders 10 % or more from run to run.</p>
+        <h4>How</h4><p>As in step 3: speed = (2 seconds distance - 1 second distance) / 1 second, so getting going and rolling on cancel. Work it out compares the three speeds with the code: all within 5 % is VERIFIED; otherwise it shows the three lines for the code (both sketches).</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 5 Start and stop -->
+  <details class="step" data-step="coast">
+    <summary><span class="num">5</span><span class="step-title">Start and stop</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">Do step 4 first: this one only holds still once moves run at a steady power.</p>
+      <p class="say">Mark the floor at the robot's <b>back edge</b>. Tap <b>Drive 1 metre</b>: the robot drives the way a program does. Measure from the mark to the back edge, in mm.</p>
+      <div class="row">
+        <button class="big" id="coastDriveButton">Drive 1 metre</button>
+        <label class="field">It went (mm)<input type="number" id="coastInput" inputmode="decimal" placeholder="e.g. 930"></label>
+      </div>
+      <div class="result" id="coastRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
+        <div class="working" id="coastRecommendText" style="color:var(--ink)"></div>
+        <div class="row" id="coastRecommendRow"></div>
+        <div class="row">
+          <button class="big green" id="coastSaveStepButton" style="font-size:16px;padding:12px 10px">Save to the robot</button>
+        </div>
+        <div class="working" id="coastTryWorking"></div>
+      </div>
+      <button class="big quiet" id="coastWorkButton">Explain the result</button>
+      <div class="working" id="coastWorking"></div>
+      <div class="result" id="coastResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>How many milliseconds early (or late) a move cuts its motors so that it lands on the target, allowing for the motors taking a moment to get going and the robot rolling on after they stop.</p>
+        <h4>Why</h4><p>Those two add the same few centimetres to every move, long or short. Step 3 measured pure speed; this makes the ends right too.</p>
+        <h4>How</h4><p>This is a real move (m0,1000,0: 1 metre at the program speed, with the robot's own timing). Went 930 for 1000? It is 70 mm short: at the slowest speed (step 3), which a move ends on, that is 70 / 249 = 0.28 s, so the number goes down by 281 ms (negative means the motors run late). Work it out shows the line for the code (SPIN_COAST_MS, both sketches). After flashing, drive again: within 2 cm of 1000 is VERIFIED.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 6 Turning -->
+  <details class="step" data-step="turn">
+    <summary><span class="num">6</span><span class="step-title">Turning</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">Put a strip of tape on the floor along the robot's nose, pointing the way it faces. Tap <b>Turn</b>: the robot turns right a quarter turn, 4 times, and should face the tape again.</p>
+      <p class="say">Where does its nose point now? Write how many <b>degrees past</b> the tape (+) or <b>short</b> of it (-). One clock minute is 6 degrees.</p>
+      <div class="row">
+        <button class="big" id="turnButton">Turn</button>
+        <label class="field">Degrees past (+) or short (-)<input type="number" id="turnInput" inputmode="decimal" placeholder="e.g. 42"></label>
+      </div>
+
+      <div class="result" id="turnRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
+        <div class="working" id="turnRecommendText" style="color:var(--ink)"></div>
+        <div class="row" id="turnRecommendRow"></div>
+        <div class="row">
+          <button class="big green" id="turnSaveStepButton" style="font-size:16px;padding:12px 10px">Save to the robot</button>
+        </div>
+        <div class="working" id="turnTryWorking"></div>
+      </div>
+      <button class="big quiet" id="turnWorkButton">Explain the result</button>
+      <div class="working" id="turnWorking"></div>
+      <div class="result" id="turnResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>How far the robot really turns for the turn it is asked: the spin factor. Mecanum wheels slip sideways while the robot turns, so it turns less (or more) than the wheels alone would say.</p>
+        <h4>Why</h4><p>Every turn in a program uses this number. Off by 10 % and a square is not a square.</p>
+        <h4>How</h4><p>Four quarter turns (the robot's own turn, as a program does it) should come back to the tape: 360 degrees. Ended 42 degrees past? It turned 402 for 360, so the spin factor goes up by 402 / 360 and the robot asks for less next time. Work it out shows the line for the code (SPIN_EFFICIENCY, both sketches). After flashing, Turn again: within 5 degrees is VERIFIED.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 7 Strafing -->
+  <details class="step" data-step="strafe">
+    <summary><span class="num">7</span><span class="step-title">Strafing</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">You need about <b>1.5 metres</b> clear to the robot's <b>right</b>. Mark the floor at the robot's <b>right edge</b>. Tap <b>Slide right 1 metre</b>. Measure from the mark to the right edge, in mm (straight sideways, even if it also crept forward or back).</p>
+      <div class="row">
+        <button class="big" id="strafeButton">Slide right 1 metre</button>
+        <label class="field">It went sideways (mm)<input type="number" id="strafeInput" inputmode="decimal" placeholder="e.g. 850"></label>
+      </div>
+      <div class="result" id="strafeRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
+        <div class="working" id="strafeRecommendText" style="color:var(--ink)"></div>
+        <div class="row" id="strafeRecommendRow"></div>
+        <div class="row">
+          <button class="big green" id="strafeSaveStepButton" style="font-size:16px;padding:12px 10px">Save to the robot</button>
+        </div>
+        <div class="working" id="strafeTryWorking"></div>
+      </div>
+      <button class="big quiet" id="strafeWorkButton">Explain the result</button>
+      <div class="working" id="strafeWorking"></div>
+      <div class="result" id="strafeResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>How far the robot really slides sideways for the slide it is asked: the strafe factor. The rollers slip sideways, so the wheels have to travel a lot further than the robot moves.</p>
+        <h4>Why</h4><p>Every sideways move in a program uses this number, and so does every diagonal.</p>
+        <h4>How</h4><p>A real 1 metre slide to the right (m90,1000,0, the program's move). Went 850? The factor goes down by 850 / 1000, so the wheels travel further next time. Work it out shows the line for the code (STRAFE_EFFICIENCY, both sketches). After flashing, slide again: within 3 cm of 1000 is VERIFIED. The robot may creep forward or back or twist a little while sliding; that is a later step, not this number.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 8 Drive straight -->
+  <details class="step" data-step="straight">
+    <summary><span class="num">8</span><span class="step-title">Drive straight</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">Put a strip of tape on the floor, about 1.2 metres long. Put the robot <b>on the tape, facing along it</b>, its middle over the tape. Tap <b>Drive 1 metre</b>.</p>
+      <p class="say">Where is the middle of the robot now? Write how far it is from the tape, in mm. <b>Right is +, left is -.</b></p>
+      <div class="row">
+        <button class="big" id="straightButton">Drive 1 metre</button>
+        <label class="field">Off the tape (mm, right +)<input type="number" id="straightInput" inputmode="decimal" placeholder="e.g. 45"></label>
+      </div>
+      <button class="big blue" id="straightWorkButton">Work it out</button>
+      <div class="working" id="straightWorking"></div>
+      <div class="result" id="straightResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>How much stronger one side of the robot is than the other. Each wheel gets a gain: 1.00 is normal, 0.97 is a bit less power.</p>
+        <h4>Why</h4><p>If the left wheels are stronger the robot curves to the right, and the longer it drives the further off it gets.</p>
+        <h4>How</h4><p>A real 1 metre drive. Ended 45 mm to the right? The left side is stronger: a steady curve that far over 1 metre means the sides differ by a few per cent (worked out from the spin factor and the wheelbase), so the left wheels get a little less power and the right wheels a little more. Work it out shows the line for the code (WHEEL_GAIN, both sketches). After flashing, drive again: within 2 cm of the tape is VERIFIED. Still off? Work it out again: each round gets closer.</p>
+        <p>A twist in the very first moment (the wheels breaking away unevenly) also shows up here. It is small at this speed; if the robot ends up off the tape by the same amount whether it drives 20 cm or 1 metre, say so.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 9 Slide straight -->
+  <details class="step" data-step="sidestraight">
+    <summary><span class="num">9</span><span class="step-title">Slide straight</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">Put a strip of tape on the floor going <b>across</b> the robot, under its middle, about 1.2 metres long to the right. Tap <b>Slide right 1 metre</b>.</p>
+      <p class="say">Now two things. Which way does the nose point: how many <b>degrees it twisted</b>, <b>+ if it turned to the right</b> (clockwise), - to the left. And where is the middle of the robot: how far from the tape, in mm, <b>ahead +, behind -</b>.</p>
+      <div class="row">
+        <button class="big" id="sideButton">Slide right 1 metre</button>
+        <label class="field">Twist (degrees, right +)<input type="number" id="twistInput" inputmode="decimal" placeholder="e.g. 45"></label>
+        <label class="field">Off the tape (mm, ahead +)<input type="number" id="sideInput" inputmode="decimal" placeholder="e.g. -40"></label>
+      </div>
+      <div class="result" id="sideRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
+        <div class="working" id="sideRecommendText" style="color:var(--ink)"></div>
+        <div class="row" id="sideRecommendRow"></div>
+        <div class="row">
+          <button class="big green" id="sideSaveStepButton" style="font-size:16px;padding:12px 10px">Save to the robot</button>
+        </div>
+        <div class="working" id="sideTryWorking"></div>
+      </div>
+      <button class="big quiet" id="sideWorkButton">Explain the result</button>
+      <div class="working" id="sideWorking"></div>
+      <div class="result" id="sideResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>How much more of the sideways push the front wheels need than the back ones. Sliding sideways, if the back wheels grip better (they carry the battery), the back pushes harder than the front and the robot twists.</p>
+        <h4>Why</h4><p>Sideways and diagonal moves in a program all depend on it. It only touches sliding: forward drives and turns stay as verified.</p>
+        <h4>How</h4><p>Sliding right, the front wheels and the back wheels push sideways; if they push unevenly the robot twists (that is the only thing that twists it: a stronger diagonal pair makes it creep forward or back instead, which is the next step). So this step reads the twist. Sliding right, a front that pushes harder turns the nose to the right (clockwise), a back that pushes harder turns it to the left. Twisted to the left? The back pushes harder: the front wheels get a bigger share of the sideways speed and the back a smaller one (STRAFE_FRONT_BIAS: 0.064 means front 1.064 x, back 0.936 x). It takes half the step the twist suggests, because a big twist is not twice a small one. Work it out shows the line for the code (both sketches). After flashing, slide again: a twist within 5 degrees is VERIFIED, whatever the creep (the creep is step 10).</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- 10 Slide creep -->
+  <details class="step" data-step="creep">
+    <summary><span class="num">10</span><span class="step-title">Slide creep</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">Tape across the robot under its middle, with room to slide 1 metre both ways. Tap <b>Slide right 1 metre</b>: how far is the middle from the tape? <b>Ahead +, behind -.</b> Put it back over the tape and do <b>Slide left 1 metre</b>.</p>
+      <div class="row">
+        <button class="big" id="creepRightButton">Slide right 1 metre</button>
+        <label class="field">Right slide: off the tape (mm, ahead +)<input type="number" id="creepRightInput" inputmode="decimal" placeholder="e.g. 260"></label>
+      </div>
+      <div class="row">
+        <button class="big" id="creepLeftButton">Slide left 1 metre</button>
+        <label class="field">Left slide: off the tape (mm, ahead +)<input type="number" id="creepLeftInput" inputmode="decimal" placeholder="e.g. 240"></label>
+      </div>
+      <div class="result" id="creepRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
+        <div class="working" id="creepRecommendText" style="color:var(--ink)"></div>
+        <div class="row" id="creepRecommendRow"></div>
+        <div class="row">
+          <button class="big green" id="creepSaveStepButton" style="font-size:16px;padding:12px 10px">Save to the robot</button>
+        </div>
+        <div class="working" id="creepTryWorking"></div>
+      </div>
+      <button class="big quiet" id="creepWorkButton">Explain the result</button>
+      <div class="working" id="creepWorking"></div>
+      <div class="result" id="creepResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>Sliding, the robot creeps forward or back while holding its heading. That is one diagonal pair of wheels pushing harder than the other (a stronger front or back would twist it instead: step 9).</p>
+        <h4>Why</h4><p>Sideways and diagonal moves end up off their line by it, whatever the heading does.</p>
+        <h4>How</h4><p>Sliding right, FL and RR roll forward and FR and RL backwards; sliding left it is the other way round. So two slides tell the two causes apart: creeping forward both ways means the motors are weaker rolling backwards (the pair rolling forward wins, whichever pair that is); creeping forward one way and back the other means one particular pair (FL + RR, or FR + RL) is stronger. Both can be there at once, and the two slides give both numbers: the share of the sideways speed taken from the stronger pair and given to the weaker. Work it out shows the lines for the code (both sketches). After flashing, slide both ways again: within 3 cm both ways is VERIFIED.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <details class="more"><summary>Robot messages</summary><div id="log"></div></details>
+</div>
+
+<script>
+"use strict";
+
+// ---------------------------------------------------------------------------
+// Robot Calibration, by hand: one number at a time, with calibration.ino.
+// Every test is a button; the person only answers Yes or No. The number found
+// goes into the CONFIG constants of mecanum_holonomic.ino and calibration.ino;
+// after flashing, "Check the code" tests the number the robot now has.
+// calibration.ino: o<mode>,<power>,<ms>; (run: start / run: done), k?;
+// (K,cal,<deadband>,<start power>,... K,end).
+// ---------------------------------------------------------------------------
+
+var APP_VERSION = "0.1.31";
+var SERIAL_BAUD = 9600;
+var BLE_SERVICE_UUID = 0xFFE0;
+var BLE_NUS_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+var BLE_CHUNK_SIZE = 20;
+var SPIN_MS = 600;
+var FIRST_POWER = 40;
+var POWER_STEP = 5;
+var SURE = 3;           // a power counts when it turns the robot 3 times out of 3
+
+document.getElementById("versionLabel").textContent = APP_VERSION;
+document.title = "Robot Calibration " + APP_VERSION + " - Maker Lab Kids";
+
+var statusDot = document.getElementById("statusDot");
+var statusText = document.getElementById("statusText");
+var logBox = document.getElementById("log");
+
+function logLine(text) {
+  logBox.textContent += text + "\n";
+  if (logBox.textContent.length > 20000) {
+    logBox.textContent = logBox.textContent.slice(-15000);
+  }
+  logBox.scrollTop = logBox.scrollHeight;
+}
+function storageGet(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch (error) { return null; }
+}
+function storageSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { /* blocked: fine for this visit */ }
+}
+function pause(ms) {
+  return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+}
+
+// ---------------------------------------------------------------------------
+// Connection (the same as before: Bluetooth, or paired / USB through Web Serial)
+// ---------------------------------------------------------------------------
+
+var link = null;
+var incomingLineBuffer = "";
+var lineDecoder = new TextDecoder();
+var writeChain = Promise.resolve();
+var replyWaiters = [];
+
+function sendCommand(text, quiet) {
+  if (!link) {
+    return;
+  }
+  if (!quiet) {
+    logLine("> " + text);
+  }
+  var activeLink = link;
+  writeChain = writeChain.then(function () {
+    return activeLink === link ? activeLink.write(new TextEncoder().encode(text)) : null;
+  }).catch(function (error) { logLine("write failed: " + error.message); });
+}
+
+function sendAndAwait(text, pattern, timeoutMs) {
+  return new Promise(function (resolve, reject) {
+    var waiter = { pattern: pattern, resolve: resolve };
+    waiter.timer = setTimeout(function () {
+      replyWaiters = replyWaiters.filter(function (w) { return w !== waiter; });
+      reject(new Error("the robot did not answer " + text));
+    }, timeoutMs);
+    replyWaiters.push(waiter);
+    if (text) {
+      sendCommand(text);
+    }
+  });
+}
+function awaitReply(pattern, timeoutMs) {
+  return sendAndAwait("", pattern, timeoutMs);
+}
+// A command over Bluetooth can be lost while the robot talks: try twice.
+function ask(text, pattern, timeoutMs) {
+  return sendAndAwait(text, pattern, timeoutMs).catch(function () { return sendAndAwait(text, pattern, timeoutMs); });
+}
+
+function handleIncomingBytes(bytes) {
+  incomingLineBuffer += lineDecoder.decode(bytes, { stream: true });
+  var newlineIndex = incomingLineBuffer.indexOf("\n");
+  while (newlineIndex >= 0) {
+    var line = incomingLineBuffer.slice(0, newlineIndex).replace(/\r$/, "");
+    incomingLineBuffer = incomingLineBuffer.slice(newlineIndex + 1);
+    if (line) {
+      handleRobotLine(line);
+    }
+    newlineIndex = incomingLineBuffer.indexOf("\n");
+  }
+}
+
+function setConnectedState() {
+  var connected = link !== null;
+  statusDot.className = connected ? "dot on" : "dot";
+  statusText.textContent = connected ? link.label + (robot.role ? " - " + robot.role + " " + (robot.fw || "") : "") : "Not connected";
+  document.getElementById("connectBleButton").textContent = connected && link.kind === "ble" ? "Disconnect" : "Bluetooth";
+  document.getElementById("connectUsbButton").textContent = connected && link.kind === "usb" ? "Disconnect" : "Bluetooth, paired (HC-06), or USB";
+  // The way that worked last time first.
+  if (connected) {
+    storageSet("calib-connect-kind", link.kind);
+  }
+  var buttons = document.getElementById("connectButtons");
+  if (storageGet("calib-connect-kind") === "usb" && buttons.firstElementChild.id !== "connectUsbButton") {
+    buttons.insertBefore(document.getElementById("connectUsbButton"), buttons.firstElementChild);
+  }
+  document.getElementById("connectBleButton").disabled = !navigator.bluetooth || (connected && link.kind !== "ble");
+  document.getElementById("connectUsbButton").disabled = !navigator.serial || (connected && link.kind !== "usb");
+  render();
+}
+
+function handleLinkLost(reason) {
+  if (!link) {
+    return;
+  }
+  link = null;
+  robot = freshRobot();
+  logLine("Disconnected" + (reason ? ": " + reason : ""));
+  setConnectedState();
+}
+
+function connectUsb() {
+  var port = null, reader = null, writer = null;
+  // (the classic serial Bluetooth ID, so Chrome lists paired HC-06 modules too)
+  navigator.serial.requestPort({ allowedBluetoothServiceClassIds: ["00001101-0000-1000-8000-00805f9b34fb"] }).then(function (chosenPort) {
+    port = chosenPort;
+    return port.open({ baudRate: SERIAL_BAUD });
+  }).then(function () {
+    writer = port.writable.getWriter();
+    reader = port.readable.getReader();
+    var info = port.getInfo ? port.getInfo() : {};
+    link = {
+      kind: "usb", label: info.bluetoothServiceClassId ? "Bluetooth (HC-06)" : "USB",
+      write: function (bytes) { return writer.write(bytes); },
+      close: function () {
+        link = null;
+        return reader.cancel().catch(function () {}).then(function () {
+          writer.releaseLock();
+          return port.close();
+        }).catch(function () {}).then(setConnectedState);
+      }
+    };
+    port.addEventListener("disconnect", function () { handleLinkLost("USB unplugged"); });
+    (function pump() {
+      reader.read().then(function (result) {
+        if (!result.done) {
+          handleIncomingBytes(result.value);
+          pump();
+        }
+      }).catch(function (error) {
+        if (link && link.kind === "usb") {
+          handleLinkLost(error.message);
+        }
+      });
+    })();
+    linked(2500);   // opening the port resets the Uno: let it boot
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "USB: " + error.message;
+  });
+}
+
+// Robots by their module's name (as it comes, or a name saved on this phone),
+// or every device nearby (showAll) when a robot is not in the list.
+function connectBle(showAll) {
+  var device = null, tx = null, rx = null, mode = "response";
+  var filters = [{ services: [BLE_SERVICE_UUID] }, { services: [BLE_NUS_SERVICE_UUID] }, { namePrefix: "HC" }, { namePrefix: "HM" }, { namePrefix: "JDY" },
+                 { namePrefix: "BT" }, { namePrefix: "MLT" }, { namePrefix: "MLK" }];
+  (storageGet("mlk-robot-names") || []).forEach(function (name) { filters.push({ name: name }); });
+  navigator.bluetooth.requestDevice(showAll ? { acceptAllDevices: true, optionalServices: [BLE_SERVICE_UUID, BLE_NUS_SERVICE_UUID] } :
+    { filters: filters, optionalServices: [BLE_SERVICE_UUID, BLE_NUS_SERVICE_UUID] }).then(function (chosenDevice) {
+    device = chosenDevice;
+    device.addEventListener("gattserverdisconnected", function () { handleLinkLost("Bluetooth dropped"); });
+    document.getElementById("connectWorking").textContent = "Connecting to " + device.name + "...";
+    return device.gatt.connect();
+  }).then(function (server) {
+    return server.getPrimaryService(BLE_SERVICE_UUID).catch(function () { return server.getPrimaryService(BLE_NUS_SERVICE_UUID); });
+  }).then(function (service) {
+    return service.getCharacteristics();
+  }).then(function (characteristics) {
+    characteristics.forEach(function (c) {
+      var p = c.properties || {};
+      if (!tx && (p.write || p.writeWithoutResponse)) { tx = c; }
+      if (!rx && (p.notify || p.indicate)) { rx = c; }
+    });
+    if (!tx) {
+      throw new Error("no writable characteristic");
+    }
+    mode = tx.properties.writeWithoutResponse ? "noresponse" : "response";
+    function writeChunk(chunk) {
+      if (mode === "noresponse" && tx.writeValueWithoutResponse) {
+        return tx.writeValueWithoutResponse(chunk);
+      }
+      return tx.writeValueWithResponse ? tx.writeValueWithResponse(chunk) : tx.writeValue(chunk);
+    }
+    link = {
+      kind: "ble", label: device.name || "Bluetooth",
+      write: function (bytes) {
+        var chain = Promise.resolve();
+        for (var offset = 0; offset < bytes.length; offset += BLE_CHUNK_SIZE) {
+          (function (chunk) {
+            chain = chain.then(function () {
+              return writeChunk(chunk).catch(function () {
+                mode = mode === "noresponse" ? "response" : "noresponse";
+                return writeChunk(chunk);
+              });
+            });
+          })(bytes.slice(offset, offset + BLE_CHUNK_SIZE));
+        }
+        return Promise.race([chain, pause(1500)]);
+      },
+      close: function () {
+        link = null;
+        if (device.gatt.connected) {
+          device.gatt.disconnect();
+        }
+        setConnectedState();
+        return Promise.resolve();
+      }
+    };
+    if (!rx) {
+      return null;
+    }
+    rx.addEventListener("characteristicvaluechanged", function (event) { handleIncomingBytes(event.target.value); });
+    return rx.startNotifications().catch(function () { /* sending still works */ });
+  }).then(function () {
+    linked(400);
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "Bluetooth: " + error.message;
+    if (device && device.gatt && device.gatt.connected) {
+      device.gatt.disconnect();
+    }
+    setConnectedState();
+  });
+}
+
+
+// ---------------------------------------------------------------------------
+// The robot
+// ---------------------------------------------------------------------------
+
+function freshRobot() {
+  return { role: null, fw: null, deadband: null, startPower: null, slowSpeed: null, coastMs: null, half: null, s192: null, max: null, spinEff: null, strafeEff: null, lever: null, gains: null, frontBias: null, diagBias: null, fwdRollBias: null, accel: null, source: null, unsaved: false };
+}
+var robot = freshRobot();
+
+function handleRobotLine(line) {
+  logLine("< " + line);
+  replyWaiters = replyWaiters.filter(function (waiter) {
+    if (!waiter.pattern.test(line)) {
+      return true;
+    }
+    clearTimeout(waiter.timer);
+    waiter.resolve(line);
+    return false;
+  });
+  var match;
+  if ((match = /^K,cal,(.*)$/.exec(line))) {
+    var fields = match[1].split(",").map(Number);
+    robot.deadband = Math.round(fields[0]);
+    robot.startPower = Math.round(fields[1]);
+    robot.slowSpeed = fields[2];
+    robot.coastMs = Math.round(fields[8]);
+    robot.half = fields[3];
+    robot.s192 = fields[4];
+    robot.max = fields[5];
+    robot.spinEff = fields[6];
+    robot.strafeEff = fields[7];
+    robot.gains = fields.slice(10, 14);
+    robot.lever = fields[19];
+    robot.frontBias = fields.length > 21 ? fields[21] : null;   // 0.10.47 on
+    robot.diagBias = fields.length > 23 ? fields[22] : null;    // 0.10.56 on
+    robot.fwdRollBias = fields.length > 23 ? fields[23] : null;
+    robot.accel = fields[20];
+    var sourceLetter = match[1].split(",").pop();
+    robot.source = /^[a-z]$/.test(sourceLetter) ? sourceLetter : null;   // e: saved on the robot, d: the code's, c: compiled in
+  } else if ((match = /^K,role,(.*)$/.exec(line))) {
+    robot.role = match[1];
+  } else if ((match = /^K,fw,(.*)$/.exec(line))) {
+    robot.fw = match[1];
+  } else if ((match = /^(calibration|mecanum_holonomic|mecanum_calibration) v(\S+)/.exec(line))) {
+    robot.role = match[1];
+    robot.fw = match[2];
+  }
+  render();
+}
+
+function isCalibrationProgram() {
+  return robot.role === "calibration";
+}
+function isKnownProgram() {
+  return robot.role === "calibration" || robot.role === "mecanum_holonomic";
+}
+
+function linked(waitMs) {
+  setConnectedState();
+  document.getElementById("connectWorking").textContent = "Reading the robot...";
+  pause(waitMs).then(function () {
+    return ask("k?;", /^K,end/, 8000);
+  }).then(function () {
+    document.getElementById("connectWorking").textContent = "";
+    setConnectedState();
+    if (isCalibrationProgram()) {
+      openStep("start");
+    } else if (isKnownProgram()) {
+      openStep("tune");
+    }
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "Connected, but " + error.message + ". Is calibration.ino on it? Try again.";
+    setConnectedState();
+  });
+}
+
+function openStep(step) {
+  var steps = document.querySelectorAll(".step");
+  for (var i = 0; i < steps.length; i++) {
+    steps[i].open = steps[i].getAttribute("data-step") === step;
+  }
+  render();   // (no scrolling: the person scrolls)
+}
+(function () {
+  var steps = document.querySelectorAll(".step");
+  for (var i = 0; i < steps.length; i++) {
+    steps[i].addEventListener("toggle", function () {
+      if (this.open) {
+        for (var j = 0; j < steps.length; j++) {
+          if (steps[j] !== this) { steps[j].open = false; }
+        }
+      }
+    });
+  }
+})();
+
+// ---------------------------------------------------------------------------
+// Step 2: start power. A search (find) or a check of the code's number.
+// ---------------------------------------------------------------------------
+
+var test = null;   // { mode: "find" | "check", ... } while a test runs
+var tried = [];    // "60: yes" ...
+
+function spin(power) {
+  document.getElementById("startWorking").textContent = "Spinning at power " + power + "...";
+  document.getElementById("questionBox").hidden = true;
+  return ask("o1," + power + "," + SPIN_MS + ";", /^run: (done|ABORTED)/, 6000).then(function (line) {
+    if (/ABORTED/.test(line)) {
+      throw new Error("stopped");
+    }
+  });
+}
+
+function askPerson(power) {
+  test.power = power;
+  return spin(power).then(function () {
+    if (!test) {
+      return;
+    }
+    document.getElementById("startWorking").textContent = "";
+    var nth = test.mode === "find" ? test.yeses + 1 : null;
+    document.getElementById("questionText").textContent = "Power " + power + (nth > 1 ? " (try " + nth + " of " + SURE + ")" : "") +
+      ": did the whole robot turn at least 2 cm?";
+    document.getElementById("questionBox").hidden = false;
+  }).catch(function (error) {
+    endTest((error.message === "stopped" ? "Stopped" : "The test stopped: " + error.message) + ". Tap Find it to start again.");
+  });
+}
+
+function startFind() {
+  if (!link || test) {
+    return;
+  }
+  tried = [];
+  test = { mode: "find", yeses: 0 };
+  document.getElementById("startResult").hidden = true;
+  render();
+  askPerson(FIRST_POWER);
+}
+
+// Check: 3 spins at the code's start power (each should turn it), then 2 at 5
+// lower (each should not).
+var CHECK_PLAN = [0, 0, 0, -POWER_STEP, -POWER_STEP];
+function startCheck() {
+  if (!link || test || robot.startPower === null) {
+    return;
+  }
+  tried = [];
+  test = { mode: "check", index: 0, wrong: [] };
+  document.getElementById("startResult").hidden = true;
+  render();
+  askPerson(robot.startPower + CHECK_PLAN[0]);
+}
+
+function answer(yes) {
+  if (!test) {
+    return;
+  }
+  document.getElementById("questionBox").hidden = true;
+  tried.push(test.power + ": " + (yes ? "yes" : "no"));
+  if (test.mode === "check") {
+    if (CHECK_PLAN[test.index] === 0 && !yes) {
+      test.wrong.push(test.power + " did not turn (it must, every time)");
+    }
+    if (CHECK_PLAN[test.index] !== 0 && yes) {
+      test.lowerTurned = (test.lowerTurned || 0) + 1;
+    }
+    test.index++;
+    if (test.index < CHECK_PLAN.length) {
+      askPerson(robot.startPower + CHECK_PLAN[test.index]);
+      return;
+    }
+    showCheck(test.wrong, test.lowerTurned || 0);
+    return;
+  }
+  // find: a power counts when it turns the robot 3 times out of 3; any no: 5 up
+  if (yes) {
+    test.yeses++;
+    if (test.yeses === SURE) {
+      showFound(test.power);
+      return;
+    }
+    askPerson(test.power);
+    return;
+  }
+  test.yeses = 0;
+  if (test.power + POWER_STEP > 255) {
+    endTest("It never turned, even at full power. Battery charged? Is a wheel stuck?");
+    return;
+  }
+  askPerson(test.power + POWER_STEP);
+}
+
+function showFound(power) {
+  var box = document.getElementById("startResult");
+  box.hidden = false;
+  box.className = "result done";
+  box.innerHTML = '<div class="headline">Start power found</div><div class="bignum">' + power + "</div>" +
+    "<div>Put it in the code (both mecanum_holonomic.ino and calibration.ino), or send the number to Claude:</div>" +
+    '<div class="code">const int PWM_DEADBAND = ' + (power - 1) + ";\nconst int CURVE_LOW_PWM = " + power + ";</div>" +
+    (robot.startPower !== null ? "<div>The code has " + robot.startPower + " now.</div>" : "");
+  endTest("");
+}
+
+function showCheck(wrong, lowerTurned) {
+  if (!wrong.length) {
+    document.querySelector('.step[data-step="start"] .step-state').textContent = "DONE \u2713";
+  }
+  var box = document.getElementById("startResult");
+  box.hidden = false;
+  box.className = "result " + (wrong.length ? "bad" : "done");
+  box.innerHTML = wrong.length ?
+    '<div class="headline">The code\'s start power (' + robot.startPower + ") is NOT right</div><div>" + escapeHtml(wrong.join("; ")) + ". Tap Find it to find the right one.</div>" :
+    '<div class="headline">VERIFIED \u2713 The code\'s start power (' + robot.startPower + ") is right</div><div>Next: step 3. It turned the robot 3 times out of 3. " +
+    (robot.startPower - POWER_STEP) + " turned it " + lowerTurned + " of 2 times" + (lowerTurned === 2 ? " too: the number has room to spare (fine, or a bit high)." :
+      lowerTurned === 1 ? ": the number sits just above the edge." : ": the number is close to the edge.") + "</div>";
+  endTest("");
+}
+
+function endTest(message) {
+  test = null;
+  document.getElementById("questionBox").hidden = true;
+  document.getElementById("startWorking").textContent = message;
+  render();
+}
+
+// ---------------------------------------------------------------------------
+// Step 3: slowest speed. Two runs at the start power, 2 s and 4 s; the
+// difference over 2 s is the speed (getting going and rolling on are the
+// same in both, and cancel).
+// ---------------------------------------------------------------------------
+
+var SLOW_TOLERANCE = 5;   // %
+var slowRunning = false;
+
+function runSlow(seconds) {
+  if (!link || slowRunning || test) {
+    return;
+  }
+  slowRunning = true;
+  render();
+  var working = document.getElementById("slowWorking");
+  applyNext("slow").then(function () {
+    noteRun("slow");
+    working.textContent = "Driving at power " + robot.startPower + " for " + seconds + " seconds...";
+    return ask("o0," + robot.startPower + "," + (seconds * 1000) + ";", /^run: (done|ABORTED)/, seconds * 1000 + 5000);
+  }).then(function (line) {
+    working.textContent = /ABORTED/.test(line) ? "Stopped. Run it again." : "Measure from the mark to the back edge and write it in the box.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    slowRunning = false;
+    render();
+  });
+}
+
+function readMm(id) {
+  var text = document.getElementById(id).value.trim().replace(",", ".");
+  return text === "" ? null : Number(text);
+}
+
+function workOutSlow() {
+  var d2 = readMm("run2Input"), d4 = readMm("run4Input");
+  var working = document.getElementById("slowWorking");
+  var box = document.getElementById("slowResult");
+  if (!(d2 > 0) || !(d4 > 0)) {
+    working.textContent = "Do both runs and write both distances (in mm) first.";
+    return;
+  }
+  if (!(d4 > d2 * 1.3)) {
+    working.textContent = "4 seconds has to go a good deal further than 2 seconds. Check the numbers (both measured from the mark to the back edge?).";
+    return;
+  }
+  working.textContent = "";
+  var speed = (d4 - d2) / 2;
+  var extra = d2 - 2 * speed;
+  var code = robot.slowSpeed;
+  var off = code ? (code - speed) / speed * 100 : null;
+  box.hidden = false;
+  if (off !== null && Math.abs(off) <= SLOW_TOLERANCE) {
+    box.className = "result done";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s slowest speed (' + Math.round(code) + " mm/s) is right</div><div>Measured " +
+      speed.toFixed(1) + " mm/s: " + (off >= 0 ? "+" : "") + off.toFixed(1) + " %.</div>";
+    document.querySelector('.step[data-step="slow"] .step-state').textContent = "DONE \u2713";
+  } else {
+    box.className = "result done";
+    box.innerHTML = '<div class="headline">Slowest speed found</div><div class="bignum">' + Math.round(speed) + " mm/s</div>" +
+      "<div>Put it in the code (both mecanum_holonomic.ino and calibration.ino), or send the number to Claude:</div>" +
+      '<div class="code">const float SPEED_AT_LOW_PWM = ' + speed.toFixed(1) + ";</div>" +
+      (code ? "<div>The code has " + code.toFixed(1) + " mm/s now (" + (off >= 0 ? "+" : "") + off.toFixed(0) + " %).</div>" : "");
+  }
+  box.innerHTML += '<div class="tried">2 s went ' + Math.round(d2) + " mm, 4 s went " + Math.round(d4) + " mm. Getting going and rolling on add " +
+    Math.round(extra) + " mm to every run (that is the next step).</div>";
+}
+
+// ---------------------------------------------------------------------------
+// Step 4: faster speeds. At 128, 192 and 255: a 1 s and a 2 s run each;
+// speed = d2 - d1 (getting going and rolling on cancel).
+// ---------------------------------------------------------------------------
+
+var CURVE_POWERS = [{ power: 128, key: "half", name: "HALF_POWER_MM_PER_SEC", label: "Half power (128)" },
+                    { power: 192, key: "s192", name: "SPEED_AT_PWM_192", label: "Three-quarter power (192)" },
+                    { power: 255, key: "max", name: "MAX_WHEEL_MM_PER_SEC", label: "Full power (255)" }];
+var CURVE_TOLERANCE = 5;   // %
+var curveRunning = false;
+
+(function () {
+  var rows = document.getElementById("curveRows");
+  CURVE_POWERS.forEach(function (entry) {
+    var title = document.createElement("div");
+    title.className = "question";
+    title.style.fontSize = "18px";
+    title.textContent = entry.label;
+    rows.appendChild(title);
+    [1, 2].forEach(function (seconds) {
+      var row = document.createElement("div");
+      row.className = "row";
+      var button = document.createElement("button");
+      button.className = "big";
+      button.id = "curve" + entry.power + "s" + seconds;
+      button.textContent = seconds + " second" + (seconds > 1 ? "s" : "");
+      button.addEventListener("click", function () { runCurve(entry.power, seconds); });
+      var label = document.createElement("label");
+      label.className = "field";
+      label.textContent = "It went (mm)";
+      var input = document.createElement("input");
+      input.type = "number";
+      input.id = "curve" + entry.power + "s" + seconds + "Input";
+      input.setAttribute("inputmode", "decimal");
+      label.appendChild(input);
+      row.appendChild(button);
+      row.appendChild(label);
+      rows.appendChild(row);
+    });
+  });
+})();
+
+function runCurve(power, seconds) {
+  if (!link || curveRunning || slowRunning || coastRunning || test) {
+    return;
+  }
+  curveRunning = true;
+  render();
+  var working = document.getElementById("curveWorking");
+  working.textContent = "Driving at power " + power + " for " + seconds + " second" + (seconds > 1 ? "s" : "") + "...";
+  ask("o0," + power + "," + (seconds * 1000) + ";", /^run: (done|ABORTED)/, seconds * 1000 + 5000).then(function (line) {
+    working.textContent = /ABORTED/.test(line) ? "Stopped. Run it again." : "Measure from the mark to the back edge and write it in the box.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    curveRunning = false;
+    render();
+  });
+}
+
+function workOutCurve() {
+  var working = document.getElementById("curveWorking");
+  var box = document.getElementById("curveResult");
+  var speeds = [], problems = [];
+  CURVE_POWERS.forEach(function (entry) {
+    var d1 = readMm("curve" + entry.power + "s1Input"), d2 = readMm("curve" + entry.power + "s2Input");
+    if (!(d1 > 0) || !(d2 > 0)) {
+      problems.push(entry.label + ": both runs needed");
+    } else if (!(d2 > d1 * 1.3)) {
+      problems.push(entry.label + ": 2 seconds has to go a good deal further than 1 second");
+    } else {
+      speeds.push({ entry: entry, speed: d2 - d1, d1: d1, d2: d2 });
+    }
+  });
+  if (problems.length) {
+    working.textContent = problems.join(". ") + ".";
+    return;
+  }
+  for (var i = 1; i < speeds.length; i++) {
+    if (!(speeds[i].speed > speeds[i - 1].speed * 1.05)) {
+      working.textContent = speeds[i].entry.label + " came out no faster than " + speeds[i - 1].entry.label.toLowerCase() + ". Check those runs.";
+      return;
+    }
+  }
+  if (!(speeds[0].speed > robot.slowSpeed * 1.05)) {
+    working.textContent = "Half power came out no faster than the slowest speed (" + Math.round(robot.slowSpeed) + "). Check its runs.";
+    return;
+  }
+  working.textContent = "";
+  var allOk = true, lines = [], detail = [];
+  speeds.forEach(function (r) {
+    var code = robot[r.entry.key];
+    var off = (code - r.speed) / r.speed * 100;
+    var ok = Math.abs(off) <= CURVE_TOLERANCE;
+    allOk = allOk && ok;
+    lines.push("const float " + r.entry.name + " = " + r.speed.toFixed(1) + ";");
+    detail.push(r.entry.label + ": " + Math.round(r.speed) + " mm/s (code " + Math.round(code) + ", " + (off >= 0 ? "+" : "") + off.toFixed(0) + " %" + (ok ? " \u2713" : "") + ")");
+  });
+  box.hidden = false;
+  box.className = "result done";
+  if (allOk) {
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s speed curve is right</div><div>' + escapeHtml(detail.join("; ")) + "</div>";
+    document.querySelector('.step[data-step="curve"] .step-state').textContent = "DONE \u2713";
+    return;
+  }
+  box.innerHTML = '<div class="headline">Speeds found</div><div>' + escapeHtml(detail.join("; ")) + "</div>" +
+    "<div>Put these in the code (both sketches), or send them to Claude:</div>" +
+    '<div class="code">' + lines.join("\n") + "</div>";
+}
+
+// ---------------------------------------------------------------------------
+// Step 5: start and stop. A real 1 m move; the shortfall at the slowest
+// speed (the speed a 1 m move ends on) is how much earlier the motors cut
+// than they should: SPIN_COAST_MS goes down by it (negative = cut late).
+// ---------------------------------------------------------------------------
+
+var COAST_MM = 1000;
+var COAST_TOLERANCE_MM = 20;
+var coastRunning = false;
+
+function runCoast() {
+  if (!link || coastRunning || slowRunning || test) {
+    return;
+  }
+  coastRunning = true;
+  render();
+  var working = document.getElementById("coastWorking");
+  applyNext("coast").then(function () {
+    noteRun("coast");
+    working.textContent = "Driving 1 metre...";
+    return ask("m0," + COAST_MM + ",0;", /^move: (done|ABORTED)/, 30000);
+  }).then(function (line) {
+    working.textContent = /ABORTED/.test(line) ? "Stopped. Drive it again." : "Measure from the mark to the back edge and write it in the box.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    coastRunning = false;
+    render();
+  });
+}
+
+function workOutCoast() {
+  var went = readMm("coastInput");
+  var working = document.getElementById("coastWorking");
+  var box = document.getElementById("coastResult");
+  if (!(went > 0)) {
+    working.textContent = "Drive, then write how far it went (in mm).";
+    return;
+  }
+  if (Math.abs(went - COAST_MM) > 300) {
+    working.textContent = "Not a start-and-stop error: " + Math.round(went) + " mm for 1000 is way off. Did it stop early? Is step 3 done?";
+    return;
+  }
+  working.textContent = "";
+  var short = COAST_MM - went;
+  box.hidden = false;
+  if (Math.abs(short) <= COAST_TOLERANCE_MM) {
+    box.className = "result done";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s start and stop (' + robot.coastMs + " ms) is right</div><div>1 metre went " + Math.round(went) + " mm.</div>";
+    document.querySelector('.step[data-step="coast"] .step-state').textContent = "DONE \u2713";
+    return;
+  }
+  var newMs = Math.round(robot.coastMs - short / robot.slowSpeed * 1000);   // the move ends at the slowest speed
+  box.className = "result done";
+  box.innerHTML = '<div class="headline">Start and stop found</div><div class="bignum">' + newMs + " ms</div>" +
+    "<div>1 metre went " + Math.round(went) + " mm: " + Math.abs(short) + " mm " + (short > 0 ? "short" : "long") + ". Put this in the code (both sketches), or send it to Claude:</div>" +
+    '<div class="code">const long SPIN_COAST_MS = ' + newMs + ";</div><div>The code has " + robot.coastMs + " ms now.</div>";
+}
+
+// ---------------------------------------------------------------------------
+// Step 6: turning. Four right quarter turns (m0,0,90: the program's turn);
+// it turned 360 + off for 360, so SPIN_EFFICIENCY x (360 + off) / 360.
+// ---------------------------------------------------------------------------
+
+var TURNS = 4;
+var TURN_TOLERANCE_DEG = 5;
+var turnRunning = false;
+
+function anyRunning() {
+  return slowRunning || coastRunning || curveRunning || turnRunning || strafeRunning || straightRunning || sideRunning || creepRunning || !!test;
+}
+
+function runTurns() {
+  if (!link || anyRunning()) {
+    return;
+  }
+  turnRunning = true;
+  render();
+  var working = document.getElementById("turnWorking");
+  var i = 0;
+  function next() {
+    if (i === TURNS) {
+      return null;
+    }
+    i++;
+    working.textContent = "Quarter turn " + i + " of " + TURNS + "...";
+    return ask("m0,0,90;", /^move: (done|ABORTED)/, 20000).then(function (line) {
+      if (/ABORTED/.test(line)) {
+        throw new Error("stopped");
+      }
+      return pause(400).then(next);
+    });
+  }
+  applyNext("turn").then(function () { noteRun("turn"); }).then(next).then(function () {
+    working.textContent = "Look where the nose points, and write the degrees past (+) or short (-).";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message + ". Tap Turn to start again.";
+  }).then(function () {
+    turnRunning = false;
+    render();
+  });
+}
+
+function workOutTurn() {
+  var off = readMm("turnInput");
+  var working = document.getElementById("turnWorking");
+  var box = document.getElementById("turnResult");
+  if (off === null || isNaN(off)) {
+    working.textContent = "Turn, then write the degrees past (+) or short (-). 0 if it came back right to the tape.";
+    return;
+  }
+  if (Math.abs(off) > 180) {
+    working.textContent = "More than half a turn off is not a calibration problem. Did it stop early? Write the degrees again.";
+    return;
+  }
+  working.textContent = "";
+  box.hidden = false;
+  if (Math.abs(off) <= TURN_TOLERANCE_DEG) {
+    box.className = "result done";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s spin factor (' + robot.spinEff.toFixed(3) + ") is right</div><div>4 quarter turns ended " + (off > 0 ? "+" : "") + off + " degrees.</div>";
+    document.querySelector('.step[data-step="turn"] .step-state').textContent = "DONE \u2713";
+    return;
+  }
+  var factor = (TURNS * 90 + off) / (TURNS * 90);
+  var newEff = robot.spinEff * factor;
+  box.className = "result done";
+  box.innerHTML = '<div class="headline">Spin factor found</div><div class="bignum">' + newEff.toFixed(3) + "</div>" +
+    "<div>4 quarter turns ended " + (off > 0 ? "+" : "") + off + " degrees: it turned " + (TURNS * 90 + off) + " for 360. Put this in the code (both sketches), or send it to Claude:</div>" +
+    '<div class="code">const float SPIN_EFFICIENCY = ' + newEff.toFixed(3) + ";</div><div>The code has " + robot.spinEff.toFixed(3) + " now.</div>";
+}
+
+// ---------------------------------------------------------------------------
+// Step 7: strafing. A real 1 m slide right (m90,1000,0); it went d for 1000,
+// so STRAFE_EFFICIENCY x d / 1000.
+// ---------------------------------------------------------------------------
+
+var STRAFE_MM = 1000;
+var STRAFE_TOLERANCE_MM = 30;
+var strafeRunning = false;
+
+function runStrafe() {
+  if (!link || anyRunning() || strafeRunning) {
+    return;
+  }
+  strafeRunning = true;
+  render();
+  var working = document.getElementById("strafeWorking");
+  applyNext("strafe").then(function () {
+    noteRun("strafe");
+    working.textContent = "Sliding right 1 metre...";
+    return ask("m90," + STRAFE_MM + ",0;", /^move: (done|ABORTED)/, 30000);
+  }).then(function (line) {
+    working.textContent = /ABORTED/.test(line) ? "Stopped. Slide it again." : "Measure from the mark to the right edge and write it in the box.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    strafeRunning = false;
+    render();
+  });
+}
+
+function workOutStrafe() {
+  var went = readMm("strafeInput");
+  var working = document.getElementById("strafeWorking");
+  var box = document.getElementById("strafeResult");
+  if (!(went > 0)) {
+    working.textContent = "Slide, then write how far sideways it went (in mm).";
+    return;
+  }
+  if (went < STRAFE_MM * 0.4 || went > STRAFE_MM * 2) {
+    working.textContent = "Not a strafe-factor problem: " + Math.round(went) + " mm for 1000 is way off. Did it stop early, or hum without moving?";
+    return;
+  }
+  working.textContent = "";
+  box.hidden = false;
+  if (Math.abs(went - STRAFE_MM) <= STRAFE_TOLERANCE_MM) {
+    box.className = "result done";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s strafe factor (' + robot.strafeEff.toFixed(3) + ") is right</div><div>1 metre sideways went " + Math.round(went) + " mm.</div>";
+    document.querySelector('.step[data-step="strafe"] .step-state').textContent = "DONE \u2713";
+    return;
+  }
+  var newEff = robot.strafeEff * went / STRAFE_MM;
+  box.className = "result done";
+  box.innerHTML = '<div class="headline">Strafe factor found</div><div class="bignum">' + newEff.toFixed(3) + "</div>" +
+    "<div>1 metre sideways went " + Math.round(went) + " mm. Put this in the code (both sketches), or send it to Claude:</div>" +
+    '<div class="code">const float STRAFE_EFFICIENCY = ' + newEff.toFixed(3) + ";</div><div>The code has " + robot.strafeEff.toFixed(3) + " now.</div>";
+}
+
+// ---------------------------------------------------------------------------
+// Step 8: drive straight. A real 1 m drive; it ended d mm to the right. A
+// side faster by a (left v(1+a), right v(1-a)) turns the body at
+// spinEff x a x v / lever, and a steady turn bends the path by
+// spinEff x a x L^2 / (2 lever) over L: a = 2 d lever / (spinEff L^2).
+// A wheel's gain acts on the power above the dead band (pwm += (pwm -
+// deadband) x (gain - 1)), and at the program speed (half power, PWM 128)
+// the curve climbs slope mm/s per PWM, so a speed change of a x v needs a
+// gain change of a x v / ((128 - deadband) x slope).
+// ---------------------------------------------------------------------------
+
+var STRAIGHT_MM = 1000;
+var STRAIGHT_TOLERANCE_MM = 20;
+var straightRunning = false;
+
+function runStraight() {
+  if (!link || anyRunning() || straightRunning) {
+    return;
+  }
+  straightRunning = true;
+  render();
+  var working = document.getElementById("straightWorking");
+  working.textContent = "Driving 1 metre...";
+  ask("m0," + STRAIGHT_MM + ",0;", /^move: (done|ABORTED)/, 30000).then(function (line) {
+    working.textContent = /ABORTED/.test(line) ? "Stopped. Drive it again." : "Measure how far the middle of the robot is from the tape (right +, left -).";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    straightRunning = false;
+    render();
+  });
+}
+
+function workOutStraight() {
+  var off = readMm("straightInput");
+  var working = document.getElementById("straightWorking");
+  var box = document.getElementById("straightResult");
+  if (off === null || isNaN(off)) {
+    working.textContent = "Drive, then write how far off the tape it ended (0 if it is right on it).";
+    return;
+  }
+  if (Math.abs(off) > 400) {
+    working.textContent = "More than 40 cm off over 1 metre is not a balance problem. Did a wheel stop, or did it twist at the start? Drive again.";
+    return;
+  }
+  working.textContent = "";
+  box.hidden = false;
+  if (Math.abs(off) <= STRAIGHT_TOLERANCE_MM) {
+    box.className = "result done";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s wheel gains are right</div><div>1 metre ended ' + off + " mm off the tape.</div>";
+    document.querySelector('.step[data-step="straight"] .step-state').textContent = "DONE \u2713";
+    return;
+  }
+  var a = 2 * off * robot.lever / (robot.spinEff * STRAIGHT_MM * STRAIGHT_MM);   // left side this much above the middle (+ = left stronger)
+  var slope = (robot.half - robot.slowSpeed) / Math.max(10, 128 - robot.startPower);
+  var dGain = a * robot.half / ((128 - robot.deadband) * slope);
+  var gains = robot.gains.map(function (g, w) { return g * (1 - (w === 0 || w === 2 ? dGain : -dGain)); });   // FL FR RL RR: left down, right up
+  var mean = (gains[0] + gains[1] + gains[2] + gains[3]) / 4;
+  gains = gains.map(function (g) { return Math.max(0.6, Math.min(1.6, g / mean)); });
+  box.className = "result done";
+  box.innerHTML = '<div class="headline">Wheel gains found</div><div>1 metre ended ' + Math.abs(off) + " mm to the " + (off > 0 ? "right: the left side is " : "left: the right side is ") +
+    (Math.abs(a) * 200).toFixed(1) + " % stronger. Put this in the code (both sketches), or send it to Claude:</div>" +
+    '<div class="code">constexpr float WHEEL_GAIN[4] = { ' + gains.map(function (g) { return g.toFixed(3); }).join(", ") + " };   // FL FR RL RR</div>" +
+    "<div>The code has { " + robot.gains.map(function (g) { return g.toFixed(3); }).join(", ") + " } now.</div>";
+}
+
+// ---------------------------------------------------------------------------
+// Step 9: slide straight. Sliding right (wheel strafe speed s = body /
+// strafeEff), a front pushing harder by b (front s(1+b), back s(1-b)) spins
+// the body at spinEff x s x b / lever clockwise: over L it twists
+// spinEff x b x L / (lever x strafeEff) radians. (A diagonal pair pushing
+// harder creeps the robot forward or back instead, with no twist: step 10.)
+// The fix is a sliding-only share: STRAFE_FRONT_BIAS goes up by -b (front
+// weaker: front gets more), so forward drives and turns are untouched.
+// ---------------------------------------------------------------------------
+
+var SIDE_MM = 1000;
+var SIDE_TWIST_TOLERANCE_DEG = 5;
+var SIDE_DAMPING = 0.5;   // half the step the twist suggests: a big twist is not twice a small one
+var sideRunning = false;
+
+function runSide() {
+  if (!link || anyRunning() || sideRunning) {
+    return;
+  }
+  sideRunning = true;
+  render();
+  var working = document.getElementById("sideWorking");
+  applyNext("side").then(function () {
+    noteRun("side");
+    working.textContent = "Sliding right 1 metre...";
+    return ask("m90," + SIDE_MM + ",0;", /^move: (done|ABORTED)/, 30000);
+  }).then(function (line) {
+    working.textContent = /ABORTED/.test(line) ? "Stopped. Slide it again." : "Write the twist (degrees, right +) and how far the middle is from the tape (ahead +, behind -).";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    sideRunning = false;
+    render();
+  });
+}
+
+function workOutSide() {
+  var twist = readMm("twistInput"), off = readMm("sideInput");
+  var working = document.getElementById("sideWorking");
+  var box = document.getElementById("sideResult");
+  if (twist === null || isNaN(twist)) {
+    working.textContent = "Slide, then write the twist in degrees (right +), and how far off the tape it ended.";
+    return;
+  }
+  if (Math.abs(twist) > 90) {
+    working.textContent = "More than a quarter turn of twist is not a balance problem. Did a wheel stop? Slide again.";
+    return;
+  }
+  if (robot.frontBias === null) {
+    box.hidden = false;
+    box.className = "result bad";
+    box.innerHTML = '<div class="headline">Needs calibration.ino 0.10.47 or newer</div><div>This one has no sliding share yet: flash the newest calibration.ino and slide again.</div>';
+    return;
+  }
+  working.textContent = "";
+  box.hidden = false;
+  var creepNote = off === null || isNaN(off) ? "" : " It ended " + Math.abs(off) + " mm " + (off >= 0 ? "ahead" : "behind") + ": that creep is step 10.";
+  if (Math.abs(twist) <= SIDE_TWIST_TOLERANCE_DEG) {
+    box.className = "result done";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The sliding share (' + robot.frontBias.toFixed(3) + ") is right</div><div>The slide twisted " + twist + " degrees." + creepNote + "</div>";
+    document.querySelector('.step[data-step="sidestraight"] .step-state').textContent = "DONE \u2713";
+    return;
+  }
+  // twist (rad) = spinEff x b x L / (lever x strafeEff), b = the front's push above the middle
+  var b = twist * Math.PI / 180 * robot.lever * robot.strafeEff / (robot.spinEff * SIDE_MM);
+  var bias = Math.max(-0.5, Math.min(0.5, robot.frontBias - SIDE_DAMPING * b));
+  box.className = "result done";
+  box.innerHTML = '<div class="headline">Sliding share found</div><div class="bignum">' + bias.toFixed(3) + "</div><div>It twisted " + Math.abs(twist) + " degrees to the " +
+    (twist > 0 ? "right: the front pushes harder, so the back" : "left: the back pushes harder, so the front") + " wheels get more of the sideways speed." + creepNote +
+    " Put this in the code (both sketches), or send it to Claude:</div>" +
+    '<div class="code">const float STRAFE_FRONT_BIAS = ' + bias.toFixed(3) + ";</div><div>The code has " + robot.frontBias.toFixed(3) + " now.</div>";
+}
+
+// ---------------------------------------------------------------------------
+// Step 10: slide creep. A pair pushing harder by e (one pair s(1+e), the
+// other s(1-e)) creeps the robot forward at s x e while it slides sideways
+// at s x strafeEff: creep / sideways = e / strafeEff. Right slide: FL+RR roll
+// forward; left: FR+RL. With cR, cL the creep ratios (ahead +):
+//   forward-rolling pair stronger (weak in reverse): f = (cR + cL) / 2
+//   FL+RR stronger (a particular pair):               g = (cR - cL) / 2
+// and the shares are f x strafeEff and g x strafeEff, added to the code's.
+// ---------------------------------------------------------------------------
+
+var CREEP_MM = 1000;
+var CREEP_TOLERANCE_MM = 30;
+var creepRunning = false;
+
+function runCreep(right) {
+  if (!link || anyRunning() || creepRunning) {
+    return;
+  }
+  creepRunning = true;
+  render();
+  var working = document.getElementById("creepWorking");
+  applyNext("creep").then(function () {
+    noteRun("creep");
+    working.textContent = "Sliding " + (right ? "right" : "left") + " 1 metre...";
+    return ask("m" + (right ? 90 : -90) + "," + CREEP_MM + ",0;", /^move: (done|ABORTED)/, 30000);
+  }).then(function (line) {
+    working.textContent = /ABORTED/.test(line) ? "Stopped. Slide it again." : "Write how far the middle is from the tape (ahead +, behind -) in the " + (right ? "right" : "left") + " slide's box.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    creepRunning = false;
+    render();
+  });
+}
+
+function workOutCreep() {
+  var cR = readMm("creepRightInput"), cL = readMm("creepLeftInput");
+  var working = document.getElementById("creepWorking");
+  var box = document.getElementById("creepResult");
+  if (cR === null || isNaN(cR) || cL === null || isNaN(cL)) {
+    working.textContent = "Both slides are needed: write how far off the tape each one ended (0 if right on it).";
+    return;
+  }
+  if (Math.abs(cR) > 500 || Math.abs(cL) > 500) {
+    working.textContent = "More than half a metre off over a 1 metre slide is not a balance problem. Did a wheel stop? Slide again.";
+    return;
+  }
+  if (robot.diagBias === null) {
+    box.hidden = false;
+    box.className = "result bad";
+    box.innerHTML = '<div class="headline">Needs calibration.ino 0.10.56 or newer</div><div>Flash the newest calibration.ino and slide again.</div>';
+    return;
+  }
+  working.textContent = "";
+  box.hidden = false;
+  if (Math.abs(cR) <= CREEP_TOLERANCE_MM && Math.abs(cL) <= CREEP_TOLERANCE_MM) {
+    box.className = "result done";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 No creep</div><div>Right slide ' + cR + " mm, left slide " + cL + " mm off the tape.</div>";
+    document.querySelector('.step[data-step="creep"] .step-state').textContent = "DONE \u2713";
+    return;
+  }
+  var f = (cR + cL) / 2 / CREEP_MM * robot.strafeEff;   // forward-rolling pair stronger
+  var g = (cR - cL) / 2 / CREEP_MM * robot.strafeEff;   // FL+RR stronger
+  var fwdRoll = Math.max(-0.5, Math.min(0.5, robot.fwdRollBias + f));
+  var diag = Math.max(-0.5, Math.min(0.5, robot.diagBias + g));
+  var story = [];
+  if (Math.abs(f) * CREEP_MM / robot.strafeEff > CREEP_TOLERANCE_MM / 2) {
+    story.push("the pair rolling " + (f > 0 ? "forward" : "backwards") + " pushes " + (Math.abs(f) * 200).toFixed(1) + " % harder (the motors are weaker " + (f > 0 ? "in reverse" : "going forward") + ")");
+  }
+  if (Math.abs(g) * CREEP_MM / robot.strafeEff > CREEP_TOLERANCE_MM / 2) {
+    story.push("the " + (g > 0 ? "FL + RR" : "FR + RL") + " pair pushes " + (Math.abs(g) * 200).toFixed(1) + " % harder");
+  }
+  box.className = "result done";
+  box.innerHTML = '<div class="headline">Slide creep found</div><div>Right slide ' + cR + " mm, left slide " + cL + " mm off the tape: " + escapeHtml(story.join("; ") || "a little of each") +
+    ". Put these in the code (both sketches), or send them to Claude:</div>" +
+    '<div class="code">const float STRAFE_DIAG_BIAS = ' + diag.toFixed(3) + ";\nconst float STRAFE_FWD_ROLL_BIAS = " + fwdRoll.toFixed(3) + ";</div>" +
+    "<div>The code has " + robot.diagBias.toFixed(3) + " and " + robot.fwdRollBias.toFixed(3) + " now.</div>";
+}
+
+// ---------------------------------------------------------------------------
+// Measure -> recommend -> try -> save, the same on every iterating step. As
+// the measurement is typed: the value the robot used for that test (noted
+// when its run button was pressed), the recommended value worked out from
+// the measurement (and why), a Next box pre-filled with it (editable), Try
+// (km, live) and Save (kw). VERIFIED when the measurement is within tolerance.
+// ---------------------------------------------------------------------------
+
+var RECOMMEND = {
+  slow: { fields: ["run2Input", "run4Input"], targets: [{ i: 2, key: "slowSpeed", label: "slowest speed", unit: " mm/s", digits: 0 }],
+    compute: function (d2, d4) {
+      if (!(d2 > 0) || !(d4 > 0)) { return null; }
+      if (!(d4 > d2 * 1.3)) { return { problem: "4 seconds has to go a good deal further than 2 seconds." }; }
+      var speed = (d4 - d2) / 2, off = (robot.slowSpeed - speed) / speed * 100;
+      return { values: [speed], why: "4 s - 2 s = " + Math.round(d4 - d2) + " mm in 2 s", verified: Math.abs(off) <= SLOW_TOLERANCE, measured: Math.round(speed) + " mm/s (" + (off >= 0 ? "+" : "") + off.toFixed(1) + " % off the code)" };
+    } },
+  coast: { fields: ["coastInput"], targets: [{ i: 8, key: "coastMs", label: "start and stop", unit: " ms", digits: 0 }],
+    compute: function (went) {
+      if (!(went > 0)) { return null; }
+      if (Math.abs(went - COAST_MM) > 300) { return { problem: Math.round(went) + " mm for 1000 is not a start-and-stop error." }; }
+      var short = COAST_MM - went;
+      return { values: [Math.round(robot.coastMs - short / robot.slowSpeed * 1000)], why: Math.abs(short) + " mm " + (short > 0 ? "short" : "long") + " at " + Math.round(robot.slowSpeed) + " mm/s",
+               verified: Math.abs(short) <= COAST_TOLERANCE_MM, measured: Math.round(went) + " mm for 1000" };
+    } },
+  turn: { fields: ["turnInput"], targets: [{ i: 6, key: "spinEff", label: "spin factor", unit: "", digits: 3 }],
+    compute: function (off) {
+      if (off === null || isNaN(off)) { return null; }
+      if (Math.abs(off) > 180) { return { problem: "More than half a turn off is not a calibration problem." }; }
+      return { values: [robot.spinEff * (TURNS * 90 + off) / (TURNS * 90)], why: "it turned " + (TURNS * 90 + off) + " for 360", verified: Math.abs(off) <= TURN_TOLERANCE_DEG,
+               measured: (off > 0 ? "+" : "") + off + " degrees" };
+    } },
+  strafe: { fields: ["strafeInput"], targets: [{ i: 7, key: "strafeEff", label: "strafe factor", unit: "", digits: 3 }],
+    compute: function (went) {
+      if (!(went > 0)) { return null; }
+      if (went < STRAFE_MM * 0.4 || went > STRAFE_MM * 2) { return { problem: Math.round(went) + " mm for 1000 is way off: did it stop early or hum?" }; }
+      return { values: [robot.strafeEff * went / STRAFE_MM], why: "it went " + Math.round(went) + " for 1000", verified: Math.abs(went - STRAFE_MM) <= STRAFE_TOLERANCE_MM, measured: Math.round(went) + " mm sideways" };
+    } },
+  side: { fields: ["twistInput"], targets: [{ i: 20, key: "frontBias", label: "sliding share front vs back", unit: "", digits: 3 }],
+    compute: function (twist) {
+      if (twist === null || isNaN(twist)) { return null; }
+      if (Math.abs(twist) > 90) { return { problem: "More than a quarter turn of twist is not a balance problem." }; }
+      if (robot.frontBias === null) { return { problem: "Needs calibration.ino or mecanum_holonomic.ino 0.10.56 or newer." }; }
+      var b = twist * Math.PI / 180 * robot.lever * robot.strafeEff / (robot.spinEff * SIDE_MM);
+      return { values: [Math.max(-0.5, Math.min(0.5, robot.frontBias - SIDE_DAMPING * b))], why: (twist > 0 ? "the front pushes harder, half a step down" : "the back pushes harder, half a step up"),
+               verified: Math.abs(twist) <= SIDE_TWIST_TOLERANCE_DEG, measured: (twist > 0 ? "+" : "") + twist + " degrees of twist" };
+    } },
+  creep: { fields: ["creepRightInput", "creepLeftInput"], targets: [{ i: 21, key: "diagBias", label: "diagonal share", unit: "", digits: 3 }, { i: 22, key: "fwdRollBias", label: "rolling-forward share", unit: "", digits: 3 }],
+    compute: function (cR, cL) {
+      if (cR === null || isNaN(cR) || cL === null || isNaN(cL)) { return null; }
+      if (Math.abs(cR) > 500 || Math.abs(cL) > 500) { return { problem: "More than half a metre off is not a balance problem." }; }
+      if (robot.diagBias === null) { return { problem: "Needs calibration.ino or mecanum_holonomic.ino 0.10.56 or newer." }; }
+      var f = (cR + cL) / 2 / CREEP_MM * robot.strafeEff, g = (cR - cL) / 2 / CREEP_MM * robot.strafeEff;
+      return { values: [Math.max(-0.5, Math.min(0.5, robot.diagBias + g)), Math.max(-0.5, Math.min(0.5, robot.fwdRollBias + f))],
+               why: "right " + cR + " and left " + cL + " mm", verified: Math.abs(cR) <= CREEP_TOLERANCE_MM && Math.abs(cL) <= CREEP_TOLERANCE_MM, measured: cR + " / " + cL + " mm off the tape" };
+    } }
+};
+var lastRun = {};          // step -> the values the robot had when its run button was pressed
+var lastRecommended = {};  // step -> what the Next boxes were last filled with
+var recommendBusy = false;
+
+function noteRun(step) {
+  var entry = RECOMMEND[step];
+  if (!entry) { return; }
+  lastRun[step] = entry.targets.map(function (t) { return robot[t.key]; });
+  refreshRecommend(step);
+}
+
+function fmt(value, digits) {
+  return value === null || value === undefined ? "?" : Number(value).toFixed(digits);
+}
+
+function refreshRecommend(step) {
+  var entry = RECOMMEND[step];
+  var box = document.getElementById(step + "Recommend");
+  var text = document.getElementById(step + "RecommendText");
+  var row = document.getElementById(step + "RecommendRow");
+  if (!row.children.length) {
+    entry.targets.forEach(function (t, k) {
+      var label = document.createElement("label");
+      label.className = "field";
+      label.textContent = "Next test will use: " + t.label + t.unit;
+      var input = document.createElement("input");
+      input.type = "number";
+      input.id = step + "Next" + k;
+      input.setAttribute("inputmode", "decimal");
+      input.step = t.digits ? "0.001" : "1";
+      label.appendChild(input);
+      row.appendChild(label);
+    });
+  }
+  var values = entry.fields.map(function (id) { return readMm(id); });
+  var result = robot.slowSpeed === null ? null : entry.compute.apply(null, values);
+  if (!result) {
+    box.hidden = true;
+    return;
+  }
+  box.hidden = false;
+  var used = (lastRun[step] || entry.targets.map(function (t) { return robot[t.key]; })).map(function (v, k) { return fmt(v, entry.targets[k].digits) + entry.targets[k].unit; }).join(" and ");
+  if (result.problem) {
+    text.innerHTML = "<b>Last test used</b> " + escapeHtml(used) + ". " + escapeHtml(result.problem);
+    row.hidden = true;
+    document.getElementById(step + "SaveStepButton").hidden = true;
+    return;
+  }
+  row.hidden = result.verified;
+  document.getElementById(step + "SaveStepButton").hidden = false;
+  var recommended = result.values.map(function (v, k) { return fmt(v, entry.targets[k].digits) + entry.targets[k].unit; }).join(" and ");
+  text.innerHTML = "<b>Last test used</b> " + escapeHtml(used) + ". Measured: " + escapeHtml(result.measured) + ". " +
+    (result.verified ? '<b style="color:var(--green)">VERIFIED \u2713</b> within tolerance: nothing to change.' :
+      "<b>Recommended</b> " + escapeHtml(recommended) + " (" + escapeHtml(result.why) + "). The next test runs with what is in the box below: change it if you like, then run the test again.");
+  result.values.forEach(function (v, k) {
+    var input = document.getElementById(step + "Next" + k);
+    var filled = fmt(v, entry.targets[k].digits);
+    var previous = (lastRecommended[step] || [])[k];
+    if (input.value === "" || input.value === previous) {
+      input.value = filled;   // a value the person typed over stays
+    }
+  });
+  lastRecommended[step] = result.values.map(function (v, k) { return fmt(v, entry.targets[k].digits); });
+}
+
+// Before a step's run: whatever is in its Next boxes goes to the robot, so
+// the test really runs with it. Resolves when the robot has it (or there
+// was nothing to send).
+function applyNext(step) {
+  var entry = RECOMMEND[step];
+  var box = document.getElementById(step + "Recommend");
+  if (!entry || box.hidden) { return Promise.resolve(); }
+  var working = document.getElementById(step + "TryWorking");
+  var sends = [];
+  entry.targets.forEach(function (t, k) {
+    var value = readMm(step + "Next" + k);
+    if (value !== null && !isNaN(value) && Math.abs(value - robot[t.key]) > (t.digits ? 0.0005 : 0.5)) {
+      sends.push({ t: t, value: value });
+    }
+  });
+  if (!sends.length) { return Promise.resolve(); }
+  working.textContent = "Sending the new " + sends.map(function (x) { return x.t.label; }).join(" and ") + " to the robot...";
+  var chain = Promise.resolve();
+  sends.forEach(function (x) {
+    chain = chain.then(function () { return ask("km" + x.t.i + "=" + x.value.toFixed(x.t.digits ? 3 : 0) + ";", /^K,cal,/, 2500); });
+  });
+  return chain.then(function () {
+    robot.unsaved = true;
+    working.textContent = "This test runs with " + sends.map(function (x) { return x.t.label + " " + fmt(robot[x.t.key], x.t.digits) + x.t.unit; }).join(" and ") + ". Not saved yet.";
+  });
+}
+
+function saveStep(step) {
+  var working = document.getElementById(step + "TryWorking");
+  if (!link || anyRunning() || recommendBusy) { return; }
+  recommendBusy = true;
+  working.textContent = "Saving on the robot...";
+  ask("kw;", /^config: saved/, 3000).then(function () {
+    robot.unsaved = false;
+    robot.source = "e";
+    working.textContent = "Saved on the robot: it keeps these numbers switched off and on.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    recommendBusy = false;
+    render();
+  });
+}
+
+Object.keys(RECOMMEND).forEach(function (step) {
+  RECOMMEND[step].fields.forEach(function (id) {
+    document.getElementById(id).addEventListener("input", function () { refreshRecommend(step); });
+  });
+  document.getElementById(step + "SaveStepButton").addEventListener("click", function () { saveStep(step); });
+});
+
+// ---------------------------------------------------------------------------
+// Tune this robot: every motion number, Try (km<i>=<v>;, live), Save to the
+// robot (kw;, EEPROM: kept through power-off and uploads, read instead of the
+// code's at power-on), Back to the code's numbers (kd;).
+// ---------------------------------------------------------------------------
+
+var TUNABLE = [
+  { i: 6, key: "spinEff", label: "Spin factor (turns)", digits: 3 },
+  { i: 7, key: "strafeEff", label: "Strafe factor (slides)", digits: 3 },
+  { i: 8, key: "coastMs", label: "Start and stop (ms, - runs late)", digits: 0 },
+  { i: 20, key: "frontBias", label: "Sliding share: front vs back", digits: 3 },
+  { i: 21, key: "diagBias", label: "Sliding share: diagonal (FL+RR vs FR+RL)", digits: 3 },
+  { i: 22, key: "fwdRollBias", label: "Sliding share: rolling forward vs back", digits: 3 },
+  { i: 5, key: "max", label: "Top speed (mm/s)", digits: 0 },
+  { i: 3, key: "half", label: "Half-power speed (mm/s)", digits: 0 },
+  { i: 2, key: "slowSpeed", label: "Slowest speed (mm/s)", digits: 0 },
+  { i: 1, key: "startPower", label: "Start power (0-255)", digits: 0 },
+  { i: 0, key: "deadband", label: "Dead band (0-255)", digits: 0 },
+  { i: 19, key: "accel", label: "Speeding up (mm/s per second)", digits: 0 }
+];
+var tuneBusy = false;
+
+(function () {
+  var rows = document.getElementById("tuneRows");
+  TUNABLE.forEach(function (entry) {
+    var row = document.createElement("div");
+    row.className = "row";
+    var label = document.createElement("label");
+    label.className = "field";
+    label.innerHTML = escapeHtml(entry.label) + ' <span id="tuneNow' + entry.i + '" style="color:var(--yellow)"></span>';
+    var input = document.createElement("input");
+    input.type = "number";
+    input.id = "tuneInput" + entry.i;
+    input.setAttribute("inputmode", "decimal");
+    input.step = entry.digits ? "0.001" : "1";
+    label.appendChild(input);
+    var button = document.createElement("button");
+    button.className = "big quiet";
+    button.id = "tuneTry" + entry.i;
+    button.style.cssText = "flex:0 0 auto;padding:16px 20px";
+    button.textContent = "Try";
+    button.addEventListener("click", function () { tryNumber(entry); });
+    row.appendChild(label);
+    row.appendChild(button);
+    rows.appendChild(row);
+  });
+})();
+
+function tryNumber(entry) {
+  var value = readMm("tuneInput" + entry.i);
+  var working = document.getElementById("tuneWorking");
+  if (value === null || isNaN(value)) {
+    working.textContent = "Write a number for " + entry.label + " first.";
+    return;
+  }
+  if (!link || anyRunning() || tuneBusy) {
+    return;
+  }
+  tuneBusy = true;
+  render();
+  working.textContent = "Sending...";
+  ask("km" + entry.i + "=" + value.toFixed(entry.digits ? 3 : 0) + ";", /^K,cal,/, 2500).then(function () {
+    robot.unsaved = true;
+    working.textContent = "The robot is using " + entry.label + " = " + value + " now. Not saved yet: it is gone at power-off until you tap Save to the robot.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message + ". Needs calibration.ino or mecanum_holonomic.ino 0.10.72 or newer.";
+  }).then(function () {
+    tuneBusy = false;
+    render();
+  });
+}
+
+function saveTune() {
+  if (!link || anyRunning() || tuneBusy) {
+    return;
+  }
+  var working = document.getElementById("tuneWorking");
+  tuneBusy = true;
+  render();
+  working.textContent = "Saving on the robot...";
+  ask("kw;", /^config: saved/, 3000).then(function () {
+    robot.unsaved = false;
+    robot.source = "e";
+    working.textContent = "Saved on the robot. It keeps these numbers switched off and on, and through uploads.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    tuneBusy = false;
+    render();
+  });
+}
+
+function resetTune() {
+  if (!link || anyRunning() || tuneBusy) {
+    return;
+  }
+  var working = document.getElementById("tuneWorking");
+  tuneBusy = true;
+  render();
+  working.textContent = "Back to the code's numbers...";
+  ask("kd;", /^K,cal,/, 3000).then(function () {
+    robot.unsaved = false;
+    working.textContent = "The robot runs on the code's numbers again; the saved set is forgotten.";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    tuneBusy = false;
+    render();
+  });
+}
+
+function renderTune(ready) {
+  TUNABLE.forEach(function (entry) {
+    var value = robot[entry.key];
+    document.getElementById("tuneNow" + entry.i).textContent = value === null || value === undefined ? "" : "now " + Number(value).toFixed(entry.digits);
+    document.getElementById("tuneTry" + entry.i).disabled = !ready || anyRunning() || tuneBusy || value === null || value === undefined;
+  });
+  document.getElementById("tuneSaveButton").disabled = !ready || anyRunning() || tuneBusy;
+  document.getElementById("tuneResetButton").disabled = !ready || anyRunning() || tuneBusy;
+  document.getElementById("tuneState").textContent = !link || !robot.source ? "" : robot.unsaved ? "CHANGED, NOT SAVED" : robot.source === "e" ? "saved on the robot" : "the code's numbers";
+}
+
+// ---------------------------------------------------------------------------
+
+function render() {
+  var connected = !!link;
+  var connectResult = document.getElementById("connectResult");
+  connectResult.hidden = !(connected && robot.role);
+  connectResult.className = "result " + (isKnownProgram() ? "done" : "bad");
+  connectResult.innerHTML = isKnownProgram() ? '<div class="headline">Connected \u2713</div><div>' + escapeHtml(robot.role) + " " + escapeHtml(robot.fw || "") +
+    (isCalibrationProgram() ? "" : " (the driving program: Tune and steps 5 to 10 work; steps 2 to 4 need calibration.ino)") + "</div>" :
+    '<div class="headline">Unknown program</div><div>This robot runs ' + escapeHtml(robot.role || "?") + ". Flash calibration.ino or mecanum_holonomic.ino, then connect again.</div>";
+  var banner = document.getElementById("programBanner");
+  banner.hidden = !(connected && robot.role && !isKnownProgram());
+  banner.textContent = "This robot runs " + robot.role + ". Flash calibration.ino or mecanum_holonomic.ino and connect again.";
+  var ready = connected && isKnownProgram() && !test;
+  var measuring = ready && isCalibrationProgram();   // the raw o runs (steps 2-4) are only in calibration.ino
+  document.getElementById("findButton").disabled = !measuring;
+  document.getElementById("checkButton").disabled = !measuring || robot.startPower === null;
+  document.getElementById("checkButton").textContent = "Check the code" + (robot.startPower !== null ? " (start power " + robot.startPower + ")" : "");
+  document.getElementById("triedList").textContent = tried.length ? "Tried: " + tried.join(", ") : "";
+  ["run2Button", "run4Button"].forEach(function (id) {
+    document.getElementById(id).disabled = !measuring || slowRunning || coastRunning || robot.startPower === null;
+  });
+  document.getElementById("coastDriveButton").disabled = !ready || slowRunning || coastRunning || curveRunning || turnRunning || robot.coastMs === null;
+  document.getElementById("turnButton").disabled = !ready || anyRunning() || robot.spinEff === null;
+  document.getElementById("strafeButton").disabled = !ready || anyRunning() || robot.strafeEff === null;
+  document.getElementById("straightButton").disabled = !ready || anyRunning() || robot.gains === null;
+  document.getElementById("sideButton").disabled = !ready || anyRunning() || robot.strafeEff === null;
+  document.getElementById("creepRightButton").disabled = !ready || anyRunning() || robot.strafeEff === null;
+  document.getElementById("creepLeftButton").disabled = !ready || anyRunning() || robot.strafeEff === null;
+  CURVE_POWERS.forEach(function (entry) {
+    [1, 2].forEach(function (seconds) {
+      document.getElementById("curve" + entry.power + "s" + seconds).disabled = !measuring || slowRunning || coastRunning || curveRunning || turnRunning;
+    });
+  });
+  document.querySelector('.step[data-step="connect"] .step-state').textContent = connected && isKnownProgram() ? "DONE \u2713" : "";
+  renderTune(ready);
+  Object.keys(RECOMMEND).forEach(function (step) {
+    var busyNow = !ready || anyRunning() || recommendBusy || tuneBusy;
+    document.getElementById(step + "SaveStepButton").disabled = busyNow;
+    if (!document.getElementById(step + "Recommend").hidden) { refreshRecommend(step); }
+  });
+}
+
+// ---------------------------------------------------------------------------
+
+document.getElementById("connectBleButton").addEventListener("click", function () {
+  if (link && link.kind === "ble") { sendCommand("x"); setTimeout(function () { if (link) { link.close(); } }, 200); } else { connectBle(false); }
+});
+document.getElementById("connectUsbButton").addEventListener("click", function () {
+  if (link && link.kind === "usb") { sendCommand("x"); setTimeout(function () { if (link) { link.close(); } }, 200); } else { connectUsb(); }
+});
+document.getElementById("showAllButton").addEventListener("click", function () {
+  if (!link) { connectBle(true); }
+});
+document.getElementById("stopButton").addEventListener("click", function () {
+  sendCommand("x");
+  setTimeout(function () { sendCommand("x"); }, 200);
+  if (test) {
+    endTest("Stopped. Tap Find it to start again.");
+  }
+});
+document.getElementById("findButton").addEventListener("click", startFind);
+document.getElementById("run2Button").addEventListener("click", function () { runSlow(2); });
+document.getElementById("run4Button").addEventListener("click", function () { runSlow(4); });
+document.getElementById("slowWorkButton").addEventListener("click", workOutSlow);
+document.getElementById("coastDriveButton").addEventListener("click", runCoast);
+document.getElementById("coastWorkButton").addEventListener("click", workOutCoast);
+document.getElementById("curveWorkButton").addEventListener("click", workOutCurve);
+document.getElementById("turnButton").addEventListener("click", runTurns);
+document.getElementById("turnWorkButton").addEventListener("click", workOutTurn);
+document.getElementById("tuneSaveButton").addEventListener("click", saveTune);
+document.getElementById("tuneResetButton").addEventListener("click", resetTune);
+document.getElementById("strafeButton").addEventListener("click", runStrafe);
+document.getElementById("strafeWorkButton").addEventListener("click", workOutStrafe);
+document.getElementById("straightButton").addEventListener("click", runStraight);
+document.getElementById("straightWorkButton").addEventListener("click", workOutStraight);
+document.getElementById("sideButton").addEventListener("click", runSide);
+document.getElementById("sideWorkButton").addEventListener("click", workOutSide);
+document.getElementById("creepRightButton").addEventListener("click", function () { runCreep(true); });
+document.getElementById("creepLeftButton").addEventListener("click", function () { runCreep(false); });
+document.getElementById("creepWorkButton").addEventListener("click", workOutCreep);
+document.getElementById("checkButton").addEventListener("click", startCheck);
+document.getElementById("yesButton").addEventListener("click", function () { answer(true); });
+document.getElementById("noButton").addEventListener("click", function () { answer(false); });
+
+if (!navigator.bluetooth && !navigator.serial) {
+  document.getElementById("connectWorking").textContent = "This browser cannot talk to the robot. Use Chrome (Android, Windows, Mac) or Bluefy (iPhone).";
+}
+setConnectedState();
+
+// Chrome on Android crashes when a page leaves with a Bluetooth or serial
+// connection open: disconnect before following a link, and on the way out.
+(function () {
+  function closeLink() {
+    if (link && link.close) {
+      try { link.close(); } catch (error) { /* already gone */ }
+    }
+  }
+  window.addEventListener("pagehide", closeLink);
+  var anchors = document.querySelectorAll("a[href]");
+  for (var i = 0; i < anchors.length; i++) {
+    anchors[i].addEventListener("click", function (event) {
+      if (!link || this.target === "_blank" || /^#/.test(this.getAttribute("href"))) {
+        return;
+      }
+      event.preventDefault();
+      var href = this.href;
+      closeLink();
+      setTimeout(function () { location.href = href; }, 250);
+    });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mecanum Robot &middot; Maker Lab Kids &middot; Robot Workshop</title>
+<meta name="description" content="Everything for the Maker Lab Kids robotics club's 4WD mecanum robot: the Workshop app, a two-stick controller, ten lesson plans, the firmware, and wiring.">
+<link rel="stylesheet" href="./css/site.css">
+<style>
+  .version { color: var(--orange); font-family: var(--mono); font-size: 13px; }
+  table.pins { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.pins th { text-align: left; font-size: 12px; color: var(--ink-dim); font-weight: 600; padding: 4px 8px 6px 0; border-bottom: 1px solid var(--panel-edge); }
+  table.pins td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--panel-edge); vertical-align: top; }
+  table.pins td:first-child { font-family: var(--mono); white-space: nowrap; }
+  table.pins tr:last-child td { border-bottom: none; }
+  .table-scroll { overflow-x: auto; }
+  .card h2 + p { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>4WD mecanum robot</small></div>
+  <nav class="site-nav"><a href="index.html" class="active">Home</a><a href="mecanum/">App</a><a href="mecanum/sticks.html">Sticks</a><a href="mecanum/calibration.html">Calibrate</a><a href="mecanum/ir.html">Remote</a><a href="mecanum/blocks.html">Blocks</a><a href="mecanum/lessons/">Lessons</a><a href="https://makerlabkids.com/robot-or-not.html">Robot or Not</a><a href="2wd.html">2WD robot</a></nav>
+</header>
+
+<main class="page">
+  <h1>The mecanum robot</h1>
+  <p class="subtitle">Four mecanum wheels: it drives forward, slides sideways and
+  spins, all at the same time. Everything for the robotics club lives here, and
+  it all works from a phone.</p>
+
+  <div class="tile-grid">
+    <a class="tile tile-primary" href="mecanum/">
+      <span class="tile-title">Mecanum Workshop</span>
+      <span class="tile-note">Connect over Bluetooth or USB. Drive, run the demos,
+      set up and watch the sensors, and calibrate.</span>
+      <span class="tile-go">Open &rarr;</span>
+    </a>
+    <a class="tile" href="mecanum/blocks.html">
+      <span class="tile-title">Mecanum Blocks</span>
+      <span class="tile-note">The code editor: Blockly programs in tabs, subroutines, a simulator robot,
+      nine demos. Runs on a robot over Bluetooth or USB, or fills the remote's nine slots. Best on a desktop.</span>
+      <span class="tile-go">Code &rarr;</span>
+    </a>
+    <a class="tile" href="mecanum/ir.html">
+      <span class="tile-title">Remote only</span>
+      <span class="tile-note">With ir.ino on the robot: drive with the arrows, type a program of steps
+      on the remote, save it in a slot, run it. No phone needed. The sonar stops it before a wall. With a <a href="mecanum/remote-guide.html">one-page printable guide</a>.</span>
+      <span class="tile-go">How &rarr;</span>
+    </a>
+    <a class="tile" href="mecanum/rename.html">
+      <span class="tile-title">Name a robot</span>
+      <span class="tile-note">With rename.ino on the robot and the USB cable: type the name, Rename, done.
+      The Bluetooth module gets the robot's name.</span>
+      <span class="tile-go">Rename &rarr;</span>
+    </a>
+    <a class="tile" href="mecanum/calibration.html">
+      <span class="tile-title">Calibrate</span>
+      <span class="tile-note">With calibration.ino on the robot: step by step, no sensors
+      needed. Each step shows its numbers, with Undo and Reset.</span>
+      <span class="tile-go">Calibrate &rarr;</span>
+    </a>
+    <a class="tile" href="mecanum/sticks.html">
+      <span class="tile-title">Two-stick controller</span>
+      <span class="tile-note">Slide and turn at once. Analog sticks, or digital
+      with six crab directions and speed presets.</span>
+      <span class="tile-go">Drive &rarr;</span>
+    </a>
+    <a class="tile" href="mecanum/lessons/">
+      <span class="tile-title">Lessons</span>
+      <span class="tile-note">Ten intro to robotics sessions, each ready to run,
+      with notes for K-5 and 6-12.</span>
+      <span class="tile-go">Browse &rarr;</span>
+    </a>
+    <a class="tile" href="https://makerlabkids.com/robot-or-not.html">
+      <span class="tile-title">Robot or Not?</span>
+      <span class="tile-note">The big grid: real machines scored on sense, think and
+      do. Argue with it, add your own.</span>
+      <span class="tile-go">Decide &rarr;</span>
+    </a>
+    <a class="tile" href="mecanum_holonomic/mecanum_holonomic.ino" download>
+      <span class="tile-title">The sketch</span>
+      <span class="tile-note">mecanum_holonomic <span class="version">v0.10.8</span>
+      for the Arduino Uno. Open the .ino in the Arduino IDE and upload.</span>
+      <span class="tile-go">Download &rarr;</span>
+    </a>
+    <a class="tile" href="2wd.html">
+      <span class="tile-title">2WD robot</span>
+      <span class="tile-note">The club's first robot: its Workshop app, 15 lessons,
+      the Maze Lab and the cheat sheet.</span>
+      <span class="tile-go">Open &rarr;</span>
+    </a>
+  </div>
+
+  <section class="card">
+    <h2>The ten lessons</h2>
+    <ol class="plain-list">
+      <li><a href="mecanum/lessons/01-robot-or-not.html">Robot or Not?</a> - what makes a machine a robot</li>
+      <li><a href="mecanum/lessons/02-sensing.html">Same Job, Different Physics</a> - laser, sonar and infrared</li>
+      <li><a href="mecanum/lessons/03-open-and-closed-loop.html">Did It Actually Turn?</a> - open loop vs closed loop</li>
+      <li><a href="mecanum/lessons/04-calibration.html">Every Robot Is Different</a> - measuring your own robot's numbers</li>
+      <li><a href="mecanum/lessons/05-moving-in-new-ways.html">Sideways Is a Direction</a> - mecanum wheels and adding arrows</li>
+      <li><a href="mecanum/lessons/06-feedback-tuning.html">Too Much, Too Little, Just Right</a> - tuning the line follower</li>
+      <li><a href="mecanum/lessons/07-buses-and-addresses.html">Roll Call on Two Wires</a> - I2C buses and addresses</li>
+      <li><a href="mecanum/lessons/08-failing-safely.html">When in Doubt, Stop</a> - a robot that fails safely</li>
+      <li><a href="mecanum/lessons/09-robots-go-wrong.html">Robots Go Wrong</a> - debugging like an engineer</li>
+      <li><a href="mecanum/lessons/10-trade-offs.html">The 32 KB Backpack</a> - engineering is choosing</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Wiring at a glance</h2>
+    <p>The L293D motor shield sits on the Uno and owns pins 3, 4, 5, 6, 7, 8, 11
+    and 12. Everything else plugs in here. The robot finds the optional parts by
+    itself at start-up.</p>
+    <div class="table-scroll">
+    <table class="pins">
+      <tr><th>Pin</th><th>What</th><th>Notes</th></tr>
+      <tr><td>A0 / A1</td><td>HC-06 Bluetooth</td><td>As the kit ships. The app and the sticks talk to it.</td></tr>
+      <tr><td>A2 / A3</td><td>HC-SR04 sonar (echo / trig)</td><td>Used only while no sensor is wired straight to A2 / A3.</td></tr>
+      <tr><td>A4 / A5</td><td>I2C (SDA / SCL)</td><td>IMU, laser and ADS1115 boards, see below.</td></tr>
+      <tr><td>D2</td><td>IR remote receiver (S)</td><td>Middle pin to 5V, "-" to GND. D2 has no header on the shield: solder to its pin.</td></tr>
+      <tr><td>D9 / D10</td><td>Servo headers</td><td>Free digital pins (no PWM: Timer1 times the IR remote).</td></tr>
+      <tr><td>D13</td><td>Heartbeat LED</td><td>Free if you set USE_HEARTBEAT 0.</td></tr>
+    </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>On the I2C bus (A4 / A5)</h2>
+    <p>Give every board 5V into its VIN. The 3.3V boards (IMU, laser) go through a
+    BSS138 level shifter: HV 5V, LV 3.3V, SDA and SCL on two of its channels.</p>
+    <div class="table-scroll">
+    <table class="pins">
+      <tr><th>Address</th><th>Board</th><th>Notes</th></tr>
+      <tr><td>0x68</td><td>MPU-6050 (GY-521)</td><td>Heading hold. Keep the robot still for a second at power-on.</td></tr>
+      <tr><td>0x28</td><td>or BNO055</td><td>ADD to GND (the cheap boards default to 0x29). PS0 and PS1 must read 0 V for I2C mode.</td></tr>
+      <tr><td>0x29</td><td>VL53L0X laser</td><td>Distance ahead, wall stop at 120 mm. Peel the film off the window.</td></tr>
+      <tr><td>0x48-0x4A</td><td>ADS1115 x3</td><td>ADDR to GND / VDD / SDA. 8 line sensor channels and the light sensors. Powered from 5V.</td></tr>
+    </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>The IR remote</h2>
+    <div class="table-scroll">
+    <table class="pins">
+      <tr><td>arrows</td><td>Hold to drive forward / back / slide left / slide right. Let go and it stops.</td></tr>
+      <tr><td>1 / 3</td><td>Hold to spin left / right</td></tr>
+      <tr><td>OK, 5</td><td>Stop. Any key stops a running demo.</td></tr>
+      <tr><td>4 / 6</td><td>Slower / faster</td></tr>
+      <tr><td>9</td><td>Circle strafe facing in (the one built-in demo; programs do the rest)</td></tr>
+      <tr><td>* / #</td><td>Follow the line / seek the light</td></tr>
+    </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Fitting it all in</h2>
+    <p>The Uno has 32 KB for the sketch, and the default build uses about 32.2 KB.
+    Calibration runs live in a separate program, <code>calibration.ino</code>,
+    which saves its numbers in the robot's EEPROM for this one to read.
+    Every optional part is a <code>USE_...</code> line at the top of the sketch:
+    1 = in, 0 = out. <a href="mecanum/lessons/10-trade-offs.html">Lesson 10</a>
+    turns this into a challenge.</p>
+    <div class="table-scroll">
+    <table class="pins">
+      <tr><th>Flag</th><th>Part</th><th>Flash</th></tr>
+      <tr><td>USE_IMU</td><td>MPU-6050 / BNO055 heading hold</td><td>1.9 KB</td></tr>
+      <tr><td>USE_TOF</td><td>VL53L0X laser</td><td>1.3 KB</td></tr>
+      <tr><td>USE_IR_REMOTE</td><td>IR remote on D2</td><td>0.8 KB</td></tr>
+      <tr><td>USE_ADS1115</td><td>ADS1115 inputs</td><td>0.35 KB</td></tr>
+      <tr><td>USE_SONAR</td><td>HC-SR04 on A2 / A3</td><td>0.3 KB</td></tr>
+      <tr><td>USE_ANALOG_MUX</td><td>74HC4051 multiplexer (off by default)</td><td>0.34 KB</td></tr>
+      <tr><td>USE_EXTRA_DEMOS</td><td>20 more demos (off; fits with USE_IR_REMOTE 0)</td><td>0.75 KB</td></tr>
+    </table>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

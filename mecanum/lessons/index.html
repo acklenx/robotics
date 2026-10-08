@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Mecanum Lessons - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html" class="active">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <h1>Lessons</h1>
+  <p class="subtitle">Ten stand-alone sessions for the 4WD mecanum robot, an hour each.
+  Pick any order: each one hangs on Sense &rarr; Think &rarr; Do and uses the
+  robot as it is (firmware mecanum_holonomic v0.10.20).</p>
+  <div class="lesson-grid">
+    <a class="lesson-card" href="01-robot-or-not.html">
+      <span class="lesson-number">01</span>
+      <span class="lesson-title">Robot or Not?</span>
+      <span class="lesson-sub">What makes a machine a robot</span>
+      <span class="lesson-goal">Decide whether something is a robot using a test you can defend, then put our mecanum robot through that same test.</span>
+    </a>
+    <a class="lesson-card" href="02-sensing.html">
+      <span class="lesson-number">02</span>
+      <span class="lesson-title">Same Job, Different Physics</span>
+      <span class="lesson-sub">Laser, sonar and infrared</span>
+      <span class="lesson-goal">Measure the same distances with the laser and the sonar, predict which one will be fooled by each object, and explain why.</span>
+    </a>
+    <a class="lesson-card" href="03-open-and-closed-loop.html">
+      <span class="lesson-number">03</span>
+      <span class="lesson-title">Did It Actually Turn?</span>
+      <span class="lesson-sub">Open loop vs closed loop</span>
+      <span class="lesson-goal">Run the same move with the IMU off and on, measure the difference, and explain what the robot 'knows' in each case.</span>
+    </a>
+    <a class="lesson-card" href="04-calibration.html">
+      <span class="lesson-number">04</span>
+      <span class="lesson-title">Every Robot Is Different</span>
+      <span class="lesson-sub">Measuring your own robot's numbers</span>
+      <span class="lesson-goal">Let the IMU measure your robot's own motors, check one distance with a tape measure, and explain why one trial is not enough.</span>
+    </a>
+    <a class="lesson-card" href="05-moving-in-new-ways.html">
+      <span class="lesson-number">05</span>
+      <span class="lesson-title">Sideways Is a Direction</span>
+      <span class="lesson-sub">Mecanum wheels and adding arrows</span>
+      <span class="lesson-goal">Predict how the robot will move from the direction of each wheel, then drive a path a normal car cannot.</span>
+    </a>
+    <a class="lesson-card" href="06-feedback-tuning.html">
+      <span class="lesson-number">06</span>
+      <span class="lesson-title">Too Much, Too Little, Just Right</span>
+      <span class="lesson-sub">Tuning the line follower</span>
+      <span class="lesson-goal">Change the line follower's correction strength while it runs, find the wobble point and the drift point, and settle on a value between them.</span>
+    </a>
+    <a class="lesson-card" href="07-buses-and-addresses.html">
+      <span class="lesson-number">07</span>
+      <span class="lesson-title">Roll Call on Two Wires</span>
+      <span class="lesson-sub">How the parts talk: I2C buses and addresses</span>
+      <span class="lesson-goal">Draw every part on the robot's I2C bus with its address, and explain what goes wrong when two parts share one.</span>
+    </a>
+    <a class="lesson-card" href="08-failing-safely.html">
+      <span class="lesson-number">08</span>
+      <span class="lesson-title">When in Doubt, Stop</span>
+      <span class="lesson-sub">Designing a robot that fails safely</span>
+      <span class="lesson-goal">List every way our robot stops itself, test each one, and invent one more safety rule.</span>
+    </a>
+    <a class="lesson-card" href="09-robots-go-wrong.html">
+      <span class="lesson-number">09</span>
+      <span class="lesson-title">Robots Go Wrong</span>
+      <span class="lesson-sub">Debugging like an engineer</span>
+      <span class="lesson-goal">Find and fix three planted faults using the robot's own messages and Watch mode, and write down how you found each one.</span>
+    </a>
+    <a class="lesson-card" href="10-trade-offs.html">
+      <span class="lesson-number">10</span>
+      <span class="lesson-title">The 32 KB Backpack</span>
+      <span class="lesson-sub">Engineering is choosing</span>
+      <span class="lesson-goal">Choose a feature set that fits in the Arduino's memory, justify every choice, and prove it fits by compiling it.</span>
+    </a></div>
+
+  <section class="card">
+    <h2>Also in here</h2>
+    <ul>
+      <li><a href="../index.html">The Mecanum Workshop app</a> - drive, demos, sensors, calibration.</li>
+      <li><a href="../sticks.html">The two-stick controller</a> - drive with two thumbs, analog or digital.</li>
+      <li><a href="https://makerlabkids.com/robot-or-not.html">Robot or Not</a> - the classification table for lesson 1.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

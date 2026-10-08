@@ -1,0 +1,374 @@
+:root {
+    --bg: #15181c;
+    --panel: #1e2329;
+    --panel-edge: #2b323b;
+    --ink: #e8ecef;
+    --ink-dim: #8a949e;
+    --orange: #ff7a1a;
+    --orange-dim: #b35008;
+    --green: #45d483;
+    --red: #ff4545;
+    --blue: #4db8ff;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overscroll-behavior: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .app {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 12px 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100%;
+  }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+  .wordmark { font-size: 13px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+  .wordmark small {
+    display: block; font-weight: 500; letter-spacing: 0.08em;
+    color: var(--ink-dim); font-size: 10px; margin-top: 2px;
+  }
+
+  #connectButton {
+    font: inherit; font-weight: 700; font-size: 13px; letter-spacing: 0.06em;
+    color: var(--bg); background: var(--green);
+    border: none; border-radius: 8px; padding: 10px 16px; cursor: pointer;
+  }
+  #connectButton.connected { background: var(--panel-edge); color: var(--green); }
+
+  .status-line { font-family: var(--mono); font-size: 11px; color: var(--ink-dim); display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex: none; }
+  .status-dot.on { background: var(--green); }
+
+  .tab-bar { display: flex; gap: 8px; }
+  .tab-bar button {
+    flex: 1; font: inherit; font-weight: 700; font-size: 13px; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim); background: var(--panel);
+    border: 1px solid var(--panel-edge); border-radius: 10px;
+    padding: 10px 0; cursor: pointer;
+  }
+  .tab-bar button.active { color: var(--bg); background: var(--orange); border-color: var(--orange); }
+
+  .tab-page { display: none; flex-direction: column; gap: 12px; }
+  .tab-page.visible { display: flex; }
+
+  .panel { background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 12px; padding: 12px; }
+  .panel-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-dim); margin-bottom: 8px;
+  }
+
+  /* Drive tab */
+  .joystick-row { display: flex; gap: 12px; align-items: stretch; }
+  #joystickZone {
+    flex: none; width: 210px; height: 210px; border-radius: 50%;
+    background: radial-gradient(circle at 50% 45%, #262c34 0%, #1a1f25 70%);
+    border: 2px solid var(--panel-edge); position: relative; touch-action: none; margin: 0 auto;
+  }
+  #joystickZone::before { content: ""; position: absolute; inset: 30%; border: 1px dashed #38414c; border-radius: 50%; }
+  #joystickKnob {
+    position: absolute; width: 72px; height: 72px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff9a4d, var(--orange) 60%, var(--orange-dim));
+    border: 2px solid #ffb070; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+  }
+  .drive-readout {
+    flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-dim); min-width: 90px;
+  }
+  .drive-readout b { color: var(--ink); font-size: 16px; }
+
+  #stopButton {
+    width: 100%; font: inherit; font-weight: 900; font-size: 20px;
+    letter-spacing: 0.3em; text-indent: 0.3em; color: #fff; background: var(--red);
+    border: none; border-bottom: 4px solid #a51f1f; border-radius: 12px;
+    padding: 16px 0 14px; cursor: pointer;
+  }
+  #stopButton:active { border-bottom-width: 1px; transform: translateY(3px); }
+
+  #tiltHoldButton {
+    width: 100%; font: inherit; font-weight: 900; font-size: 15px;
+    letter-spacing: 0.14em; color: var(--bg); background: var(--orange);
+    border: none; border-bottom: 4px solid var(--orange-dim); border-radius: 12px;
+    padding: 14px 0 12px; cursor: pointer; touch-action: none;
+  }
+  #tiltHoldButton.holding { border-bottom-width: 1px; transform: translateY(3px); background: #ff9a4d; }
+  .tilt-hint { font-size: 11px; line-height: 1.5; color: var(--ink-dim); margin-top: 8px; }
+
+  .dpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .dpad button {
+    font: inherit; font-size: 22px; color: var(--ink); background: #262c34;
+    border: 1px solid var(--panel-edge); border-radius: 10px; padding: 14px 0;
+    cursor: pointer; touch-action: none;
+  }
+  .dpad button:active, .dpad button.pressed { background: var(--orange); color: var(--bg); }
+  .dpad .blank { visibility: hidden; }
+
+  .mode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .mode-grid button {
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--ink); background: #262c34;
+    border: 1px solid var(--panel-edge); border-radius: 10px; padding: 12px 6px; cursor: pointer;
+  }
+  .mode-grid button.active { background: var(--orange); color: var(--bg); border-color: var(--orange); }
+
+  .slider-row { display: flex; align-items: center; gap: 10px; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--orange); height: 30px; }
+  .slider-value { font-family: var(--mono); font-size: 14px; min-width: 3ch; text-align: right; }
+
+  /* Blocks tab */
+  .slot-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .slot-row button {
+    font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: #262c34;
+    border: 1px solid var(--panel-edge); border-radius: 10px; padding: 11px 0; cursor: pointer;
+  }
+  .slot-row button.active { background: var(--orange); color: var(--bg); border-color: var(--orange); }
+
+  .program-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .program-actions button {
+    font: inherit; font-size: 13px; font-weight: 700; color: var(--ink); background: #262c34;
+    border: 1px solid var(--panel-edge); border-radius: 10px; padding: 12px 6px; cursor: pointer;
+  }
+  .program-actions button.primary { background: var(--orange); color: var(--bg); border-color: var(--orange); }
+  .program-actions button.go { background: var(--green); color: var(--bg); border-color: var(--green); }
+
+  #programText {
+    width: 100%; height: 120px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--ink); background: #12151a;
+    border: 1px solid var(--panel-edge); border-radius: 8px;
+    padding: 8px 10px; resize: vertical;
+    user-select: text; -webkit-user-select: text;
+  }
+
+  /* Console */
+  #console {
+    font-family: var(--mono); font-size: 11px; line-height: 1.5; color: var(--ink-dim);
+    background: #12151a; border: 1px solid var(--panel-edge); border-radius: 8px;
+    padding: 8px 10px; height: 100px; overflow-y: auto;
+    white-space: pre-wrap; word-break: break-all;
+    user-select: text; -webkit-user-select: text;
+  }
+  #console .rx { color: var(--green); }
+  #console .err { color: var(--red); }
+
+  .cal-text { font-size: 12px; line-height: 1.55; color: var(--ink-dim); margin-bottom: 8px; }
+  .cal-action {
+    width: 100%; font: inherit; font-weight: 800; font-size: 14px;
+    color: var(--bg); background: var(--orange); border: none;
+    border-radius: 10px; padding: 12px 0; cursor: pointer; margin-bottom: 8px;
+  }
+  .cal-input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .cal-input-row input, .cal-input-row select {
+    flex: 1; font: inherit; font-size: 14px; color: var(--ink);
+    background: #12151a; border: 1px solid var(--panel-edge); border-radius: 8px; padding: 10px;
+  }
+  .cal-input-row button {
+    font: inherit; font-size: 13px; font-weight: 700; color: var(--ink);
+    background: #262c34; border: 1px solid var(--panel-edge); border-radius: 8px;
+    padding: 10px 14px; cursor: pointer;
+  }
+  .cal-trials { font-family: var(--mono); font-size: 11px; color: var(--ink-dim); line-height: 1.6; }
+  .cal-trials .trial-remove { color: var(--red); cursor: pointer; padding: 0 6px; }
+  .cal-result {
+    font-family: var(--mono); font-size: 13px; color: var(--green);
+    background: #12151a; border: 1px solid var(--panel-edge); border-radius: 8px;
+    padding: 8px 10px; margin-top: 4px;
+  }
+  .saved-robot { cursor: pointer; }
+  .saved-robot b { color: var(--orange); }
+
+  .battery-chip {
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px; border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  /* Contrast pairings: dark ink on bright fills, white on the dark red. */
+  .battery-high   { background: #123d24; border-color: var(--green); color: #7ef0ae; }
+  .battery-medium { background: #3d3312; border-color: #e0b33a; color: #ffdd85; }
+  .battery-low    { background: #4a2a10; border-color: #ff9d3a; color: #ffcb90; }
+  .battery-danger { background: #5c1414; border-color: var(--red); color: #ffffff; }
+
+  @keyframes cutoffFlash {
+    0%, 49% { background: #7a0f0f; border-color: #ff6b6b; }
+    50%, 100% { background: #2a0606; border-color: #ff2020; }
+  }
+  #cutoffBanner {
+    display: none; border-radius: 12px; padding: 16px 14px; text-align: center;
+    border: 2px solid #ff2020; color: #ffffff;
+    animation: cutoffFlash 0.7s steps(1, end) infinite;
+  }
+  #cutoffBanner .cutoff-title {
+    display: block; font-size: 20px; font-weight: 900; letter-spacing: 0.04em; margin-bottom: 6px;
+  }
+  #cutoffBanner .cutoff-sub { display: block; font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+  #cutoffBanner .cutoff-note { display: block; font-size: 12px; line-height: 1.5; color: #ffd9d9; }
+
+  #batteryBanner {
+    display: none; border-radius: 12px; padding: 12px 14px;
+    font-size: 13px; line-height: 1.5; border: 1px solid;
+  }
+  #batteryBanner.level-medium { background: #3d3312; border-color: #e0b33a; color: #ffe9b0; }
+  #batteryBanner.level-low    { background: #4a2a10; border-color: #ff9d3a; color: #ffdcbb; }
+  #batteryBanner.level-danger { background: #5c1414; border-color: var(--red); color: #ffffff; }
+  #batteryBanner b { display: block; margin-bottom: 4px; font-size: 14px; }
+  #batteryBannerDismiss {
+    margin-top: 10px; font: inherit; font-size: 12px; font-weight: 700;
+    background: rgba(255,255,255,0.14); color: inherit;
+    border: 1px solid currentColor; border-radius: 8px; padding: 7px 14px; cursor: pointer;
+  }
+
+  button.just-touched { filter: brightness(1.6); outline: 2px solid var(--orange); outline-offset: -2px; }
+
+  .cal-action:disabled {
+    background: var(--panel-edge); color: var(--ink-dim); cursor: default;
+  }
+  .cal-input-row button:disabled { color: var(--ink-dim); cursor: default; }
+  button.flash-ok { background: var(--green) !important; color: var(--bg) !important; border-color: var(--green) !important; }
+  button.flash-err { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
+
+  .telemetry-block { margin-bottom: 12px; }
+  .opposed-labels {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 14px; margin-bottom: 4px;
+  }
+  .opposed-title { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.12em; text-transform: uppercase; }
+  .opposed-bars { display: flex; height: 22px; border: 1px solid var(--panel-edge); border-radius: 6px; overflow: hidden; }
+  .opposed-half { flex: 1; display: flex; background: #12151a; }
+  .opposed-half.left { justify-content: flex-end; border-right: 2px solid var(--panel-edge); }
+  .opposed-half.right { justify-content: flex-start; }
+  .opposed-fill { background: var(--blue); width: 0%; transition: width 0.15s linear; }
+  .line-dots { display: flex; gap: 14px; justify-content: center; }
+  .line-dot {
+    width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--ink-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-weight: 700; background: #e8ecef; color: #12151a;
+  }
+  .line-dot.black { background: #12151a; color: var(--ink); border-color: var(--orange); }
+  .distance-bar { position: relative; height: 22px; background: #12151a; border: 1px solid var(--panel-edge); border-radius: 6px; overflow: hidden; }
+  .distance-fill { height: 100%; width: 0%; background: var(--green); transition: width 0.15s linear; }
+  .distance-marker { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--red); }
+  .analysis-line {
+    font-size: 13px; font-weight: 600; text-align: center; color: var(--green);
+    border-top: 1px solid var(--panel-edge); padding-top: 8px; min-height: 20px;
+  }
+  .telemetry-hint { font-size: 10px; color: var(--ink-dim); margin-top: 4px; line-height: 1.5; }
+  .cheat summary::-webkit-details-marker { display: none; }
+  .cheat-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  .cheat-table th { text-align: left; color: var(--orange); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 10px 4px 4px; }
+  .cheat-table td { padding: 3px 4px; border-bottom: 1px solid #262c34; vertical-align: top; }
+  .cheat-table td:first-child { font-family: var(--mono); white-space: nowrap; color: var(--ink); padding-right: 12px; }
+  .cheat-table td:last-child { color: var(--ink-dim); }
+
+  .unsupported {
+    background: #3a1e1e; border: 1px solid var(--red); border-radius: 10px;
+    padding: 12px; font-size: 13px; line-height: 1.5; display: none;
+  }
+
+  /* ---- Block editor (ours; no Blockly, no CDN) --------------------------- */
+  #blockEditor {
+    min-height: 90px; max-height: 46vh; overflow-y: auto;
+    background: #12151a; border: 1px solid var(--panel-edge);
+    border-radius: 10px; padding: 8px;
+  }
+  .block {
+    border-radius: 10px; padding: 8px 10px; margin-bottom: 6px;
+    border: 1px solid rgba(255,255,255,0.18); color: #12151a;
+  }
+  .block-move    { background: #ffb374; }
+  .block-control { background: #9fd8ff; }
+  .block-loop    { background: #a7e8bf; }
+  .block-sense   { background: #d9b8ff; }
+  .block.insert-here { outline: 3px solid var(--orange); outline-offset: 2px; }
+  .block-headline { display: flex; align-items: center; gap: 8px; }
+  .block-label { font-weight: 800; font-size: 14px; flex: 1; }
+  .block-plain { font-size: 11px; opacity: 0.75; margin-top: 3px; font-style: italic; }
+  .block-value-group {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(255,255,255,0.55); border-radius: 8px; padding: 2px;
+  }
+  .block-value { font-family: var(--mono); font-size: 13px; min-width: 7ch; text-align: center; }
+  .block-nudge {
+    font: inherit; font-weight: 900; font-size: 15px; line-height: 1;
+    width: 30px; height: 30px; border-radius: 6px; cursor: pointer;
+    background: #12151a; color: var(--ink); border: none;
+  }
+  .block-tools { display: inline-flex; gap: 3px; }
+  .block-tool {
+    font: inherit; font-size: 12px; width: 34px; height: 34px; cursor: pointer;
+    background: rgba(0,0,0,0.18); color: #12151a; border: none; border-radius: 6px;
+  }
+  /* On touch screens the recommended target is 44px. Grow the hit area on
+     coarse pointers only, so a mouse-driven laptop keeps the tidy layout. */
+  @media (pointer: coarse) {
+    .block-tool { width: 44px; height: 44px; font-size: 14px; }
+    .block-nudge { width: 44px; height: 44px; font-size: 18px; }
+    .palette-block { padding: 17px 10px; font-size: 14px; }
+  }
+  .block-delete { background: rgba(180,20,20,0.25); }
+  .block-inside {
+    margin-top: 8px; padding: 8px; border-radius: 8px;
+    background: rgba(0,0,0,0.14); border: 2px dashed rgba(0,0,0,0.3);
+  }
+  .block-inside.insert-here { border-color: var(--orange); background: rgba(255,122,26,0.18); }
+  .block-empty { font-size: 11px; text-align: center; padding: 6px; opacity: 0.7; }
+  .block-empty-program { color: var(--ink-dim); font-size: 13px; text-align: center; padding: 26px 10px; }
+
+  #blockPalette { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .palette-block {
+    font: inherit; font-weight: 700; font-size: 13px; color: #12151a;
+    border: none; border-radius: 9px; padding: 13px 8px; cursor: pointer; text-align: left;
+  }
+  .palette-move    { background: #ffb374; }
+  .palette-control { background: #9fd8ff; }
+  .palette-loop    { background: #a7e8bf; }
+  .palette-sense   { background: #d9b8ff; }
+
+  .block-editor-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+  .block-editor-actions button {
+    font: inherit; font-size: 12px; font-weight: 700; color: var(--ink); background: #262c34;
+    border: 1px solid var(--panel-edge); border-radius: 9px; padding: 10px 6px; cursor: pointer;
+  }
+  .button-link {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--ink); background: #262c34;
+    border: 1px solid var(--panel-edge); border-radius: 10px; padding: 12px 6px;
+    text-decoration: none;
+  }
+
+  @media (min-width: 720px) {
+    #blockPalette { grid-template-columns: repeat(4, 1fr); }
+    #blockEditor { max-height: 60vh; }
+  }
+
+  /* ---- Editor view switch + Blockly canvas ------------------------------- */
+  .view-switch { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .view-switch button {
+    font: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--ink-dim); background: var(--panel);
+    border: 1px solid var(--panel-edge); border-radius: 10px;
+    padding: 11px 0; cursor: pointer;
+  }
+  .view-switch button.active { color: var(--bg); background: var(--orange); border-color: var(--orange); }
+
+  #blocklyArea {
+    height: 420px; border: 1px solid var(--panel-edge);
+    border-radius: 10px; overflow: hidden; background: #f7f9fa;
+  }
+  .blockly-missing {
+    padding: 20px; font-size: 13px; line-height: 1.6; color: var(--ink-dim);
+  }
+  @media (max-width: 719px) { #blocklyArea { height: 320px; } }

@@ -1,0 +1,4 @@
+JS-Interpreter by Neil Fraser (https://github.com/NeilFraser/JS-Interpreter), acorn_interpreter.js copied
+unchanged from the commit in VERSION.txt. Apache License 2.0 (LICENSE). It runs the JavaScript that
+Blockly generates inside its own interpreter, so the page needs no eval (the site's Content Security
+Policy forbids it).

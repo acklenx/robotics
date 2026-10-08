@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
+<title>Remote Guide 0.1.6 - Maker Lab Kids</title>
+<style>
+  :root {
+    --ink: #1c1f24;
+    --dim: #5b6670;
+    --orange: #e65100;
+    --blue: #0b6fb3;
+    --green: #1f8a4c;
+    --red: #c62828;
+    --purple: #5b47c9;
+    --paper: #fff;
+    --panel: #f4f6f8;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #e9ecef; }
+  body { color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; line-height: 1.35; }
+  .sheet { background: var(--paper); max-width: 8.5in; margin: 16px auto; padding: 0.45in 0.5in; box-shadow: 0 2px 14px rgba(0,0,0,0.15); }
+  .top { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .top img { height: 36px; width: auto; }
+  .top h1 { font-size: 22px; margin: 0; line-height: 1.1; }
+  .top .sub { color: var(--dim); font-size: 13px; }
+  .top .back { margin-left: auto; font-size: 12px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .box { background: var(--panel); border-radius: 10px; padding: 10px 12px; }
+  .box h2 { font-size: 15px; margin: 0 0 6px; color: var(--orange); text-transform: uppercase; letter-spacing: 0.04em; }
+  .box h3 { font-size: 14px; margin: 8px 0 3px; }
+  p { margin: 4px 0; }
+  .dim { color: var(--dim); }
+  .key {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 1.75em; height: 1.75em; padding: 0 0.4em; margin: 1px 1px;
+    border-radius: 6px; background: #fff; border: 1.5px solid #9aa4ae; color: var(--ink);
+    font-family: var(--mono); font-weight: 700; font-size: 13px; vertical-align: middle;
+  }
+  .key.star { border-color: var(--orange); color: var(--orange); }
+  .key.pound { border-color: var(--red); color: var(--red); }
+  .key.arrow { border-color: var(--blue); color: var(--blue); }
+  .key.ok { border-color: var(--green); color: var(--green); }
+  .key.turn { border-color: var(--purple); color: var(--purple); }
+  .say { color: var(--green); font-weight: 700; }
+  /* The kit's remote, as it looks: black body, white keys with white rings and black digits,
+     red * # OK, blue arrows on a white plus. Colours are kept when printing. */
+  .remote, .remote * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .remote { background: #121212; border-radius: 22px; padding: 22px 16px 24px; width: 236px; zoom: 0.8; margin: 8px auto; box-shadow: inset 0 0 0 3px #262626; }
+  .remote .pad { display: grid; grid-template-columns: repeat(3, 56px); gap: 22px 16px; justify-content: center; }
+  .remote .btn { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative;
+    box-shadow: 0 0 0 2px #121212, 0 0 0 4px #e9e9e9; }
+  .remote .btn b { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-weight: 900; font-size: 25px; line-height: 1; color: #111; }
+  .remote .btn.white { background: #f6f6f6; }
+  .remote .btn.red { background: #e34234; }
+  .remote .btn.blue { background: #2fa8d8; }
+  .remote .btn.blue b { font-size: 22px; }
+  .remote .btn.ok b { font-size: 18px; letter-spacing: 0.02em; }
+  .remote .cap { position: absolute; left: 50%; transform: translateX(-50%); bottom: -17px; font-size: 9.5px; line-height: 1; color: #c9c9c9; white-space: nowrap; font-weight: 700; }
+  .remote .dpad { position: relative; width: 188px; height: 188px; margin: 30px auto 14px; }
+  .remote .dpad .cross { position: absolute; background: #f6f6f6; border-radius: 8px; }
+  .remote .dpad .cross.v { left: 63px; top: 0; width: 62px; height: 188px; }
+  .remote .dpad .cross.h { top: 63px; left: 0; width: 188px; height: 62px; }
+  .remote .dpad .btn { position: absolute; box-shadow: 0 0 0 2px #f6f6f6, 0 0 0 3px #bbb; }
+  .remote .dpad .up { left: 66px; top: 3px; }
+  .remote .dpad .left { left: 3px; top: 66px; }
+  .remote .dpad .ok { left: 66px; top: 66px; }
+  .remote .dpad .right { left: 129px; top: 66px; }
+  .remote .dpad .down { left: 66px; top: 129px; }
+  .remote .dpad .cap { transform: none; left: auto; bottom: auto; }
+  .remote .dpad .c-up { left: 136px; top: 20px; }
+  .remote .dpad .c-down { left: 136px; top: 158px; }
+  .remote .dpad .c-left { left: 0; top: 136px; }
+  .remote .dpad .c-right { right: 0; top: 136px; }
+  .remote .dpad .c-ok { left: 0; top: 40px; width: 58px; text-align: center; white-space: normal; }
+  .remote.live .btn { cursor: pointer; user-select: none; }
+  .remote.live .btn:active { filter: brightness(1.3); }
+  table.prog { border-collapse: collapse; width: 100%; margin-top: 4px; }
+  table.prog td { padding: 3px 4px; border-bottom: 1px solid #dde2e6; vertical-align: middle; }
+  table.prog td.keys { white-space: nowrap; }
+  table.prog td.what { font-size: 13px; }
+  table.prog td.what b { color: var(--ink); }
+  table.prog tr.quiet td { color: var(--dim); }
+  .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+  .vs div { background: #fff; border-radius: 8px; padding: 6px 8px; border: 1px solid #dde2e6; }
+  .vs b { display: block; margin-bottom: 2px; }
+  .vs svg { display: block; margin: 4px auto 0; }
+  .gest { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 4px; }
+  .gest div { background: #fff; border-radius: 8px; padding: 6px 8px; border: 1px solid #dde2e6; font-size: 12.5px; }
+  .gest b { color: var(--ink); display: block; }
+  .rule { font-size: 15px; font-weight: 700; margin: 6px 0 2px; }
+  .note { border: 1.2px solid #777; border-radius: 8px; padding: 6px 10px; margin: 8px 0; font-size: 13px; }
+  .example { border: 1.5px dashed #777; border-radius: 8px; padding: 6px 10px; margin: 8px 0 2px; }
+  .example-title { font-weight: 700; margin-bottom: 3px; }
+  .example .line { display: flex; gap: 10px; align-items: center; padding: 2px 0; border-bottom: 1px solid #e3e7ea; }
+  .example .line:last-child { border-bottom: none; }
+  .example .keys { flex: 0 0 150px; white-space: nowrap; }
+  .example .what { color: var(--dim); font-size: 13px; }
+  .example .after { display: block; color: var(--dim); font-size: 13px; padding-top: 5px; }
+  .foot { margin-top: 10px; font-size: 12px; color: var(--dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 640px) {
+    .cols, .vs, .gest { grid-template-columns: 1fr; }
+    .sheet { margin: 0; padding: 16px; box-shadow: none; }
+  }
+  @media print {
+    html, body { background: #fff; }
+    .sheet { margin: 0; padding: 0; box-shadow: none; max-width: none; }
+    .top .back, .no-print { display: none; }
+    /* Print: whatever paper and margins the printer dialog says; a box never splits across pages. */
+    .cols { display: block; }
+    .box { margin-top: 10px; padding: 8px 12px; }
+    .remote { zoom: 0.72; }
+    body { font-size: 13px; }
+    /* Ink-light remote: white body with a thin outline, keys as outlined circles,
+       the coloured keys keep a pale tint, captions in dark grey */
+    .remote { background: #fff; box-shadow: none; border: 1.5px solid #333; }
+    .remote .btn { box-shadow: 0 0 0 1.5px #333; background: #fff; }
+    .remote .btn.white { background: #fff; }
+    .remote .btn.red { background: #fde2dc; }
+    .remote .btn.blue { background: #dcefff; }
+    .remote .dpad .cross { background: #f0f0f0; border: 1px solid #bbb; }
+    .remote .dpad .btn { box-shadow: 0 0 0 1.5px #333; }
+    .remote .cap { color: #333; }
+    .box, .example, .remote, .vs div, .gest div { break-inside: avoid; page-break-inside: avoid; }
+    .example .line { padding: 1px 0; }
+    table.prog td { padding: 2px 4px; }
+    .note { margin: 6px 0; padding: 4px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="top">
+    <img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
+    <div><h1>Robot remote: drive it, program it</h1><div class="sub">Everything the robot can do from the remote. No phone needed.</div></div>
+    <a class="back" href="ir.html">Full page &amp; instructor tools &rarr;</a>
+  </div>
+
+  <div class="cols">
+    <div>
+      <div class="box">
+        <h2>The keys</h2>
+        <div class="remote">
+    <div class="pad">
+      <div class="btn white"><b>1</b><small class="cap">turn left</small></div>
+      <div class="btn white"><b>2</b></div>
+      <div class="btn white"><b>3</b><small class="cap">turn right</small></div>
+      <div class="btn white"><b>4</b></div>
+      <div class="btn white"><b>5</b><small class="cap">pause</small></div>
+      <div class="btn white"><b>6</b></div>
+      <div class="btn white"><b>7</b><small class="cap">diagonal</small></div>
+      <div class="btn white"><b>8</b><small class="cap">again</small></div>
+      <div class="btn white"><b>9</b><small class="cap">diagonal</small></div>
+      <div class="btn red"><b>*</b><small class="cap">program</small></div>
+      <div class="btn white"><b>0</b><small class="cap">stop</small></div>
+      <div class="btn red"><b>#</b><small class="cap">cancel</small></div>
+    </div>
+    <div class="dpad">
+      <div class="cross v"></div><div class="cross h"></div>
+      <div class="btn blue up"><b>&#9650;</b></div>
+      <div class="btn blue left"><b>&#9664;</b></div>
+      <div class="btn red ok"><b>OK</b></div>
+      <div class="btn blue right"><b>&#9654;</b></div>
+      <div class="btn blue down"><b>&#9660;</b></div>
+      <small class="cap c-up">forward</small>
+      <small class="cap c-left">slide left</small>
+      <small class="cap c-right">slide right</small>
+      <small class="cap c-down">back</small>
+      <small class="cap c-ok">stop</small>
+    </div>
+        </div>
+        <p class="rule">Drive: hold a key</p>
+        <p>Hold <span class="key arrow">&#9650;</span> <span class="key arrow">&#9660;</span> <span class="key arrow">&#9664;</span> <span class="key arrow">&#9654;</span> to go, let go to stop.
+        Hold <span class="key turn">1</span> or <span class="key turn">3</span> to spin on the spot.
+        <span class="key">0</span> <span class="key ok">OK</span> <span class="key pound">#</span> stop.</p>
+        <p class="dim">Closer than 25 cm to something in front? It refuses to go forward. Back up or slide.</p>
+      </div>
+
+      <div class="box" style="margin-top:10px">
+        <h2>Slide or turn?</h2>
+        <div class="vs">
+          <div><b><span class="key arrow">&#9654;</span> Slide right 30</b>
+            The robot moves sideways and keeps facing the same way. Mecanum wheels!
+            <svg width="120" height="46" viewBox="0 0 120 46" aria-hidden="true"><rect x="8" y="13" width="26" height="20" rx="3" fill="none" stroke="#0b6fb3" stroke-width="2"/><polygon points="21,6 15,13 27,13" fill="#0b6fb3"/><line x1="40" y1="23" x2="76" y2="23" stroke="#0b6fb3" stroke-width="2" stroke-dasharray="4 3"/><rect x="86" y="13" width="26" height="20" rx="3" fill="none" stroke="#0b6fb3" stroke-width="2"/><polygon points="99,6 93,13 105,13" fill="#0b6fb3"/></svg></div>
+          <div><b><span class="key turn">3</span> Turn right 90</b>
+            The robot stays put and spins to face right. Then <span class="key arrow">&#9650;</span> goes that way.
+            <svg width="120" height="46" viewBox="0 0 120 46" aria-hidden="true"><rect x="8" y="13" width="26" height="20" rx="3" fill="none" stroke="#5b47c9" stroke-width="2"/><polygon points="21,6 15,13 27,13" fill="#5b47c9"/><path d="M44 16 A14 14 0 0 1 72 16" fill="none" stroke="#5b47c9" stroke-width="2"/><polygon points="72,16 66,10 78,12" fill="#5b47c9"/><rect x="86" y="13" width="26" height="20" rx="3" fill="none" stroke="#5b47c9" stroke-width="2"/><polygon points="119,23 112,17 112,29" fill="#5b47c9"/></svg></div>
+        </div>
+        <p style="margin-top:6px"><b>The number after a direction is how far:</b> centimetres for arrows, degrees for <span class="key turn">1</span> and <span class="key turn">3</span>.
+        <span class="key star">*</span><span class="key turn">1</span><span class="key">2</span><span class="key">0</span> is <b>turn left 20 degrees</b>. No number? 25 cm, or a 90 degree turn.</p>
+      </div>
+
+      </div>
+    </div>
+
+    <div>
+      <div class="box">
+        <h2>Make a program</h2>
+        <p class="rule">A. Switch to Program Mode: <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span> <span class="dim">&rarr;</span> <span class="say">wiggle</span></p>
+        <p class="rule">B. Add a step: <span class="key star">*</span> direction number <span class="dim">&rarr;</span> <span class="say">nod</span></p>
+        <p class="dim">The first key after a <span class="key star">*</span> is always the move. The number ends when the next <span class="key star">*</span> comes.</p>
+        <p class="rule">C. Add another step: <span class="key star">*</span> and the next move. Any of these:</p>
+        <table class="prog">
+          <tr><td class="keys"><span class="key arrow">&#9650;</span> <span class="key arrow">&#9660;</span> <span class="key arrow">&#9664;</span> <span class="key arrow">&#9654;</span></td><td class="what">+ cm: forward, back, slide left, slide right</td></tr>
+          <tr><td class="keys"><span class="key turn">1</span> <span class="key turn">3</span></td><td class="what">+ degrees: turn left, turn right</td></tr>
+          <tr><td class="keys"><span class="key">7</span> <span class="key">9</span></td><td class="what">+ cm: the forward diagonals, left and right</td></tr>
+          <tr><td class="keys"><span class="key">5</span></td><td class="what">+ seconds: pause</td></tr>
+          <tr><td class="keys"><span class="key">0</span></td><td class="what">+ cm across: a circle, nose pointed at the middle</td></tr>
+          <tr><td class="keys"><span class="key">8</span></td><td class="what">+ times: do everything before it again, that many times in all</td></tr>
+        </table>
+        <p class="rule">D. Done: <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span> <span class="dim">&rarr;</span> <span class="say">wiggle</span></p>
+        <p class="rule">E. Save: slot <span class="key">1</span>..<span class="key">9</span> then <span class="key star">*</span><span class="key star">*</span> <span class="dim">&rarr;</span> <span class="say">nod</span></p>
+        <div class="note"><b>No number?</b> <span class="key star">*</span><span class="key arrow">&#9650;</span> is 25 cm, <span class="key star">*</span><span class="key turn">3</span> a 90 degree turn, <span class="key star">*</span><span class="key">5</span> 1 second, <span class="key star">*</span><span class="key">8</span> 2 times, <span class="key star">*</span><span class="key">0</span> 1 m across.</div>
+        <div class="note"><b>Oops:</b> <span class="key pound">#</span> throws the program away (<span class="say">slow head shake</span>). <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span> and a slot number adds to the program saved there.</div>
+        <div class="example">
+          <div class="example-title">Example: out, turn, back a bit, saved in slot 2</div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="say">wiggle</span> = listening</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">5</span><span class="key">0</span></span><span class="what">forward 50 cm</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key turn">3</span><span class="key">9</span><span class="key">0</span></span><span class="what">turn right 90 degrees</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9660;</span><span class="key">2</span><span class="key">0</span></span><span class="what">back 20 cm</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="say">wiggle</span> = which slot?</span></div>
+          <div class="line"><span class="keys"><span class="key">2</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="say">nod</span> = saved in slot 2</span></div>
+          <div class="line after">After each step the robot <span class="say">nods</span> = "got it".</div>
+        </div>
+      </div>
+
+      <div class="box" style="margin-top:10px">
+        <h2>Run a program</h2>
+        <p class="rule"><span class="key star">*</span> slot number. Any key stops it.</p>
+        <p class="dim"><span class="key star">*</span><span class="key">0</span> is always a circle 1 m across, facing in. A slot nobody has saved to runs a built-in demo: 1 square, 2 crab box, 3 out and back, 4 triangle, 5 stairs, 6 spiral, 7 look around, 8 figure 8, 9 dance.</p>
+      </div>
+      <div class="box" style="margin-top:10px">
+        <h2>What the robot says back</h2>
+        <div class="gest">
+          <div><b>Wiggle</b> quick left-right<br>"Listening" / "which slot?"</div>
+          <div><b>Nod</b> forward-back<br>"Got it", saved</div>
+          <div><b>Slow shake</b><br>"No": cancelled, empty slot, full</div>
+        </div>
+      <div class="box" style="margin-top:10px">
+        <h2>Sample: around the box and back</h2>
+        <p class="dim">A box sits in front of the robot. Go around it the long way, come back home facing the way you started. Saved in slot 2.</p>
+        <table class="prog">
+          <tr><td class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></td><td class="what"><span class="say">wiggle</span> <span class="dim">= listening</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key arrow">&#9654;</span><span class="key">3</span><span class="key">0</span></td><td class="what"><b>slide right 30 cm</b> <span class="dim">(still facing forward)</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">6</span><span class="key">0</span></td><td class="what"><b>forward 60 cm</b> <span class="dim">(past the box)</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key arrow">&#9664;</span><span class="key">3</span><span class="key">0</span></td><td class="what"><b>slide left 30 cm</b> <span class="dim">(back in line, in front of the box)</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key turn">3</span><span class="key">1</span><span class="key">8</span><span class="key">0</span></td><td class="what"><b>turn right 180</b> <span class="dim">(spin to face home)</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key arrow">&#9654;</span><span class="key">3</span><span class="key">0</span></td><td class="what"><b>slide right 30 cm</b> <span class="dim">(facing home, right is the other side now)</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">6</span><span class="key">0</span></td><td class="what"><b>forward 60 cm</b></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key arrow">&#9664;</span><span class="key">3</span><span class="key">0</span></td><td class="what"><b>slide left 30 cm</b> <span class="dim">(home!)</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key turn">1</span><span class="key">1</span><span class="key">8</span><span class="key">0</span></td><td class="what"><b>turn left 180</b> <span class="dim">(facing the way you started)</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></td><td class="what"><span class="say">wiggle</span> <span class="dim">= which slot?</span></td></tr>
+          <tr><td class="keys"><span class="key">2</span><span class="key star">*</span><span class="key star">*</span></td><td class="what"><span class="say">nod</span> <span class="dim">= saved in slot 2</span></td></tr>
+          <tr><td class="keys"><span class="key star">*</span><span class="key">2</span></td><td class="what"><b>run it</b></td></tr>
+        </table>
+        <p class="dim" style="margin-top:6px">The last <span class="key star">*</span> of a step and the first of the <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span> are the same key, so you only press three stars at the end, not four.
+        </p>
+      </div>
+      <div class="box" style="margin-top:10px">
+        <h2>Two ways to make a square</h2>
+        <div class="example">
+          <div class="example-title">The long way, saved in slot 1</div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="say">wiggle</span> = listening</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">3</span><span class="key">0</span> <span class="key star">*</span><span class="key turn">3</span></span><span class="what">forward 30 cm, turn right 90</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">3</span><span class="key">0</span> <span class="key star">*</span><span class="key turn">3</span></span><span class="what">again</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">3</span><span class="key">0</span> <span class="key star">*</span><span class="key turn">3</span></span><span class="what">and again</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">3</span><span class="key">0</span> <span class="key star">*</span><span class="key turn">3</span></span><span class="what">and once more: four sides</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span> <span class="key">1</span><span class="key star">*</span><span class="key star">*</span></span><span class="what">done, saved in slot 1</span></div>
+        </div>
+        <div class="example">
+          <div class="example-title">Or try this shortcut to also make a square</div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="say">wiggle</span> = listening</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span></span><span class="what">forward</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key turn">3</span></span><span class="what">turn right</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key">8</span><span class="key">4</span></span><span class="what">do it all again, 4 times in all</span></div>
+          <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="say">wiggle</span> = which slot?</span></div>
+          <div class="line"><span class="keys"><span class="key">1</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="say">nod</span> = saved in slot 1</span></div>
+          <div class="line after">Three steps instead of eight. No number after <span class="key arrow">&#9650;</span> means 25 cm, no number after <span class="key turn">3</span> means 90 degrees, and <span class="key">8</span><span class="key">4</span> does everything before it again until it has gone round 4 times in all. A 25 cm square.</div>
+        </div>
+      </div>
+      <div class="foot" style="margin-top:10px">
+        <span>Point the remote at the robot's eye. One key at a time. Wait for the nod.</span>
+        <span>Pressed <span class="key star">*</span> by mistake? Wait 3 seconds, it forgets. <span class="key pound">#</span> always gets you out.</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

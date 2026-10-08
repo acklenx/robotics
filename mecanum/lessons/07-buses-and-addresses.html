@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>07. Roll Call on Two Wires - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 07 &middot; 60 minutes</p>
+  <h1>Roll Call on Two Wires</h1>
+  <p class="subtitle">How the parts talk: I2C buses and addresses</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Draw every part on the robot's I2C bus with its address, and explain what goes wrong when two parts share one.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>I2C: many parts share just two wires, SDA (data) and SCL (clock)</li><li>Each part answers only to its own number, its address</li><li>Two parts with the same address talk over each other</li><li>The robot finds its parts by calling out every address at power-on</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>Before the robot can SENSE anything with the IMU, the laser or the ADS1115 inputs, it has to find them. At power-on it calls each address and listens for an answer, like taking attendance.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Play roll call: everyone holds a card with a number (0x28, 0x29, 0x48, 0x49, 0x4A, 0x68). The teacher calls a number; only that person stands up.</li><li>Now give two kids 0x29. Call it. Both stand and talk at once. That is exactly what happens if a BNO055 and the laser are both at 0x29.</li><li>Look at the robot's breadboard: SDA rail to A4, SCL rail to A5, 5V and GND rails. Trace each board to the rails.</li><li>Restart the robot and read the console: 'imu: on MPU-6050 0x68', 'tof: VL53L0X found', 'adc: ADS1115 found: 0x48 0x49 0x4A'.</li><li>Unplug one ADS1115 and send kp; (probe again). Which address disappeared?</li><li>Draw the bus map: each board, its address, and how its address was chosen (the ADS1115 ADDR pin to GND, VDD, SDA or SCL; the BNO055 ADD pin to GND for 0x28).</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>The ADS1115 can only be 0x48 to 0x4B. How many can one bus have?</li><li>Why does a cheap BNO055 board need its ADD pin pulled to GND on our robot?</li><li>Why do 3.3 V boards like the BNO055 need a level shifter on a 5 V bus?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Nothing found on I2C</td><td>SDA and SCL swapped, or no 5V/GND to the boards.</td></tr><tr><td>A board shows up at the wrong address</td><td>Its address pin is floating or pulled the other way. Check the ADDR / ADD wiring.</td></tr><tr><td>IMU and laser both missing, or garbage</td><td>Two boards at 0x29. Pull the BNO055's ADD to GND so it moves to 0x28.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The roll-call game makes addresses stick. The 0x29 collision is a real story from building this robot: tell it.</p>
+    <p><strong>Ages:</strong> K-5: roll call game only, with animal names instead of hex. 6-12: read the hex addresses, the 7-bit address plus read/write bit, and the level-shifter question.</p>
+    <p><strong>Materials:</strong> Robot with several I2C boards, index cards with addresses, breadboard close-up photo or the real robot, app console.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="06-feedback-tuning.html">&larr; Too Much, Too Little, Just Right</a><a class="page-turn" href="08-failing-safely.html">When in Doubt, Stop &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

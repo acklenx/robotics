@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>04. Every Robot Is Different - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 04 &middot; 60 minutes</p>
+  <h1>Every Robot Is Different</h1>
+  <p class="subtitle">Measuring your own robot's numbers</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Let the IMU measure your robot's own motors, check one distance with a tape measure, and explain why one trial is not enough.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>A number in the code is a guess until you measure it</li><li>Motors are not straight lines: half power is much more than half speed</li><li>A gyro can measure turning, but not distance</li><li>Mecanum wheels lose a lot when strafing: on our robot about 55%</li><li>Several trials and an average beat one careful trial</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>The robot can SENSE its own turning with the IMU, so it can calibrate most of itself: that is the closed loop from lesson 3, pointed at its own motors. Distance it cannot sense, so for that you are the sensor, with a tape measure.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Flash calibration.ino (the calibration program: no sensors or demos, just measuring). Open the Calibrate tab. Type the robot's name, then press the surface it is standing on (carpet, rug, hardwood, tile, concrete). The top panel always says which numbers the robot is driving with: the fleet defaults until it is calibrated.</li><li>Step 1, speed curve: clear a space, press the button and stand back. For about 20 seconds the robot spins: first it hunts for the lowest power that gets it moving at all (ours: nothing at PWM 64, then suddenly 46 degrees a second at 72), then half, three-quarter and full power. Is half power half the speed? Usually it is much more: motors are not straight lines.</li><li>Step 2, drive straight: it drives forward and back, then strafes left and right, slow and fast, with heading hold off. A stronger side makes it turn when it should go straight; the gyro measures how much, and each wheel gets its own trim. Watch the turn numbers shrink from round to round.</li><li>Step 3, distance: press Drive it, measure from the start mark to the tail, and how far it ended up to the side. Enter both and Apply. Drive it again: closer?</li><li>Every step changes the robot straight away and saves the numbers in its EEPROM. Flash mecanum_holonomic.ino again: it reads them at power-on (the top panel says 'saved in the robot's EEPROM'). Uploading a new version later keeps them.</li><li>Now pick a different surface and do it again. Compare the two sets: which numbers change, and why?</li><li>No IMU, or to see the science by hand: open 'Without an IMU' for the tape-measure runs (cf full power, ch half, cs strafe, cr spin), three trials each; the app averages them. Our robot strafed about 615 mm sideways for 1380 mm forward: 0.45. Why? The rollers slip sideways.</li><li>Compare with another group's robot. Same kit, different numbers.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Carpet against a hard floor: which number changes most, and why?</li><li>Why do we average three trials instead of doing one very carefully?</li><li>Run the IMU showdown square with heading hold off, before and after calibration. How much closer does it get to closing the square?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Steps say 'Pick the surface first'</td><td>Press the surface the robot is on, at the top of the Calibrate tab.</td></tr><tr><td>Speed curve says the robot hardly turned</td><td>Wheels off the floor, battery flat, or no IMU found (Sensors tab, top panel).</td></tr><tr><td>Drive straight never gets there</td><td>A wheel rubbing or a loose motor: check by hand. Then run it again; it carries on from where it got.</td></tr><tr><td>Trials disagree by a lot</td><td>Battery is dropping, or the floor changes. Charge up and use the same patch of floor.</td></tr><tr><td>A wheel goes backwards in t0-t3</td><td>Tick 'backwards' for that corner in the wiring table and paste the new table into the sketch.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>Measuring is the scientific method in miniature: predict, measure, repeat, average, check. The speed curve and drive-straight steps do most of it for you, which is the point to make: a robot that can sense itself can measure itself. Make the prove-it runs a small celebration; it is satisfying when the robot lands on the mark.</p>
+    <p><strong>Ages:</strong> K-5: watch the speed curve and drive-straight steps, then the class guesses where the 1 m run will stop before measuring it. 6-12: compute STRAFE_EFFICIENCY by hand from the tape-measure steps, and discuss why the IMU's accelerometer cannot measure distance (a 0.01 g error, summed twice, is about 0.8 m off after 4 seconds).</p>
+    <p><strong>Materials:</strong> Robot with MPU-6050 or BNO055, app, tape measure (mm), masking tape for marks, charged battery, a consistent floor patch about 2 m by 2 m.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="03-open-and-closed-loop.html">&larr; Did It Actually Turn?</a><a class="page-turn" href="05-moving-in-new-ways.html">Sideways Is a Direction &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

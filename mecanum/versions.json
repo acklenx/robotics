@@ -1,0 +1,11 @@
+{
+  "versions": [
+    {
+      "app": "0.6.35",
+      "path": "/mecanum/",
+      "firmwareMin": "0.10.20",
+      "firmwareMax": "0.10.9999"
+    }
+  ],
+  "latestFirmware": "0.10.72"
+}

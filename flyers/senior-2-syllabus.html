@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robotics & Engineering, Grades 6-12 — Course Outline</title>
+<style>
+  /* One page, every time. The dashed outline on screen shows where the paper
+     ends, so nothing sneaks onto a second sheet without you noticing. */
+  @page { size: letter portrait; margin: 0.4in; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; padding: 24px 12px; }
+  .sheet {
+    width: 7.7in; min-height: 10.2in; padding: 0.34in 0.4in;
+    position: relative;
+    /* Deliberately NOT overflow:hidden. If your real dates and prices run
+       longer than the placeholders, the flyer should visibly spill onto a
+       second page so you notice, rather than quietly swallowing a line. */
+    overflow: visible;
+  }
+  @media screen { .sheet { outline: 1px dashed #bbb; outline-offset: 10px; } }
+  @media print {
+    body { padding: 0; display: block; }
+    .sheet { width: auto; height: auto; outline: none; }
+  }
+  .fill { white-space: nowrap; }
+
+  body { background: #eceff2; font-family: "Segoe UI", system-ui, sans-serif; }
+  .sheet { background: #fff; color: #1c2126; }
+  header { display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 4px solid #24506e; padding-bottom: 10px; margin-bottom: 14px; }
+  h1 { font-size: 24pt; line-height: 1.1; }
+  h1 small { display: block; font-size: 10pt; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #24506e; font-weight: 700; margin-bottom: 4px; }
+  .meta { text-align: right; font-size: 9.5pt; line-height: 1.6; color: #4d5a66; }
+  .meta b { color: #1c2126; }
+  h2 { font-size: 9.5pt; letter-spacing: 0.16em; text-transform: uppercase; color: #24506e;
+    margin-bottom: 7px; padding-bottom: 3px; border-bottom: 1px solid #d3dae1; }
+  .two { display: flex; gap: 0.28in; }
+  .two > div { flex: 1; }
+  section { margin-bottom: 13px; }
+  p, li { font-size: 10pt; line-height: 1.48; }
+  ul { margin-left: 16px; }
+  li { margin-bottom: 3px; }
+  table { width: 100%; border-collapse: collapse; font-size: 9.6pt; }
+  th { text-align: left; font-size: 8.5pt; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #6b7883; padding-bottom: 4px; }
+  td { padding: 4px 0; border-top: 1px solid #e6ebef; vertical-align: top; }
+  td:first-child { width: 22%; font-weight: 700; color: #24506e; }
+  .note { background: #f2f6f9; border-left: 4px solid #24506e; padding: 10px 12px; font-size: 9.8pt; line-height: 1.5; }
+  .bio { font-size: 9.5pt; line-height: 1.5; color: #4d5a66; }
+  .bio b { color: #1c2126; }
+  footer { position: absolute; left: 0.4in; right: 0.4in; bottom: 0.34in;
+    border-top: 4px solid #24506e; padding-top: 9px; display: flex;
+    justify-content: space-between; font-size: 10pt; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header>
+    <h1><small><img src="../img/lockup.png" alt="Maker Lab Kids" style="height:30pt;width:auto;display:inline-block;vertical-align:middle;background:#fff;border-radius:5pt;padding:2pt 5pt"> &middot; After-School Program</small>Robotics &amp; Engineering<br>Grades 6&ndash;12</h1>
+    <div class="meta">
+      <b class="fill">[ DAY &amp; TIME ]</b><br>
+      15 weeks &middot; one hour a week<br>
+      Starts <span class="fill">[ START DATE ]</span><br>
+      <span class="fill">[ LOCATION ]</span> &middot; <span class="fill">[ PRICE ]</span>
+    </div>
+  </header>
+
+  <div class="two">
+    <div>
+      <section>
+        <h2>Course arc</h2>
+        <table>
+          <tr><td>Weeks 1&ndash;2</td><td>Brushbots. Motors, batteries, and why a
+          circuit that works on the bench fails on carpet.</td></tr>
+          <tr><td>Weeks 3&ndash;4</td><td>Light-seeking brushbots. First sensor,
+          first feedback loop, first argument about what the robot &ldquo;knows&rdquo;.</td></tr>
+          <tr><td>Weeks 5&ndash;7</td><td>The two-wheeled platform. Assembly,
+          wiring, motor control, and reading real sensor data.</td></tr>
+          <tr><td>Weeks 8&ndash;11</td><td>Programming: sequences, loops,
+          conditionals. Calibration and measurement. Debugging by evidence.</td></tr>
+          <tr><td>Weeks 12&ndash;13</td><td>Extensions. Students design and build
+          their own additions &mdash; new sensors, mounts, arms, bumpers.</td></tr>
+          <tr><td>Weeks 14&ndash;15</td><td>Maze build and race, then a showcase
+          where each team explains its design and its failures.</td></tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>Skills practised</h2>
+        <ul>
+          <li>Soldering, wiring, and reading a simple schematic</li>
+          <li>Using a multimeter to answer a question, not just take a reading</li>
+          <li>Block programming with the generated code visible alongside</li>
+          <li>Measurement and calibration, including repeat trials and spread</li>
+          <li>Mechanical design and fabrication for a part they specified</li>
+          <li>Explaining a design decision, including the trade-off it cost</li>
+        </ul>
+      </section>
+    </div>
+
+    <div>
+      <section>
+        <h2>What students design themselves</h2>
+        <p>The second half is not scripted. A student who wants a distance
+        sensor on a 30 cm arm has to mount it, wire it, decide what the robot
+        should do with the reading, and defend why the arm was worth the extra
+        weight. Some builds fail. Those weeks teach the most.</p>
+      </section>
+
+      <section class="note">
+        <b>No experience needed.</b> Nothing assumes prior coding or
+        electronics. Students who arrive already programming are not held back
+        &mdash; the robot's own source code is open and readable, and there is
+        always more depth available than any student exhausts.
+      </section>
+
+      <section>
+        <h2>Homeschool notes</h2>
+        <ul>
+          <li>Grade bands are a guide. Place by readiness and interest.</li>
+          <li>Siblings across the band often work well as a team.</li>
+          <li>Documentation-friendly: students keep a build log, and the final
+          showcase works as a portfolio artefact.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Who teaches it</h2>
+        <p class="bio">Run by <b>Maker Lab Kids</b>. Instructor background: Marine Corps
+        electronics test and calibration, a career in cybersecurity leadership,
+        founder of a community hackerspace, and a parent who taught his own kids
+        this way first.</p>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <div><b>Register:</b> <span class="fill">[ SIGN-UP LINK ]</span></div>
+    <div><span class="fill">[ EMAIL / PHONE ]</span> &middot; class size <span class="fill">[ N ]</span></div>
+  </footer>
+
+</div>
+</body>
+</html>

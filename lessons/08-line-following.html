@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>08. Following the Line &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 08 &middot; 60 minutes</p>
+  <h1>Following the Line</h1>
+  <p class="subtitle">A feedback loop you can see</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Explain, while watching the robot, why it wiggles down the line instead of driving straight along it.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Feedback: measure, correct, measure again</li><li>Correcting always means overshooting a little</li><li>Two sensors give you four possible situations</li><li>The wiggle is not a bug &mdash; it is the loop working</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>A tight SENSE-THINK-DO loop running many times a second, right in front of you.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Lay a black tape line with a gentle curve. Press <b>4</b> on the remote or Line tracking in the app.</li><li>Watch the two dots on the phone while the robot drives. Say out loud what it sees and what it does.</li><li>Fill in the table: left black &rarr; turn left; right black &rarr; turn right; neither &rarr; straight; both &rarr; stop.</li><li>Make the curve sharper until the robot loses the line. Find the tightest curve it can hold.</li><li>Change the surface or the lighting. Notice the sensors are reading reflection, not colour.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Design a track the robot definitely cannot follow, then explain exactly why in sensor terms.</li><li>Add a gap in the line. What does the robot do? What SHOULD it do?</li><li>Could you write the line follower yourself with if-blocks? Try it, then compare with the built-in one.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>The robot runs off a black line on a dark floor</td><td>The sensors compare reflection. Dark floor, dark line, no contrast, no chance.</td></tr><tr><td>It wiggles violently</td><td>The correction is strong relative to the speed. Lower the speed and watch the wiggle shrink.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The wiggle IS the lesson. Every control system overshoots; a thermostat does it in temperature and you cannot see it. Here it is right there on the floor.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="07-if-sensor.html">&larr; Making Decisions</a><a class="page-turn" href="09-avoid-and-seek.html">Avoiding &amp; Seeking &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

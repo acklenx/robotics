@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>06. Too Much, Too Little, Just Right - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 06 &middot; 60 minutes</p>
+  <h1>Too Much, Too Little, Just Right</h1>
+  <p class="subtitle">Tuning the line follower</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Change the line follower's correction strength while it runs, find the wobble point and the drift point, and settle on a value between them.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>The line follower measures how far off the line it is (in mm)</li><li>It corrects in proportion: twice as far off, twice as much correction</li><li>Too strong: it wobbles. Too weak: it drifts off curves</li><li>Tuning is a search, not a guess</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>SENSE: the line sensors measure the offset. THINK: multiply the offset by the gain. DO: slide and turn toward the line. Change the gain and the whole personality changes.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Tape a loop with gentle curves and one tight curve.</li><li>Sensors tab: check the line sensor is set up. Press Watch (lw) and slide tape under each channel: its raw number should jump by 100 or more.</li><li>Put the line under the middle of the sensor and press Calibrate (lc). The robot strafes across the line and back.</li><li>Press Follow (lf). It runs until you press STOP.</li><li>While it follows, drag the Slide correction slider up a lot. Watch it wobble. Drag it down a lot. Watch it drift off the tight curve.</li><li>Do the same with Turn correction. Which one helps on the tight curve?</li><li>Find the lowest setting that still takes the tight curve. Then the highest that does not wobble. Pick the middle. Save to robot.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Speed it up (speed slider). Do the best gains change?</li><li>Make the curve tighter. What fails first?</li><li>Turn slide correction to zero: now it steers like a normal car. Better or worse?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>'never saw the line'</td><td>The sensors never saw the tape. Press Watch: no change under tape means the emitters are off or the channel is not wired where the robot thinks.</td></tr><tr><td>Numbers go the wrong way over tape</td><td>Flip 'Over the tape the reading goes' in the Sensors tab.</td></tr><tr><td>'lost the line, stopped'</td><td>It went off the line for longer than the lost-stop time. Slow down or raise the turn correction.</td></tr><tr><td>Stops at a wall</td><td>The laser's wall stop (120 mm) works during line following too. Move the wall.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>Settings change live, so the robot never has to stop for a re-flash. Let each group own one slider and report what it does. The point is the shape of the search: too much, too little, bracket it.</p>
+    <p><strong>Ages:</strong> K-5: one slider, three settings (low, middle, high), describe the wiggle. 6-12: record offset telemetry (the L line in the console) and graph it for two gains.</p>
+    <p><strong>Materials:</strong> Robot with line sensor array (8-channel, through the ADS1115s or direct), black electrical tape, light floor or poster board, app (Sensors tab).</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="05-moving-in-new-ways.html">&larr; Sideways Is a Direction</a><a class="page-turn" href="07-buses-and-addresses.html">Roll Call on Two Wires &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

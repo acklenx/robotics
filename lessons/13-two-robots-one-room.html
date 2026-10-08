@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13. Two Robots, One Room &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 13 &middot; 60 minutes</p>
+  <h1>Two Robots, One Room</h1>
+  <p class="subtitle">Sharing space, control, and the airwaves</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Run two robots at once without either one interfering with the other, and explain what could go wrong.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Every robot has its own name, and names matter when there are twelve</li><li>IR is a broadcast: one remote can hit several robots</li><li>Bluetooth is a conversation: one phone, one robot</li><li>Shared space needs rules, whether the drivers are robots or people</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>The same loop, twice, in one room &mdash; and now the environment includes another robot.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Two robots, one IR remote. Press 5. Watch both react. Explain why.</li><li>Now connect each robot to its own phone by name. Notice you must pick the right name.</li><li>Give them opposite modes: one avoiding, one seeking. Watch them interact.</li><li>Set them nose-to-nose in follow mode. What happens, and why is it unstable?</li><li>Agree a room rule for the maze race: how do teams avoid running two robots into each other?</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Make two robots follow each other in a line without colliding.</li><li>Can you make one robot deliberately confuse another's sonar? Should you?</li><li>If twelve robots run at once, which of our systems would break first? Argue for one.</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Both robots react to one remote</td><td>IR is a broadcast with no addressing. That is a property of the medium, not a bug.</td></tr><tr><td>A phone connects to the wrong robot</td><td>Names come from the firmware. Check ROBOT_BLUETOOTH_NAME at the top of the kernel.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The nose-to-nose follow demo is worth doing deliberately: two followers create a feedback loop with no damping, and they oscillate. It is a genuinely surprising and memorable result.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="12-when-sensors-lie.html">&larr; When Sensors Lie</a><a class="page-turn" href="14-design-your-own-behaviour.html">Design Your Own Behaviour &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

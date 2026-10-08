@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#15181c">
+<title>Rename Robot 0.1.4 - Maker Lab Kids</title>
+<style>
+  :root {
+    --bg: #15181c;
+    --panel: #1e2329;
+    --panel-edge: #2b323b;
+    --ink: #e8ecef;
+    --ink-dim: #9aa4ae;
+    --orange: #ff7a1a;
+    --green: #45d483;
+    --green-dark: #123d24;
+    --red: #ff5a5a;
+    --red-dark: #4a1414;
+    --yellow: #ffd23f;
+    --blue: #4db8ff;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 17px; line-height: 1.45;
+  }
+  a { color: #ffa45c; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 120px; }
+  header {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 10px 16px; padding-top: max(10px, env(safe-area-inset-top));
+    background: var(--panel); border-bottom: 1px solid var(--panel-edge);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .mlk-lockup { display: inline-flex; background: #fff; border-radius: 6px; padding: 2px 6px; line-height: 0; }
+  .mlk-lockup img { height: 24px; width: auto; display: block; }
+  .title { font-weight: 900; font-size: 16px; }
+  .title span { color: var(--orange); font-weight: 700; font-size: 13px; }
+  .status { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-dim); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--red); flex: none; }
+  .dot.on { background: var(--green); }
+  .spacer { flex: 1 1 auto; }
+  #stopButton {
+    font: inherit; font-weight: 900; letter-spacing: 0.12em; font-size: 15px;
+    color: #fff; background: #cc2b2b; border: none; border-radius: 10px; padding: 10px 18px; cursor: pointer;
+  }
+  .banner { margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; font-weight: 700; }
+  .banner[hidden] { display: none; }
+  .banner.bad { background: var(--red-dark); border: 2px solid var(--red); color: #ffd0d0; }
+  .banner.info { background: #1d2a3a; border: 1px solid var(--blue); color: #cfe9ff; }
+  h1 { font-size: 22px; margin: 18px 0 4px; }
+  .lead { color: var(--ink-dim); margin: 0 0 12px; font-size: 15px; }
+
+  /* Steps: one open at a time */
+  .step { background: var(--panel); border: 2px solid var(--panel-edge); border-radius: 14px; margin: 12px 0; overflow: hidden; }
+  .step.current { border-color: var(--orange); }
+  .step.done { border-color: #2f6b47; }
+  .step > summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  }
+  .step > summary::-webkit-details-marker { display: none; }
+  .num {
+    width: 38px; height: 38px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px; background: #2b323b; color: var(--ink);
+  }
+  .step.current .num { background: var(--orange); color: var(--bg); }
+  .step.done .num { background: var(--green); color: var(--bg); }
+  .step-title { font-weight: 800; font-size: 18px; flex: 1 1 auto; }
+  .step-state { font-size: 13px; font-weight: 700; color: var(--ink-dim); white-space: nowrap; }
+  .step.done .step-state { color: var(--green); }
+  .step-body { padding: 0 14px 14px; }
+  .say { font-size: 18px; margin: 4px 0 12px; }
+  .say b { color: var(--yellow); }
+
+  .big {
+    display: block; width: 100%; font: inherit; font-weight: 900; font-size: 19px;
+    color: var(--bg); background: var(--orange); border: none; border-radius: 12px;
+    padding: 16px 10px; cursor: pointer; margin: 8px 0;
+  }
+  .big.blue { background: var(--blue); }
+  .big.green { background: var(--green); font-size: 24px; padding: 26px 10px; }
+  .big.quiet { background: #2b323b; color: var(--ink); font-size: 16px; padding: 12px 10px; }
+  .big:disabled { background: #2b323b; color: var(--ink-dim); cursor: default; }
+  .big[hidden] { display: none; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .row > * { flex: 1 1 160px; }
+  label.field { display: flex; flex-direction: column; gap: 4px; font-size: 15px; font-weight: 700; }
+  label.field input {
+    font: inherit; font-size: 22px; font-weight: 700; color: var(--ink); background: #11151a;
+    border: 2px solid #3a434e; border-radius: 10px; padding: 10px 12px; width: 100%;
+  }
+  label.field input:focus { outline: none; border-color: var(--orange); }
+  .surfaces { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 8px 0; }
+  .surfaces button {
+    font: inherit; font-weight: 800; font-size: 16px; color: var(--ink); background: #2b323b;
+    border: 2px solid #3a434e; border-radius: 12px; padding: 14px 6px; cursor: pointer;
+  }
+  .surfaces button.active { background: var(--orange); color: var(--bg); border-color: var(--orange); }
+  .working { color: var(--blue); font-weight: 700; min-height: 1.4em; margin: 6px 0; }
+
+  /* Result of a step: done (green), not on the robot (red) */
+  .result { border-radius: 12px; padding: 12px 14px; margin: 12px 0 8px; }
+  .result[hidden] { display: none; }
+  .result.done { background: var(--green-dark); border: 2px solid var(--green); }
+  .result.bad { background: var(--red-dark); border: 2px solid var(--red); }
+  .result .headline { font-weight: 900; font-size: 19px; }
+  .result.done .headline { color: var(--green); }
+  .result.bad .headline { color: var(--red); }
+  .values { font-family: var(--mono); font-size: 14px; margin-top: 6px; display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; }
+  .values .k { color: var(--ink-dim); }
+  .values .changed { color: var(--yellow); }
+
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .tools button {
+    font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: none;
+    border: 1px solid #3a434e; border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  }
+  .tools button:disabled { opacity: 0.4; cursor: default; }
+  .confirm { background: #2a2414; border: 2px solid var(--yellow); border-radius: 12px; padding: 12px; margin-top: 10px; }
+  .confirm[hidden] { display: none; }
+  .confirm p { margin: 0 0 8px; }
+  .confirm .row button { font: inherit; font-weight: 800; border-radius: 10px; padding: 10px; cursor: pointer; border: none; }
+  .confirm .yes { background: var(--yellow); color: var(--bg); }
+  .confirm .no { background: #2b323b; color: var(--ink); }
+
+  .more { margin-top: 10px; }
+  .more > summary { cursor: pointer; color: #ffa45c; font-size: 15px; font-weight: 700; }
+  .more-text { font-size: 15px; color: #c9d1d8; }
+  .more-text h4 { margin: 10px 0 2px; color: var(--ink); font-size: 15px; }
+  .more-text p { margin: 4px 0; }
+  .gyro { border-top: 1px dashed #3a434e; margin-top: 12px; padding-top: 8px; }
+  .history { font-family: var(--mono); font-size: 13px; color: var(--ink-dim); margin: 6px 0; }
+  .history div { padding: 2px 0; border-bottom: 1px solid #262c34; }
+  .history .ok { color: var(--green); }
+  .history .fix { color: var(--yellow); }
+  .gyro[hidden] { display: none; }
+  .gyro .note { font-size: 14px; color: var(--ink-dim); }
+  #log { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); white-space: pre-wrap; max-height: 220px; overflow: auto; background: #11151a; border-radius: 8px; padding: 8px; }
+</style>
+<style>
+  .bignum { font-size: 40px; font-weight: 900; color: var(--green); line-height: 1.1; word-break: break-all; }
+  #connectButtons .big { margin: 6px 0; }
+</style>
+</head>
+<body>
+<header>
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="title">Rename Robot <span id="versionLabel"></span></div>
+  <div class="status"><div class="dot" id="statusDot"></div><span id="statusText">Not connected</span></div>
+  <div class="spacer"></div>
+</header>
+
+<div class="wrap">
+  <h1>Name a robot</h1>
+  <p class="lead">Flash <b>rename.ino</b>, plug in the <b>USB cable</b>, Connect, type the name, Rename. Done in seconds. Then flash
+  <b>mecanum_holonomic.ino</b> again.</p>
+
+  <details class="step" data-step="connect" open>
+    <summary><span class="num">1</span><span class="step-title">Connect</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <div id="connectButtons">
+        <button class="big blue" id="connectUsbButton">USB cable</button>
+        <button class="big quiet" id="connectBleButton">Bluetooth (slower: the robot renames at its next power-on)</button>
+      </div>
+      <div class="working" id="connectWorking"></div>
+      <div class="result" id="connectResult" hidden></div>
+      <button class="big quiet" id="askButton">Ask the module again (after putting an HC-05 in AT mode)</button>
+    </div>
+  </details>
+
+  <details class="step" data-step="name" open>
+    <summary><span class="num">2</span><span class="step-title">Name</span><span class="step-state"></span></summary>
+    <div class="step-body">
+      <p class="say">Letters, numbers, - and _ (up to 20). No spaces.</p>
+      <p class="say"><b>HC-05 module</b> (the one with a small button): hold the button while switching the robot on, until its light blinks slowly. Then Connect and Rename.</p>
+      <div class="row">
+        <label class="field">Robot name<input type="text" id="nameInput" placeholder="e.g. Rexy" autocomplete="off" maxlength="20"></label>
+        <button class="big green" id="renameButton" style="flex:0 0 auto;padding:16px 24px;font-size:20px">Rename</button>
+      </div>
+      <div class="working" id="nameWorking"></div>
+      <div class="result" id="nameResult" hidden></div>
+      <details class="more"><summary>What, why and how</summary><div class="more-text">
+        <h4>What</h4><p>The robot's Bluetooth module gets the robot's name. Every kit module comes called HC-06, so without this a room of robots is a list of identical names.</p>
+        <h4>How</h4><p>The kit's HC-06 only takes a new name while nothing is connected to it over Bluetooth, so over the USB cable it is renamed on the spot and confirms (OKsetname). Connected over Bluetooth, the robot saves the name and renames the module when it is next switched on. Phones remember the old name for a while: forget HC-06 in the phone's Bluetooth settings, scan again.</p>
+        <p>An HC-05 takes commands only in its AT mode: hold its button while the robot is switched on (slow blink). rename.ino finds it (at 38400 or 9600) and renames it; afterwards switch the robot off and on to leave AT mode. Its PIN is 1234, like the HC-06's.</p>
+        <p>The name also goes in this phone's list of robots, so the Workshop, Sticks and Calibration pages list it.</p>
+      </div></details>
+    </div>
+  </details>
+
+  <details class="more"><summary>Robot messages</summary><div id="log"></div></details>
+</div>
+
+<script>
+"use strict";
+
+var APP_VERSION = "0.1.4";
+var SERIAL_BAUD = 9600;
+var BLE_SERVICE_UUID = 0xFFE0;
+var BLE_NUS_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+var BLE_CHUNK_SIZE = 20;
+var NAME_PATTERN = /^[A-Za-z0-9_-]{1,20}$/;
+
+document.getElementById("versionLabel").textContent = APP_VERSION;
+var statusDot = document.getElementById("statusDot");
+var statusText = document.getElementById("statusText");
+var logBox = document.getElementById("log");
+
+function logLine(text) {
+  logBox.textContent += text + "\n";
+  if (logBox.textContent.length > 20000) {
+    logBox.textContent = logBox.textContent.slice(-15000);
+  }
+  logBox.scrollTop = logBox.scrollHeight;
+}
+function storageGet(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch (error) { return null; }
+}
+function storageSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { /* blocked */ }
+}
+function pause(ms) {
+  return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+}
+
+// ---------------------------------------------------------------------------
+// Connection (the same as the calibration page's)
+// ---------------------------------------------------------------------------
+
+var link = null;
+var incomingLineBuffer = "";
+var lineDecoder = new TextDecoder();
+var writeChain = Promise.resolve();
+var replyWaiters = [];
+
+function sendCommand(text, quiet) {
+  if (!link) {
+    return;
+  }
+  if (!quiet) {
+    logLine("> " + text);
+  }
+  var activeLink = link;
+  writeChain = writeChain.then(function () {
+    return activeLink === link ? activeLink.write(new TextEncoder().encode(text)) : null;
+  }).catch(function (error) { logLine("write failed: " + error.message); });
+}
+
+function sendAndAwait(text, pattern, timeoutMs) {
+  return new Promise(function (resolve, reject) {
+    var waiter = { pattern: pattern, resolve: resolve };
+    waiter.timer = setTimeout(function () {
+      replyWaiters = replyWaiters.filter(function (w) { return w !== waiter; });
+      reject(new Error("the robot did not answer " + text));
+    }, timeoutMs);
+    replyWaiters.push(waiter);
+    if (text) {
+      sendCommand(text);
+    }
+  });
+}
+function awaitReply(pattern, timeoutMs) {
+  return sendAndAwait("", pattern, timeoutMs);
+}
+// A command over Bluetooth can be lost while the robot talks: try twice.
+function ask(text, pattern, timeoutMs) {
+  return sendAndAwait(text, pattern, timeoutMs).catch(function () { return sendAndAwait(text, pattern, timeoutMs); });
+}
+
+function handleIncomingBytes(bytes) {
+  incomingLineBuffer += lineDecoder.decode(bytes, { stream: true });
+  var newlineIndex = incomingLineBuffer.indexOf("\n");
+  while (newlineIndex >= 0) {
+    var line = incomingLineBuffer.slice(0, newlineIndex).replace(/\r$/, "");
+    incomingLineBuffer = incomingLineBuffer.slice(newlineIndex + 1);
+    if (line) {
+      handleRobotLine(line);
+    }
+    newlineIndex = incomingLineBuffer.indexOf("\n");
+  }
+}
+
+function setConnectedState() {
+  var connected = link !== null;
+  statusDot.className = connected ? "dot on" : "dot";
+  statusText.textContent = connected ? link.label + (robot.role ? " - " + robot.role + " " + (robot.fw || "") : "") : "Not connected";
+  document.getElementById("connectBleButton").textContent = connected && link.kind === "ble" ? "Disconnect" : "Bluetooth (slower: the robot renames at its next power-on)";
+  document.getElementById("connectUsbButton").textContent = connected && link.kind === "usb" ? "Disconnect" : "USB cable";
+  document.getElementById("connectBleButton").disabled = !navigator.bluetooth || (connected && link.kind !== "ble");
+  document.getElementById("connectUsbButton").disabled = !navigator.serial || (connected && link.kind !== "usb");
+  render();
+}
+
+function handleLinkLost(reason) {
+  if (!link) {
+    return;
+  }
+  link = null;
+  robot = freshRobot();
+  logLine("Disconnected" + (reason ? ": " + reason : ""));
+  setConnectedState();
+}
+
+function connectUsb() {
+  var port = null, reader = null, writer = null;
+  // (the classic serial Bluetooth ID, so Chrome lists paired HC-06 modules too)
+  navigator.serial.requestPort({ allowedBluetoothServiceClassIds: ["00001101-0000-1000-8000-00805f9b34fb"] }).then(function (chosenPort) {
+    port = chosenPort;
+    return port.open({ baudRate: SERIAL_BAUD });
+  }).then(function () {
+    writer = port.writable.getWriter();
+    reader = port.readable.getReader();
+    var info = port.getInfo ? port.getInfo() : {};
+    link = {
+      kind: "usb", label: info.bluetoothServiceClassId ? "Bluetooth (HC-06)" : "USB",
+      write: function (bytes) { return writer.write(bytes); },
+      close: function () {
+        link = null;
+        return reader.cancel().catch(function () {}).then(function () {
+          writer.releaseLock();
+          return port.close();
+        }).catch(function () {}).then(setConnectedState);
+      }
+    };
+    port.addEventListener("disconnect", function () { handleLinkLost("USB unplugged"); });
+    (function pump() {
+      reader.read().then(function (result) {
+        if (!result.done) {
+          handleIncomingBytes(result.value);
+          pump();
+        }
+      }).catch(function (error) {
+        if (link && link.kind === "usb") {
+          handleLinkLost(error.message);
+        }
+      });
+    })();
+    linked(2500);   // opening the port resets the Uno: let it boot
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "USB: " + error.message;
+  });
+}
+
+// Robots by their module's name (as it comes, or a name saved on this phone),
+// or every device nearby (showAll) when a robot is not in the list.
+function connectBle(showAll) {
+  var device = null, tx = null, rx = null, mode = "response";
+  var filters = [{ services: [BLE_SERVICE_UUID] }, { services: [BLE_NUS_SERVICE_UUID] }, { namePrefix: "HC" }, { namePrefix: "HM" }, { namePrefix: "JDY" },
+                 { namePrefix: "BT" }, { namePrefix: "MLT" }, { namePrefix: "MLK" }];
+  (storageGet("mlk-robot-names") || []).forEach(function (name) { filters.push({ name: name }); });
+  navigator.bluetooth.requestDevice(showAll ? { acceptAllDevices: true, optionalServices: [BLE_SERVICE_UUID, BLE_NUS_SERVICE_UUID] } :
+    { filters: filters, optionalServices: [BLE_SERVICE_UUID, BLE_NUS_SERVICE_UUID] }).then(function (chosenDevice) {
+    device = chosenDevice;
+    device.addEventListener("gattserverdisconnected", function () { handleLinkLost("Bluetooth dropped"); });
+    document.getElementById("connectWorking").textContent = "Connecting to " + device.name + "...";
+    return device.gatt.connect();
+  }).then(function (server) {
+    return server.getPrimaryService(BLE_SERVICE_UUID).catch(function () { return server.getPrimaryService(BLE_NUS_SERVICE_UUID); });
+  }).then(function (service) {
+    return service.getCharacteristics();
+  }).then(function (characteristics) {
+    characteristics.forEach(function (c) {
+      var p = c.properties || {};
+      if (!tx && (p.write || p.writeWithoutResponse)) { tx = c; }
+      if (!rx && (p.notify || p.indicate)) { rx = c; }
+    });
+    if (!tx) {
+      throw new Error("no writable characteristic");
+    }
+    mode = tx.properties.writeWithoutResponse ? "noresponse" : "response";
+    function writeChunk(chunk) {
+      if (mode === "noresponse" && tx.writeValueWithoutResponse) {
+        return tx.writeValueWithoutResponse(chunk);
+      }
+      return tx.writeValueWithResponse ? tx.writeValueWithResponse(chunk) : tx.writeValue(chunk);
+    }
+    link = {
+      kind: "ble", label: device.name || "Bluetooth",
+      write: function (bytes) {
+        var chain = Promise.resolve();
+        for (var offset = 0; offset < bytes.length; offset += BLE_CHUNK_SIZE) {
+          (function (chunk) {
+            chain = chain.then(function () {
+              return writeChunk(chunk).catch(function () {
+                mode = mode === "noresponse" ? "response" : "noresponse";
+                return writeChunk(chunk);
+              });
+            });
+          })(bytes.slice(offset, offset + BLE_CHUNK_SIZE));
+        }
+        return Promise.race([chain, pause(1500)]);
+      },
+      close: function () {
+        link = null;
+        if (device.gatt.connected) {
+          device.gatt.disconnect();
+        }
+        setConnectedState();
+        return Promise.resolve();
+      }
+    };
+    if (!rx) {
+      return null;
+    }
+    rx.addEventListener("characteristicvaluechanged", function (event) { handleIncomingBytes(event.target.value); });
+    return rx.startNotifications().catch(function () { /* sending still works */ });
+  }).then(function () {
+    linked(400);
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "Bluetooth: " + error.message;
+    if (device && device.gatt && device.gatt.connected) {
+      device.gatt.disconnect();
+    }
+    setConnectedState();
+  });
+}
+
+
+
+// ---------------------------------------------------------------------------
+// The robot: rename.ino answers "bt module: ...", "bt name: <name> - set" /
+// "- saved: switch the robot off and on" / "- the module did not answer ..."
+// ---------------------------------------------------------------------------
+
+function freshRobot() {
+  return { role: null, fw: null, module: null };
+}
+var robot = freshRobot();
+var pending = null;
+
+function handleRobotLine(line) {
+  logLine("< " + line);
+  replyWaiters = replyWaiters.filter(function (waiter) {
+    if (!waiter.pattern.test(line)) {
+      return true;
+    }
+    clearTimeout(waiter.timer);
+    waiter.resolve(line);
+    return false;
+  });
+  var match;
+  if ((match = /^(rename|calibration|mecanum_holonomic) v(\S+)/.exec(line))) {
+    robot.role = match[1];
+    robot.fw = match[2];
+  } else if ((match = /^bt module: (.*)$/.exec(line))) {
+    robot.module = match[1];
+  }
+  render();
+}
+
+function linked(waitMs) {
+  setConnectedState();
+  document.getElementById("connectWorking").textContent = "Reading the robot...";
+  pause(waitMs).then(function () {
+    return ask("?\n", /^ready/, 20000);   // (a robot without a module answering takes ~14 s to start: it tries every speed)
+  }).then(function () {
+    document.getElementById("connectWorking").textContent = "";
+    setConnectedState();
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "Connected, but " + error.message + ". Is rename.ino on it?";
+    setConnectedState();
+  });
+}
+
+function render() {
+  var connected = !!link;
+  var box = document.getElementById("connectResult");
+  box.hidden = !(connected && robot.role);
+  box.className = "result " + (robot.role === "rename" ? "done" : "bad");
+  box.innerHTML = robot.role === "rename" ? '<div class="headline">Connected \u2713</div><div>rename ' + escapeHtml(robot.fw || "") +
+    (robot.module ? " - module: " + escapeHtml(robot.module) : "") + (link.kind === "usb" ? "" : " (over Bluetooth: the rename happens at the next power-on)") + "</div>" :
+    '<div class="headline">Not rename.ino</div><div>This robot runs ' + escapeHtml(robot.role || "?") + ". Flash rename.ino and connect again.</div>";
+  document.querySelector('.step[data-step="connect"] .step-state').textContent = connected && robot.role === "rename" ? "DONE \u2713" : "";
+  document.getElementById("renameButton").disabled = !(connected && robot.role === "rename") || !!pending;
+  document.getElementById("askButton").disabled = !(connected && robot.role === "rename") || !!pending;
+}
+
+function rename() {
+  var name = document.getElementById("nameInput").value.trim();
+  var working = document.getElementById("nameWorking");
+  var box = document.getElementById("nameResult");
+  if (!NAME_PATTERN.test(name)) {
+    working.textContent = "A name is letters, numbers, - and _ (up to 20), no spaces.";
+    return;
+  }
+  if (!link || pending) {
+    return;
+  }
+  pending = name;
+  render();
+  working.textContent = "Renaming...";
+  box.hidden = true;
+  ask("N" + name.replace(/x/g, "*").replace(/X/g, "#") + "\n", /^bt name: /, 6000).then(function (line) {
+    var names = storageGet("mlk-robot-names") || [];
+    if (names.indexOf(name) < 0) {
+      storageSet("mlk-robot-names", names.concat([name]).slice(-40));
+    }
+    box.hidden = false;
+    if (/ - set/.test(line)) {
+      box.className = "result done";
+      var says = / - set; the module says its name is ([^,]*), data speed ([^.]*)\./.exec(line);
+      box.innerHTML = '<div class="headline">Renamed \u2713</div><div class="bignum">' + escapeHtml(name) + "</div><div>" +
+        (says ? "The module says its name is now " + escapeHtml(says[1].trim()) + " and its data speed is " + escapeHtml(says[2].trim()) + ". Switch the robot off and on. " : "The module took the name. ") +
+        "Phones remember the old name: in the phone's Bluetooth settings, forget the old HC-05 / HC-06 and scan again. Then flash mecanum_holonomic.ino, and the next robot.</div>";
+    } else if (/ - saved/.test(line)) {
+      box.className = "result done";
+      box.innerHTML = '<div class="headline">NOT renamed yet: the module did not answer</div><div class="bignum">' + escapeHtml(name) + "</div><div>" +
+        (link && link.kind === "usb" ? "Over USB that means the module is not listening: an HC-05 has to be in AT mode (hold its button while switching the robot on, slow blink), an HC-06 must have nothing connected to it over Bluetooth. Fix that and Rename again. " :
+          "Over Bluetooth the module cannot be renamed while you are connected to it. ") +
+        "The robot keeps the name and will try once at its next power-on, if the module is listening then.</div>";
+    } else {
+      box.className = "result bad";
+      box.innerHTML = '<div class="headline">The module did not answer</div><div>' + escapeHtml(line) + "</div><div>Is anything connected to the robot over Bluetooth? Disconnect it and Rename again.</div>";
+    }
+    working.textContent = "";
+  }).catch(function (error) {
+    working.textContent = "That did not work: " + error.message;
+  }).then(function () {
+    pending = null;
+    render();
+  });
+}
+
+document.getElementById("connectBleButton").addEventListener("click", function () {
+  if (link && link.kind === "ble") { setTimeout(function () { if (link) { link.close(); } }, 100); } else { connectBle(false); }
+});
+document.getElementById("connectUsbButton").addEventListener("click", function () {
+  if (link && link.kind === "usb") { setTimeout(function () { if (link) { link.close(); } }, 100); } else { connectUsb(); }
+});
+document.getElementById("renameButton").addEventListener("click", rename);
+document.getElementById("askButton").addEventListener("click", function () {
+  if (!link || pending) { return; }
+  robot.module = null;
+  document.getElementById("connectWorking").textContent = "Asking the module (up to 15 seconds)...";
+  ask("v\n", /^bt module: /, 20000).then(function () {
+    document.getElementById("connectWorking").textContent = "";
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "That did not work: " + error.message;
+  });
+});
+document.getElementById("nameInput").addEventListener("keydown", function (event) { if (event.key === "Enter") { event.preventDefault(); rename(); } });
+if (!navigator.bluetooth && !navigator.serial) {
+  document.getElementById("connectWorking").textContent = "This browser cannot talk to the robot. Use Chrome (Android, Windows, Mac).";
+}
+setConnectedState();
+
+// Chrome on Android crashes when a page leaves with a Bluetooth or serial
+// connection open: disconnect before following a link, and on the way out.
+(function () {
+  function closeLink() {
+    if (link && link.close) {
+      try { link.close(); } catch (error) { /* already gone */ }
+    }
+  }
+  window.addEventListener("pagehide", closeLink);
+  var anchors = document.querySelectorAll("a[href]");
+  for (var i = 0; i < anchors.length; i++) {
+    anchors[i].addEventListener("click", function (event) {
+      if (!link || this.target === "_blank" || /^#/.test(this.getAttribute("href"))) {
+        return;
+      }
+      event.preventDefault();
+      var href = this.href;
+      closeLink();
+      setTimeout(function () { location.href = href; }, 250);
+    });
+  }
+})();
+</script>
+</body>
+</html>

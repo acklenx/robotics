@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Cheat Sheet &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="./css/site.css">
+</head>
+<body>
+<header class="site-header no-print">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav">
+    <a href="2wd.html">2WD home</a><a href="lessons/index.html">Lessons</a>
+    <a href="workshop.html">Workshop</a><a href="MazeLab.html">Maze Lab</a>
+    <a href="cheatsheet.html" class="active">Cheat sheet</a><a href="index.html">Mecanum robot</a>
+  </nav>
+</header>
+
+<main class="page sheet">
+  <h1 class="sheet-title">Robot Cheat Sheet</h1>
+  <p class="subtitle no-print">Print this and tape it to the table. Everything the
+  robot understands is on this page.</p>
+  <button class="copy-button no-print" onclick="window.print()">Print this page</button>
+
+  <div class="sheet-columns">
+
+    <section class="card">
+      <h2>IR remote</h2>
+      <p class="sheet-note">Works the moment the robot is switched on. No phone needed.</p>
+      <table class="watch">
+        <tr><td>&#9650; &#9660; &#9664; &#9654;</td><td>drive while held</td></tr>
+        <tr><td>OK</td><td>STOP &mdash; always works</td></tr>
+        <tr><td>1 / 2 / 3</td><td>run stored program 1 / 2 / 3</td></tr>
+        <tr><td>4</td><td>line tracking</td></tr>
+        <tr><td>5</td><td>obstacle avoidance</td></tr>
+        <tr><td>6</td><td>follow</td></tr>
+        <tr><td>7</td><td>light seek</td></tr>
+        <tr><td>8</td><td>seek (radar lock)</td></tr>
+        <tr><td>9</td><td>speed up a notch (wraps)</td></tr>
+        <tr><td>0</td><td>let go of control</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Program language</h2>
+      <p class="sheet-note">One instruction per line. Upper or lower case, both fine.</p>
+      <table class="watch">
+        <tr><td>F 900</td><td>forward for 900 ms</td></tr>
+        <tr><td>B 900</td><td>backward</td></tr>
+        <tr><td>L 350</td><td>spin left</td></tr>
+        <tr><td>R 350</td><td>spin right</td></tr>
+        <tr><td>W 500</td><td>wait, wheels stopped</td></tr>
+        <tr><td>V 5</td><td>speed 0&ndash;9</td></tr>
+        <tr><td>E 90</td><td>point sonar, 0&ndash;180&deg;</td></tr>
+        <tr><td>P 4 &hellip; Q</td><td>repeat 4 times</td></tr>
+        <tr><td>I 5 &hellip; Z</td><td>if sensor 5 is true</td></tr>
+        <tr><td>X</td><td>end the program</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Sensor numbers for I</h2>
+      <table class="watch">
+        <tr><td>1</td><td>left line sees black</td></tr>
+        <tr><td>2</td><td>right line sees black</td></tr>
+        <tr><td>3</td><td>something close on the left</td></tr>
+        <tr><td>4</td><td>something close on the right</td></tr>
+        <tr><td>5</td><td>wall closer than 25 cm</td></tr>
+        <tr><td>6</td><td>the way ahead is clear</td></tr>
+        <tr><td>7</td><td>the right side is clear</td></tr>
+        <tr><td>8</td><td>the left side is clear</td></tr>
+      </table>
+      <p class="sheet-note">6, 7 and 8 are the opposites of 5, 4 and 3. Pair them to
+      get an if/else.</p>
+    </section>
+
+    <section class="card">
+      <h2>Typed commands</h2>
+      <p class="sheet-note">Same over USB or Bluetooth.</p>
+      <table class="watch">
+        <tr><td>f b l r s</td><td>drive / stop</td></tr>
+        <tr><td>0&ndash;9</td><td>speed (0 is slowest, NOT release)</td></tr>
+        <tr><td>t a w p y</td><td>line / avoid / follow / light / seek</td></tr>
+        <tr><td>d</td><td>read all sensors once</td></tr>
+        <tr><td>h1 / h0</td><td>live sensor stream on / off</td></tr>
+        <tr><td>*1 *2 *3</td><td>pick program slot</td></tr>
+        <tr><td>[ &hellip; ]</td><td>save a program into the slot</td></tr>
+        <tr><td>g / k</td><td>run / list the slot</td></tr>
+        <tr><td>z z</td><td>set servo centre (twice within 6 s)</td></tr>
+        <tr><td>j&lt;n&gt;</td><td>straight-drive trim, &minus;15&hellip;15</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>When something is wrong</h2>
+      <table class="watch">
+        <tr><td>No servo wiggle at power-on</td><td>servo not connected</td></tr>
+        <tr><td>Distance always &ldquo;clear&rdquo;</td><td>press <b>d</b>: NOECHO climbing means the sonar never answered</td></tr>
+        <tr><td>SAVED steps= is too small</td><td>part of the upload was lost; send it again</td></tr>
+        <tr><td>Robot stops by itself</td><td>manual driving expires after 0.4 s; hold, do not tap</td></tr>
+        <tr><td>Flashing red banner</td><td>battery cutoff &mdash; charge before anything else</td></tr>
+        <tr><td>Turns are wrong after a change</td><td>re-run calibration; the numbers moved</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Healthy numbers</h2>
+      <table class="watch">
+        <tr><td>5V rail</td><td>4.90&ndash;5.10 V</td></tr>
+        <tr><td>Battery pack (2 cells)</td><td>8.4 V full, 7.0 V get ready, 6.6 V cutoff</td></tr>
+        <tr><td>One room</td><td>30.5 cm (12 inches)</td></tr>
+        <tr><td>Program slots</td><td>3, up to 100 steps each</td></tr>
+      </table>
+    </section>
+
+  </div>
+</main>
+</body>
+</html>

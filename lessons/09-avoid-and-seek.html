@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09. Avoiding &amp; Seeking &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 09 &middot; 60 minutes</p>
+  <h1>Avoiding &amp; Seeking</h1>
+  <p class="subtitle">Strategies for not knowing everything</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Compare two robot behaviours and describe what each one does when it loses track of the world.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Scanning: turning the sensor to learn more before deciding</li><li>A plan for being lost is part of a plan</li><li>Follow waits when it loses the target; Seek goes looking</li><li>Giving up is a feature &mdash; searching forever is a bug</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>THINK gets a memory: the robot now stores what it saw a moment ago and uses it.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Press <b>5</b> (avoid). Corner the robot and watch it scan left, scan right, then commit.</li><li>Corner it harder &mdash; block every direction. Watch it rotate 45&deg; and rescan, again and again, then stop and say it is boxed in.</li><li>Press <b>6</b> (follow). Hold a book in front, then take it away. It waits.</li><li>Press <b>8</b> (seek). Same trick. It surveys, locks on, chases, and when it loses you, searches in widening arcs.</li><li>Discuss: which behaviour would you want on a robot vacuum? On a rescue robot? Why are they different?</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Build a corner the avoider cannot escape. Is it possible if the room has an exit?</li><li>Time how long seek takes to find you from behind. Explain the number using the search pattern.</li><li>Write your own avoider with if-blocks. Where does it fall short of the built-in one?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Follow and seek do nothing at all</td><td>No distance readings. Check NOECHO with Read sensors &mdash; the sonar is not answering.</td></tr><tr><td>Seek spins and gives up quickly</td><td>It surveys three times, finds no echoes, and stops rather than pirouetting forever. That is deliberate.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The vacuum-versus-rescue question is the real content. Same sensors, same code structures, different priorities &mdash; engineering is choosing which failure you prefer.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="08-line-following.html">&larr; Following the Line</a><a class="page-turn" href="10-maze-race.html">The Maze Race &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

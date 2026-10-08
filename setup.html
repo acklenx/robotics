@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Set Up a Robot &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="./css/site.css">
+</head>
+<body>
+<header class="site-header no-print">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav">
+    <a href="2wd.html">2WD home</a><a href="lessons/index.html">Lessons</a>
+    <a href="workshop.html">Workshop</a><a href="MazeLab.html">Maze Lab</a>
+    <a href="cheatsheet.html">Cheat sheet</a><a href="index.html">Mecanum robot</a>
+  </nav>
+</header>
+
+<main class="page">
+  <h1>Set up a robot</h1>
+  <p class="subtitle">Box to driving. Do this once per robot, before the club
+  starts &mdash; not during it.</p>
+
+  <section class="card">
+    <h2>1. Give it a name</h2>
+    <p>Open <code>kernel/robot_kernel.ino</code> in the Arduino IDE and change one line
+    near the top:</p>
+    <pre class="program">#define ROBOT_BLUETOOTH_NAME "Aqua Kitten"</pre>
+    <p>Every robot needs a different name, or twelve identical entries appear in the
+    Bluetooth list and nobody can find theirs. Let the kids choose; it is usually
+    their first ever code edit.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Flash it</h2>
+    <ul>
+      <li>Board: <b>Arduino Uno</b>. Port: the one that appears when you plug in.</li>
+      <li>On Linux you may need to be in the <code>dialout</code> group &mdash; log out and
+      back in after adding yourself, or the port stays invisible.</li>
+      <li>Upload. The Bluetooth module lives on pins 8 and 11, not 0 and 1, so you do
+      <em>not</em> need to unplug anything first.</li>
+      <li>First boot after changing the name: power-cycle once so the module takes it.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>3. Watch it wake up</h2>
+    <p>Switch it on and watch the sonar servo: it should wiggle once, left, right,
+    centre. That wiggle is the robot telling you the servo is connected. No wiggle
+    means it is plugged into the wrong header &mdash; fix that now, because half the
+    later behaviours depend on it.</p>
+  </section>
+
+  <section class="card">
+    <h2>4. Check the sensors before the kids do</h2>
+    <p>Open the <a href="workshop.html">Workshop</a>, press <b>Connect</b>, pick the
+    robot by name, then press <b>Read sensors</b>. You want:</p>
+    <table class="watch">
+      <tr><td>Distance</td><td>a sane number that changes when you move your hand</td></tr>
+      <tr><td>NOECHO</td><td>0. A climbing number means the sonar never answered.</td></tr>
+      <tr><td>Line dots</td><td>fill when you slide something black underneath</td></tr>
+      <tr><td>Prox dots</td><td>fill when a hand is a few inches away</td></tr>
+      <tr><td>Rail</td><td>4.90&ndash;5.10 V</td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>5. Calibrate, and write it on the robot</h2>
+    <p>Run the <b>Calibrate</b> tab top to bottom on the surface the club will actually
+    use. Save the robot under its name, then write the two numbers on a strip of tape
+    and stick it to the chassis &mdash; the browser remembers them, but only on that one
+    device, and club night is not the time to discover that.</p>
+  </section>
+
+  <section class="card">
+    <h2>Serving these pages</h2>
+    <p>The Workshop needs <code>https://</code> or <code>http://localhost</code>, because
+    browsers only allow Bluetooth from a secure page. The lessons, the Maze Lab and the
+    cheat sheet work from anywhere, including a USB stick with no internet at all.</p>
+    <p>On Android Chrome, both Bluetooth <b>and</b> Location have to be switched on. This
+    catches everybody once.</p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>14. Design Your Own Behaviour &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 14 &middot; 60 minutes</p>
+  <h1>Design Your Own Behaviour</h1>
+  <p class="subtitle">From an idea to a program the robot can run</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Invent a behaviour nobody has demonstrated, write it, test it, and describe how it fails.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>A behaviour is a rule you can state in one sentence before you write it</li><li>Write the sentence first, then the blocks</li><li>Every behaviour has failure modes; finding yours is finishing the work</li><li>Testing means trying to break it, not proving it works</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>You design the whole loop this time.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Pitch: each group writes their behaviour in one sentence on paper before touching a robot.</li><li>Sketch the sense-think-do loop: what does it check, what does it decide, what does it do?</li><li>Build it in blocks. Keep it under fifteen blocks &mdash; short programs fail in ways you can see.</li><li>Test it. Then try to break it on purpose and write down what broke.</li><li>Demo to the group: the sentence, the demo, and the failure. All three.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Sample program</h2>
+    <p>A starting point: a shy robot that steers away from whichever side something is near, and edges forward when both sides are clear. Take it and make it yours.</p>
+    <pre class="program" id="samplePlain">V 5
+P 12
+I 3
+R 250
+Z
+I 8
+L 250
+Z
+F 400
+Q</pre>
+    <button class="copy-button" data-copy="samplePlain">Copy to clipboard</button>
+    <p class="hint">Paste it into the Workshop's <b>Robot language</b> box, then press
+    <b>Text &rarr; blocks</b> to see it as blocks &mdash; or just send it straight to the robot.</p>
+  </section>
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>A robot that finds the darkest corner in the room and parks there.</li><li>A guard robot that stays still until something comes close, then chases it.</li><li>A robot that traces the edge of a table without falling off &mdash; which sensor tells you where the edge is?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>The behaviour works once, then does something odd</td><td>Programs run steps in order without re-checking. A loop makes it keep checking.</td></tr><tr><td>Nothing happens at all</td><td>Check the sensor really triggers, using Read sensors, before blaming the program.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>Insisting on the sentence before the blocks is the whole lesson. Groups that start by dragging blocks build something that half-works and cannot say what it is; groups that write 'it turns away from whichever side is blocked' debug in minutes.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="13-two-robots-one-room.html">&larr; Two Robots, One Room</a><a class="page-turn" href="15-show-and-tell.html">Show &amp; Tell &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

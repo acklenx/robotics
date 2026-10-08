@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You Don't Get A Kit, You Get A Lab — Grades 6-12</title>
+<style>
+  /* One page, every time. The dashed outline on screen shows where the paper
+     ends, so nothing sneaks onto a second sheet without you noticing. */
+  @page { size: letter portrait; margin: 0.4in; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; padding: 24px 12px; }
+  .sheet {
+    width: 7.7in; min-height: 10.2in; padding: 0.34in 0.4in;
+    position: relative;
+    /* Deliberately NOT overflow:hidden. If your real dates and prices run
+       longer than the placeholders, the flyer should visibly spill onto a
+       second page so you notice, rather than quietly swallowing a line. */
+    overflow: visible;
+  }
+  @media screen { .sheet { outline: 1px dashed #bbb; outline-offset: 10px; } }
+  @media print {
+    body { padding: 0; display: block; }
+    .sheet { width: auto; height: auto; outline: none; }
+  }
+  .fill { white-space: nowrap; }
+
+  body { background: #0d0f12; font-family: "Segoe UI", system-ui, sans-serif; }
+  .sheet {
+    background: #14181d; color: #e8ecef;
+    background-image: linear-gradient(#1b2027 1px, transparent 1px),
+                      linear-gradient(90deg, #1b2027 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+  .tag {
+    display: inline-block; background: #35ff9b; color: #0d0f12; font-weight: 900;
+    font-size: 9.5pt; letter-spacing: 0.2em; padding: 5px 11px; text-transform: uppercase;
+  }
+  h1 { font-size: 47pt; line-height: 0.95; font-weight: 900; margin: 12px 0 8px; letter-spacing: -0.02em; }
+  h1 span { color: #35ff9b; }
+  .sub { font-size: 12.5pt; line-height: 1.45; color: #9fb0bd; max-width: 6.1in; margin-bottom: 16px; }
+  .grid { display: flex; gap: 0.2in; margin-bottom: 0.2in; }
+  .cell { flex: 1; border: 1px solid #2b333d; background: #191e25; padding: 12px 13px; }
+  .cell h3 {
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-size: 10pt; color: #35ff9b; letter-spacing: 0.1em; margin-bottom: 6px;
+  }
+  .cell p { font-size: 9.8pt; line-height: 1.45; color: #c3ceD7; }
+  .strip {
+    border-left: 4px solid #35ff9b; background: #191e25; padding: 13px 16px; margin-bottom: 0.2in;
+  }
+  .strip h2 { font-size: 13pt; margin-bottom: 5px; }
+  .strip p { font-size: 10.2pt; line-height: 1.5; color: #c3ced7; }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .specs { display: flex; gap: 0.2in; }
+  .spec { flex: 1; }
+  .spec b {
+    display: block; font-family: ui-monospace, Consolas, monospace; font-size: 8.5pt;
+    color: #8b9ba8; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px;
+  }
+  .spec span { font-size: 12pt; font-weight: 800; }
+  footer {
+    position: absolute; left: 0.4in; right: 0.4in; bottom: 0.34in;
+    border-top: 1px solid #2b333d; padding-top: 11px; display: flex;
+    justify-content: space-between; align-items: flex-end;
+  }
+  footer .org { font-size: 14pt; font-weight: 900; }
+  footer .org small { display: block; font-size: 9pt; color: #35ff9b; letter-spacing: 0.16em; }
+  footer .cta { text-align: right; }
+  footer .cta b { font-size: 11.5pt; }
+  footer .cta span { display: block; font-size: 9.5pt; color: #9fb0bd; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="tag">Grades 6&ndash;12 &middot; After school</div>
+  <h1>YOU DON'T GET<br>A KIT.<br><span>YOU GET A LAB.</span></h1>
+  <div class="sub">Most robotics classes hand you a robot and a worksheet. Here
+  you get a robot, its source code, a soldering iron, and permission to change
+  any of it.</div>
+
+  <div class="grid">
+    <div class="cell"><h3>&gt; WRITE IT</h3>
+      <p>Your own programs, in blocks that compile to the robot's real command
+      language. See both. Change either.</p></div>
+    <div class="cell"><h3>&gt; WIRE IT</h3>
+      <p>Add sensors the robot did not ship with. Solder them. Find out what
+      the datasheet did not mention.</p></div>
+    <div class="cell"><h3>&gt; BUILD IT</h3>
+      <p>Design a mount, an arm, a bumper. If your idea needs a sensor 30 cm
+      out front, build the thing that puts it there.</p></div>
+  </div>
+
+  <div class="strip">
+    <h2>Then prove it works</h2>
+    <p>Every claim gets tested on the floor. Teams build maze sections, swap
+    them so nobody can memorise the answer, and race robots that have to solve
+    a maze they have never seen. The team that says <span class="mono">&ldquo;we
+    tuned it until it worked&rdquo;</span> loses to the team that can say
+    <span class="mono">&ldquo;we follow the right-hand wall and accept it is
+    slower&rdquo;</span> &mdash; and everyone watches it happen.</p>
+  </div>
+
+  <div class="grid">
+    <div class="cell"><h3>&gt; REAL TOOLS</h3>
+      <p>Soldering, multimeters, hand tools, 3D-printed and laser-cut parts.
+      Supervised, and genuinely theirs to use.</p></div>
+    <div class="cell"><h3>&gt; REAL CODE</h3>
+      <p>Blocks first. Then the text underneath. Students who want it leave
+      heading straight for Python.</p></div>
+    <div class="cell"><h3>&gt; REAL FAILURE</h3>
+      <p>Sensors lie, batteries sag, wheels slip. Debugging that is the
+      engineering &mdash; the rest is assembly.</p></div>
+  </div>
+
+  <div class="specs">
+    <div class="spec"><b>Runs</b><span>15 weeks / one hour a week</span></div>
+    <div class="spec"><b>When</b><span class="fill">[ DAY &amp; TIME ]</span></div>
+    <div class="spec"><b>Where</b><span class="fill">[ LOCATION ]</span></div>
+    <div class="spec"><b>Cost</b><span class="fill">[ PRICE ]</span></div>
+  </div>
+
+  <footer>
+    <div class="org"><img src="../img/lockup.png" alt="Maker Lab Kids" style="height:30pt;width:auto;display:inline-block;vertical-align:middle;background:#fff;border-radius:5pt;padding:2pt 5pt"><small>Make. Learn. Share.</small></div>
+    <div class="cta"><b class="fill">[ SIGN-UP LINK ]</b><span class="fill">[ EMAIL / PHONE ] &middot; starts [ START DATE ]</span></div>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#15181c">
+<title>Remote Robot 0.1.10 - Maker Lab Kids</title>
+<style>
+  :root {
+    --bg: #15181c;
+    --panel: #1e2329;
+    --panel-edge: #2b323b;
+    --ink: #e8ecef;
+    --ink-dim: #9aa4ae;
+    --orange: #ff7a1a;
+    --green: #45d483;
+    --green-dark: #123d24;
+    --red: #ff5a5a;
+    --red-dark: #4a1414;
+    --yellow: #ffd23f;
+    --blue: #4db8ff;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 17px; line-height: 1.45;
+  }
+  a { color: #ffa45c; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 120px; }
+  header {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 10px 16px; padding-top: max(10px, env(safe-area-inset-top));
+    background: var(--panel); border-bottom: 1px solid var(--panel-edge);
+    position: sticky; top: 0; z-index: 5;
+  }
+  .mlk-lockup { display: inline-flex; background: #fff; border-radius: 6px; padding: 2px 6px; line-height: 0; }
+  .mlk-lockup img { height: 24px; width: auto; display: block; }
+  .title { font-weight: 900; font-size: 16px; }
+  .title span { color: var(--orange); font-weight: 700; font-size: 13px; }
+  .status { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-dim); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--red); flex: none; }
+  .dot.on { background: var(--green); }
+  .spacer { flex: 1 1 auto; }
+  nav.pages { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; padding: 8px 0 0; }
+  h1 { font-size: 24px; margin: 18px 0 4px; }
+  h2 { font-size: 20px; margin: 26px 0 8px; color: var(--yellow); }
+  h3 { font-size: 17px; margin: 16px 0 4px; }
+  p { margin: 6px 0; }
+  .lead { color: var(--ink-dim); margin: 0 0 12px; font-size: 15px; }
+  .card { background: var(--panel); border: 2px solid var(--panel-edge); border-radius: 14px; padding: 14px 16px; margin: 12px 0; }
+  .card.kid { border-color: #3a5a3a; }
+  .card.warn { border-color: var(--yellow); background: #2a2414; }
+
+  /* Remote keys as chips */
+  .key {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 2em; height: 2em; padding: 0 0.5em; margin: 1px 2px;
+    border-radius: 8px; background: #2b323b; border: 1px solid #3f4852; color: var(--ink);
+    font-family: var(--mono); font-weight: 700; font-size: 15px; vertical-align: middle;
+  }
+  .key.star { background: #3b2a1a; border-color: var(--orange); color: #ffb067; }
+  .key.pound { background: #3a1a1a; border-color: var(--red); color: #ff9a9a; }
+  .key.arrow { background: #1b2d3a; border-color: var(--blue); color: #9ad8ff; }
+  .key.ok { background: #1a3a2a; border-color: var(--green); color: #9af0c0; }
+  .seq { line-height: 2.4; }
+  .seq .then { color: var(--ink-dim); font-size: 14px; margin: 0 4px; }
+  ul.steps { margin: 4px 0 10px; padding-left: 10px; list-style: none; line-height: 2.2; }
+  ul.steps li .then { color: var(--ink-dim); font-size: 14px; margin-left: 4px; }
+  .note { border: 1.5px solid #4a5560; border-radius: 10px; padding: 8px 12px; margin: 10px 0; font-size: 15px; }
+  .note b { color: var(--yellow); }
+  .example { border: 1.5px dashed #7a8794; border-radius: 10px; padding: 8px 12px; margin: 12px 0 4px; }
+  .example-title { font-weight: 800; margin-bottom: 4px; }
+  .example .line { display: flex; gap: 12px; align-items: center; padding: 3px 0; border-bottom: 1px solid #262c34; }
+  .example .line:last-child { border-bottom: none; }
+  .example .keys { flex: 0 0 150px; white-space: nowrap; }
+  .example .what { color: var(--ink-dim); font-size: 15px; }
+  .example .after { display: block; color: var(--ink-dim); font-size: 15px; padding-top: 6px; }
+  .answer { color: var(--green); font-weight: 700; }
+
+  /* The kit's remote, as it looks: black body, white keys with white rings and black digits,
+     red * # OK, blue arrows on a white plus. Colours are kept when printing. */
+  .remote, .remote * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .remote { background: #121212; border-radius: 22px; padding: 22px 16px 24px; width: 236px; margin: 8px auto; box-shadow: inset 0 0 0 3px #262626; }
+  .remote .pad { display: grid; grid-template-columns: repeat(3, 56px); gap: 22px 16px; justify-content: center; }
+  .remote .btn { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative;
+    box-shadow: 0 0 0 2px #121212, 0 0 0 4px #e9e9e9; }
+  .remote .btn b { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-weight: 900; font-size: 25px; line-height: 1; color: #111; }
+  .remote .btn.white { background: #f6f6f6; }
+  .remote .btn.red { background: #e34234; }
+  .remote .btn.blue { background: #2fa8d8; }
+  .remote .btn.blue b { font-size: 22px; }
+  .remote .btn.ok b { font-size: 18px; letter-spacing: 0.02em; }
+  .remote .cap { position: absolute; left: 50%; transform: translateX(-50%); bottom: -17px; font-size: 9.5px; line-height: 1; color: #c9c9c9; white-space: nowrap; font-weight: 700; }
+  .remote .dpad { position: relative; width: 188px; height: 188px; margin: 30px auto 14px; }
+  .remote .dpad .cross { position: absolute; background: #f6f6f6; border-radius: 8px; }
+  .remote .dpad .cross.v { left: 63px; top: 0; width: 62px; height: 188px; }
+  .remote .dpad .cross.h { top: 63px; left: 0; width: 188px; height: 62px; }
+  .remote .dpad .btn { position: absolute; box-shadow: 0 0 0 2px #f6f6f6, 0 0 0 3px #bbb; }
+  .remote .dpad .up { left: 66px; top: 3px; }
+  .remote .dpad .left { left: 3px; top: 66px; }
+  .remote .dpad .ok { left: 66px; top: 66px; }
+  .remote .dpad .right { left: 129px; top: 66px; }
+  .remote .dpad .down { left: 66px; top: 129px; }
+  .remote .dpad .cap { transform: none; left: auto; bottom: auto; }
+  .remote .dpad .c-up { left: 136px; top: 20px; }
+  .remote .dpad .c-down { left: 136px; top: 158px; }
+  .remote .dpad .c-left { left: 0; top: 136px; }
+  .remote .dpad .c-right { right: 0; top: 136px; }
+  .remote .dpad .c-ok { left: 0; top: 40px; width: 58px; text-align: center; white-space: normal; }
+  .remote.live .btn { cursor: pointer; user-select: none; }
+  .remote.live .btn:active { filter: brightness(1.3); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  td, th { text-align: left; padding: 6px 8px; border-bottom: 1px solid #2b323b; vertical-align: top; }
+  th { color: var(--ink-dim); font-weight: 700; }
+  code { font-family: var(--mono); font-size: 14px; background: #11151a; padding: 1px 5px; border-radius: 4px; }
+  pre { font-family: var(--mono); font-size: 13px; background: #11151a; padding: 10px; border-radius: 8px; overflow: auto; }
+  .gest { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .gest div { background: #11151a; border-radius: 10px; padding: 10px 12px; }
+  .gest b { color: var(--yellow); }
+
+  .big {
+    display: block; width: 100%; font: inherit; font-weight: 900; font-size: 19px;
+    color: var(--bg); background: var(--orange); border: none; border-radius: 12px;
+    padding: 16px 10px; cursor: pointer; margin: 8px 0;
+  }
+  .big.blue { background: var(--blue); }
+  .big.quiet { background: #2b323b; color: var(--ink); font-size: 16px; padding: 12px 10px; }
+  .big:disabled { background: #2b323b; color: var(--ink-dim); cursor: default; }
+  .working { color: var(--blue); font-weight: 700; min-height: 1.4em; margin: 6px 0; }
+  .result { border-radius: 12px; padding: 12px 14px; margin: 12px 0 8px; }
+  .result[hidden] { display: none; }
+  .result.done { background: var(--green-dark); border: 2px solid var(--green); }
+  .result.bad { background: var(--red-dark); border: 2px solid var(--red); }
+  .result .headline { font-weight: 900; font-size: 19px; }
+  .result.done .headline { color: var(--green); }
+  .result.bad .headline { color: var(--red); }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .tools button {
+    font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: none;
+    border: 1px solid #3a434e; border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  }
+  .tools button:disabled { opacity: 0.4; cursor: default; }
+  .tools button.stop { border-color: var(--red); color: #ff9a9a; }
+  .slots { font-family: var(--mono); font-size: 14px; }
+  .slots div { padding: 3px 0; border-bottom: 1px solid #262c34; }
+  .slots .n { color: var(--orange); display: inline-block; width: 2.2em; }
+  .slots .empty { color: var(--ink-dim); }
+  .heard { font-family: var(--mono); font-size: 22px; min-height: 1.4em; color: var(--yellow); letter-spacing: 0.08em; word-break: break-all; }
+  .state { font-size: 15px; color: var(--ink-dim); min-height: 1.4em; }
+  .more { margin-top: 10px; }
+  .more > summary { cursor: pointer; color: #ffa45c; font-size: 15px; font-weight: 700; }
+  #log { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); white-space: pre-wrap; max-height: 260px; overflow: auto; background: #11151a; border-radius: 8px; padding: 8px; }
+  @media print {
+    body { background: #fff; color: #000; }
+    header, .instructor, nav.pages, .no-print { display: none; }
+    .card { border: none; background: none; padding: 0; }
+    .card.kid { border: none; }
+    .note, .example, .gest div, .card.warn, .remote { break-inside: avoid; page-break-inside: avoid; }
+    .key { color: #000; background: #eee; border-color: #999; }
+    h2 { color: #000; }
+    .note { border-color: #555; }
+    .example { border-color: #555; }
+    .example .line { border-bottom-color: #ddd; }
+    .lead, .seq .then, .example .what, .example .after, ul.steps li .then { color: #333; }
+    .answer { color: #1f8a4c; }
+    .note b { color: #000; }
+    /* ink-light keys, remote and cards */
+    .key, .key.star, .key.pound, .key.arrow, .key.ok { background: #fff; color: #000; }
+    .key.star { border-color: #e65100; color: #e65100; }
+    .key.pound { border-color: #c62828; color: #c62828; }
+    .key.arrow { border-color: #0b6fb3; color: #0b6fb3; }
+    .key.ok { border-color: #1f8a4c; color: #1f8a4c; }
+    .remote, .remote * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .remote { background: #fff; box-shadow: none; border: 1.5px solid #333; margin: 8px auto; }
+    .remote .btn, .remote .dpad .btn { box-shadow: 0 0 0 1.5px #333; background: #fff; }
+    .remote .btn.red { background: #fde2dc; }
+    .remote .btn.blue { background: #dcefff; }
+    .remote .dpad .cross { background: #f0f0f0; border: 1px solid #bbb; }
+    .remote .cap { color: #333; }
+    .gest div { background: #fff; border: 1px solid #999; color: #000; }
+    .gest b { color: #000; }
+    .card.warn { border: 1.5px solid #555; background: none; padding: 8px 12px; }
+    .card.warn h3, .card.warn p { color: #000; }
+    a { color: #000; text-decoration: none; }
+    body { font-size: 15px; line-height: 1.4; }
+    .key { font-size: 13px; height: 1.85em; min-width: 1.85em; }
+    .say, .seq { font-size: 16px; }
+    .example .line { padding: 2px 0; }
+    .gest div { padding: 6px 8px; }
+    h2 { font-size: 18px; margin: 16px 0 6px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="title">Remote Robot <span id="versionLabel"></span></div>
+  <div class="status"><div class="dot" id="statusDot"></div><span id="statusText">Not connected</span></div>
+  <div class="spacer"></div>
+</header>
+
+<div class="wrap">
+  <nav class="pages no-print"><a href="../">Robot hub</a> <a href="./">Workshop</a> <a href="calibration.html">Calibrate / Tune</a> <a href="rename.html">Rename</a> <a href="remote-guide.html"><b>Printable guide</b></a> <a href="blocks.html">Blocks editor</a> <a href="#instructor">Instructor</a></nav>
+  <h1>Drive and program the robot with the remote</h1>
+
+  <div class="card kid">
+    <h2 style="margin-top:0">The remote</h2>
+    <div class="remote" id="remoteDrawing">
+    <div class="pad">
+      <div class="btn white" data-key="1"><b>1</b><small class="cap">turn left</small></div>
+      <div class="btn white" data-key="2"><b>2</b></div>
+      <div class="btn white" data-key="3"><b>3</b><small class="cap">turn right</small></div>
+      <div class="btn white" data-key="4"><b>4</b></div>
+      <div class="btn white" data-key="5"><b>5</b><small class="cap">pause</small></div>
+      <div class="btn white" data-key="6"><b>6</b></div>
+      <div class="btn white" data-key="7"><b>7</b><small class="cap">diagonal</small></div>
+      <div class="btn white" data-key="8"><b>8</b><small class="cap">again</small></div>
+      <div class="btn white" data-key="9"><b>9</b><small class="cap">diagonal</small></div>
+      <div class="btn red" data-key="*"><b>*</b><small class="cap">program</small></div>
+      <div class="btn white" data-key="0"><b>0</b><small class="cap">stop / circle</small></div>
+      <div class="btn red" data-key="#"><b>#</b><small class="cap">cancel</small></div>
+    </div>
+    <div class="dpad">
+      <div class="cross v"></div><div class="cross h"></div>
+      <div class="btn blue up" data-key="U"><b>&#9650;</b></div>
+      <div class="btn blue left" data-key="L"><b>&#9664;</b></div>
+      <div class="btn red ok" data-key="O"><b>OK</b></div>
+      <div class="btn blue right" data-key="R"><b>&#9654;</b></div>
+      <div class="btn blue down" data-key="D"><b>&#9660;</b></div>
+      <small class="cap c-up">forward</small>
+      <small class="cap c-left">slide left</small>
+      <small class="cap c-right">slide right</small>
+      <small class="cap c-down">back</small>
+      <small class="cap c-ok">stop / try it</small>
+    </div>
+    </div>
+    <p class="lead" style="text-align:center">Numbers are how far (centimetres) or how much to turn (degrees), and which slot a program lives in.</p>
+  </div>
+
+  <h2>1. Drive</h2>
+  <div class="card">
+    <p><b>Hold an arrow</b> and the robot goes that way. Let go and it stops. <span class="key arrow">&#9650;</span> forward,
+    <span class="key arrow">&#9660;</span> back, <span class="key arrow">&#9664;</span> <span class="key arrow">&#9654;</span> slide sideways (mecanum wheels!).</p>
+    <p><b>Hold <span class="key">1</span> or <span class="key">3</span></b> to turn left or right on the spot.</p>
+    <p><span class="key">0</span>, <span class="key ok">OK</span> or <span class="key pound">#</span> stop it.</p>
+    <p>If something is closer than <b>25 cm</b> in front, the robot will not drive forward (the sonar sees it). Back up, slide or turn instead.</p>
+  </div>
+
+  <h2>2. Make a program</h2>
+  <div class="card">
+    <p class="seq"><b>A. Switch to Program Mode:</b> <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span>
+      <span class="then">the robot</span> <span class="answer">wiggles</span> <span class="then">= "I am listening"</span></p>
+    <p class="seq"><b>B. Add a step:</b> <span class="key star">*</span> <span class="then">then</span> a direction <span class="then">then</span> a number.
+      <span class="then">The first key after the</span> <span class="key star">*</span> <span class="then">is always the move; the next</span> <span class="key star">*</span> <span class="then">ends the number. The robot</span> <span class="answer">nods</span> <span class="then">= "got it".</span></p>
+    <p class="seq"><b>C. Add another step:</b> <span class="key star">*</span> <span class="then">and the next move. Any of these:</span></p>
+    <ul class="steps">
+      <li><span class="key arrow">&#9650;</span> <span class="key arrow">&#9660;</span> <span class="key arrow">&#9664;</span> <span class="key arrow">&#9654;</span> <span class="then">+ cm: forward, back, slide left, slide right</span></li>
+      <li><span class="key">1</span> <span class="key">3</span> <span class="then">+ degrees: turn left, turn right</span></li>
+      <li><span class="key">7</span> <span class="key">9</span> <span class="then">+ cm: the forward diagonals, left and right</span></li>
+      <li><span class="key">5</span> <span class="then">+ seconds: pause</span></li>
+      <li><span class="key">0</span> <span class="then">+ cm across: a circle, nose pointed at the middle</span></li>
+      <li><span class="key">8</span> <span class="then">+ times: do everything before it again, that many times in all</span></li>
+    </ul>
+    <p class="seq"><b>D. Done:</b> <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span>
+      <span class="then">the robot</span> <span class="answer">wiggles</span> <span class="then">= "which slot?"</span></p>
+    <p class="seq"><b>E. Save it:</b> a slot number <span class="key">1</span>..<span class="key">9</span> <span class="then">then</span>
+      <span class="key star">*</span><span class="key star">*</span> <span class="then">the robot</span> <span class="answer">nods</span> <span class="then">= saved.</span></p>
+    <div class="note"><b>No number?</b> <span class="key star">*</span><span class="key arrow">&#9650;</span> is 25 cm, <span class="key star">*</span><span class="key">3</span> is a 90 degree turn, <span class="key star">*</span><span class="key">5</span> is 1 second, <span class="key star">*</span><span class="key">8</span> is 2 times, <span class="key star">*</span><span class="key">0</span> is 1 m across.</div>
+    <div class="note"><b>Oops:</b> <span class="key pound">#</span> throws the program away (slow <span class="answer">head shake</span>). <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span> and a slot number adds to the program saved there instead of starting fresh.</div>
+    <div class="example">
+      <div class="example-title">Example: out, turn, back a bit, saved in slot 2</div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="answer">wiggle</span> = listening</span></div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">5</span><span class="key">0</span></span><span class="what">forward 50 cm</span></div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key">3</span><span class="key">9</span><span class="key">0</span></span><span class="what">turn right 90 degrees</span></div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9660;</span><span class="key">2</span><span class="key">0</span></span><span class="what">back 20 cm</span></div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="answer">wiggle</span> = which slot?</span></div>
+      <div class="line"><span class="keys"><span class="key">2</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="answer">nod</span> = saved in slot 2</span></div>
+      <div class="line after">After each step the robot <span class="answer">nods</span> = "got it".</div>
+    </div>
+  </div>
+
+  <h2>3. Run a program</h2>
+  <div class="card">
+    <p class="seq"><span class="key star">*</span> <span class="then">then the slot number:</span> <span class="key star">*</span><span class="key">3</span>
+      <span class="then">runs the program in slot 3.</span></p>
+    <p><b>Any key stops it.</b> An empty slot gets a slow <span class="answer">head shake</span>.</p>
+    <p>Up to 16 steps in a program, 9 slots. Programs stay on the robot when it is switched off.</p>
+    <p class="seq"><span class="key star">*</span><span class="key">0</span> <span class="then">is always program 0: a circle 1 m across, facing in.</span></p>
+    <p><b>Out of the box the slots hold nine demos:</b> 1 square, 2 crab box (slides only), 3 out and back, 4 triangle, 5 stairs, 6 spiral, 7 look around, 8 figure 8, 9 dance. Saving your own program in a slot replaces its demo.</p>
+  </div>
+
+  <div class="card warn">
+    <h3 style="margin-top:0">Tips</h3>
+    <p>Point the remote at the robot's receiver (the little black eye). Press keys one at a time. Wait for the nod before the next step.</p>
+    <p>Pressed <span class="key star">*</span> by mistake? Nothing happens if you wait 3 seconds. <span class="key pound">#</span> always gets you out.</p>
+  </div>
+
+  <h2>What the robot is saying</h2>
+  <div class="card gest">
+    <div><b>Wiggle</b> (quick left-right)<br>"I am listening" / "which slot?"</div>
+    <div><b>Nod</b> (forward-back)<br>"Got it": step kept, program saved</div>
+    <div><b>Slow head shake</b><br>"No": cancelled, empty slot, program full</div>
+    <div><b>Stops dead</b><br>Something is in front of it (sonar), or a key was pressed</div>
+  </div>
+
+  <h2>Try this: a square</h2>
+  <div class="card">
+    <p class="seq"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span>
+      <span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">3</span><span class="key">0</span>
+      <span class="key star">*</span><span class="key">3</span>
+      <span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">3</span><span class="key">0</span>
+      <span class="key star">*</span><span class="key">3</span>
+      <span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">3</span><span class="key">0</span>
+      <span class="key star">*</span><span class="key">3</span>
+      <span class="key star">*</span><span class="key arrow">&#9650;</span><span class="key">3</span><span class="key">0</span>
+      <span class="key star">*</span><span class="key">3</span>
+      <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span>
+      <span class="key">1</span><span class="key star">*</span><span class="key star">*</span></p>
+    <p class="lead">Forward 30 cm and turn right, four times, saved in slot 1. Run it with <span class="key star">*</span><span class="key">1</span>.
+    Does it end where it started? If not, the robot needs <a href="calibration.html">calibrating</a>.</p>
+    <div class="example">
+      <div class="example-title">Or try this shortcut to also make a square</div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="answer">wiggle</span> = listening</span></div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key arrow">&#9650;</span></span><span class="what">forward</span></div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key">3</span></span><span class="what">turn right</span></div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key">8</span><span class="key">4</span></span><span class="what">do it all again, 4 times in all</span></div>
+      <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="answer">wiggle</span> = which slot?</span></div>
+      <div class="line"><span class="keys"><span class="key">1</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="answer">nod</span> = saved in slot 1</span></div>
+      <div class="line after">Three steps instead of eight. No number after <span class="key arrow">&#9650;</span> means 25 cm, none after <span class="key">3</span> means 90 degrees, and <span class="key">8</span><span class="key">4</span> repeats everything before it until it has gone round 4 times in all: a 25 cm square.</div>
+    </div>
+  </div>
+
+
+  <section class="instructor" id="instructor">
+    <h2>Instructor</h2>
+    <div class="card">
+      <h3 style="margin-top:0">Set up a robot</h3>
+      <p>Flash <a href="../ir/ir.ino" download><b>ir.ino</b></a> (Arduino IDE, Uno). It drives on the same motion numbers as mecanum_holonomic.ino, including a set saved by the <a href="calibration.html">Calibrate / Tune</a> page.</p>
+      <p><b>IR receiver</b> (3 pins: OUT, VCC, GND): OUT to <b>D10</b>, the signal pin of the shield's <b>SER1</b> servo header, 5 V and GND beside it. No soldering. Any other pin works too: change <code>IR_RECEIVER_PIN</code> at the top of the sketch (the robot says which pin it uses when it boots).</p>
+      <p><b>Sonar</b> (HC-SR04) stays where the kit puts it: trig A3, echo A2. Under 25 cm ahead = stop. <code>SONAR_STOP_MM</code> sets the distance; <code>SONAR_STOPS_EVERYTHING</code> makes it stop every move, not only forward ones.</p>
+      <p>The remote is the kit's 17-key one (arrows, OK, 0-9, * #). Another remote prints <code>ir: key 0x.. not mapped</code> in the console below; its codes go in <code>IR_KEYS</code>.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Calibrate from the remote: <span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span></h3>
+      <p class="lead">Three quick steps to get programmed moves in the ballpark. A test only runs when you press <span class="key ok">OK</span>, so put the robot on a mark first; <span class="key star">*</span> runs the current test again whenever you want to re-measure. You type what you measured. The numbers are saved on the robot (the same place the <a href="calibration.html">Calibrate / Tune</a> page saves), on top of the code's numbers. Strafing is left alone. You need a tape measure and a metre of floor.</p>
+      <table>
+        <tr><th>Step</th><th>What happens</th><th>You press</th></tr>
+        <tr><td>Start</td><td><span class="answer">wiggle</span>, then a short forward pulse at the start power</td><td class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span></td></tr>
+        <tr><td>1 Start power</td><td>Each press pulses again. Go down until it stops moving, then up until it just moves.</td><td class="seq"><span class="key arrow">&#9660;</span> less, <span class="key arrow">&#9650;</span> more, <span class="key ok">OK</span> keeps it (<span class="answer">nod</span>)</td></tr>
+        <tr><td>2 One metre</td><td>Put it on a mark. <span class="key ok">OK</span> drives forward 1 m. Measure how far it really went.</td><td class="seq"><span class="key ok">OK</span> to drive, then the cm, e.g. <span class="key">9</span><span class="key">4</span>, then <span class="key ok">OK</span></td></tr>
+        <tr><td>2 Drift</td><td>Did it end left or right of a straight line?</td><td class="seq"><span class="key arrow">&#9664;</span> or <span class="key arrow">&#9654;</span>, the cm, <span class="key ok">OK</span> (<span class="key ok">OK</span> alone = straight)</td></tr>
+        <tr><td>3 Four turns</td><td>Mark where it faces. <span class="key ok">OK</span> turns right 90 four times. Is it facing the way it started?</td><td class="seq"><span class="key ok">OK</span> to turn, then <span class="key arrow">&#9654;</span> degrees past, or <span class="key arrow">&#9664;</span> degrees short, <span class="key ok">OK</span></td></tr>
+        <tr><td>Saved</td><td><span class="answer">nod + wiggle</span>: the numbers are on the robot. Run <span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span> again to refine; each round builds on the last.</td><td></td></tr>
+      </table>
+      <p class="lead"><span class="key star">*</span> runs the current step's test again (the pulse, the metre, the four turns) and drops any digits typed so far. <span class="key pound">#</span> cancels and puts the saved numbers back. To go back to the code's numbers, send <code>kd;</code> from the command box below.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">Watch and drive from here</h3>
+      <p class="lead">Connect to a robot running ir.ino. Every key it hears shows up here, and the remote drawing above becomes a remote: tap its keys.</p>
+      <div id="connectButtons">
+        <button class="big blue" id="connectBleButton">Bluetooth</button>
+        <button class="big quiet" id="connectUsbButton">USB cable / paired Bluetooth (Serial)</button>
+      </div>
+      <div class="working" id="connectWorking"></div>
+      <div class="result" id="connectResult" hidden></div>
+      <div class="heard" id="heard"></div>
+      <div class="state" id="robotState"></div>
+      <div class="tools">
+        <button class="stop" id="stopButton" disabled>Stop (x)</button>
+        <button id="sonarButton" disabled>Sonar reading (u)</button>
+        <button id="slotsButton" disabled>List the slots (p?)</button>
+        <button id="clearHeardButton">Clear</button>
+      </div>
+      <div class="slots" id="slots"></div>
+      <details class="more"><summary>Commands you can type to the robot</summary>
+        <table>
+          <tr><th>Command</th><th>Does</th></tr>
+          <tr><td><code>i&lt;keys&gt;;</code></td><td>press remote keys: U D L R O(k) * # 0-9. <code>i***;</code> then <code>iU50*;</code> then <code>i***;</code> ... exactly what a kid would press.</td></tr>
+          <tr><td><code>p?;</code></td><td>list the slots: <code>P,3,f50,t90</code> (f b l r in cm, t in degrees, t-90 = left)</td></tr>
+          <tr><td><code>p3;</code></td><td>run slot 3</td></tr>
+          <tr><td><code>p3=f50 t90 n4;</code></td><td>store a program in slot 3 from the phone: f b l r cm, q e diagonals cm, t degrees (t-90 left), p pause s, n do it all again times (<code>p3=;</code> empties it). The <a href="blocks.html">Blocks editor</a> builds these lines from block programs and can send all nine slots at once.</td></tr>
+          <tr><td><code>u</code></td><td>one sonar reading, <code>U,&lt;mm&gt;</code> (-1 = nothing within 4 m)</td></tr>
+          <tr><td><code>v40,0,0;</code></td><td>keep driving forward / right / clockwise at -100..100 % (the Blocks page's keep-driving blocks and the Sticks page); stops unless repeated within half a second; the sonar zeroes the forward part near a wall</td></tr>
+          <tr><td><code>x</code></td><td>stop</td></tr>
+          <tr><td><code>m0,500,0;</code>  <code>k?;</code></td><td>a move and the motion numbers, as in calibration.ino</td></tr>
+        </table>
+        <div class="tools"><input id="commandInput" placeholder="type a command, Enter sends" style="flex:1 1 200px;font:inherit;font-size:15px;background:#11151a;color:var(--ink);border:1px solid #3a434e;border-radius:8px;padding:8px 10px"><button id="sendButton" disabled>Send</button></div>
+      </details>
+      <details class="more"><summary>Robot messages</summary><div id="log"></div></details>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0">If it does not work</h3>
+      <table>
+        <tr><td>Nothing happens on any key</td><td>Is ir.ino on the robot (connect: the status says <b>ir</b>)? Is the receiver's OUT on the pin the robot names at boot? Try the keys from this page: if those work, it is the receiver or the remote's battery.</td></tr>
+        <tr><td>Some keys are missed</td><td>Point straight at the eye; sunlight and some LED lights blind receivers. Press keys one at a time and wait for the nod.</td></tr>
+        <tr><td>It will not go forward</td><td>Something is within 25 cm of the sonar, or the sonar is unplugged and reads 0. Check with <b>Sonar reading</b>.</td></tr>
+        <tr><td>Distances or turns are off</td><td>It drives on the calibration numbers: <a href="calibration.html">Calibrate / Tune</a>, then try the square again.</td></tr>
+        <tr><td>Too wobbly when it nods / wiggles</td><td><code>GESTURE_PWM_OVER_START</code> and <code>GESTURE_TWITCH_MS</code> in the sketch.</td></tr>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+"use strict";
+
+var APP_VERSION = "0.1.10";
+var SERIAL_BAUD = 9600;
+var BLE_SERVICE_UUID = 0xFFE0;
+var BLE_NUS_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+var BLE_CHUNK_SIZE = 20;
+
+document.getElementById("versionLabel").textContent = APP_VERSION;
+var statusDot = document.getElementById("statusDot");
+var statusText = document.getElementById("statusText");
+var logBox = document.getElementById("log");
+
+function logLine(text) {
+  logBox.textContent += text + "\n";
+  if (logBox.textContent.length > 20000) {
+    logBox.textContent = logBox.textContent.slice(-15000);
+  }
+}
+function storageGet(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch (error) { return null; }
+}
+function pause(ms) {
+  return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+}
+
+// ---------------------------------------------------------------------------
+// Connection (the same as the calibration and rename pages')
+// ---------------------------------------------------------------------------
+
+var link = null;
+var incomingLineBuffer = "";
+var lineDecoder = new TextDecoder();
+var writeChain = Promise.resolve();
+var replyWaiters = [];
+
+function sendCommand(text, quiet) {
+  if (!link) {
+    return;
+  }
+  if (!quiet) {
+    logLine("> " + text.replace(/\n$/, ""));
+  }
+  var activeLink = link;
+  writeChain = writeChain.then(function () {
+    return activeLink === link ? activeLink.write(new TextEncoder().encode(text)) : null;
+  }).catch(function (error) { logLine("write failed: " + error.message); });
+}
+
+function sendAndAwait(text, pattern, timeoutMs) {
+  return new Promise(function (resolve, reject) {
+    var waiter = { pattern: pattern, resolve: resolve };
+    waiter.timer = setTimeout(function () {
+      replyWaiters = replyWaiters.filter(function (w) { return w !== waiter; });
+      reject(new Error("the robot did not answer " + text.trim()));
+    }, timeoutMs);
+    replyWaiters.push(waiter);
+    if (text) {
+      sendCommand(text);
+    }
+  });
+}
+// A command over Bluetooth can be lost while the robot talks: try twice.
+function ask(text, pattern, timeoutMs) {
+  return sendAndAwait(text, pattern, timeoutMs).catch(function () { return sendAndAwait(text, pattern, timeoutMs); });
+}
+
+function handleIncomingBytes(bytes) {
+  incomingLineBuffer += lineDecoder.decode(bytes, { stream: true });
+  var newlineIndex = incomingLineBuffer.indexOf("\n");
+  while (newlineIndex >= 0) {
+    var line = incomingLineBuffer.slice(0, newlineIndex).replace(/\r$/, "");
+    incomingLineBuffer = incomingLineBuffer.slice(newlineIndex + 1);
+    if (line) {
+      handleRobotLine(line);
+    }
+    newlineIndex = incomingLineBuffer.indexOf("\n");
+  }
+}
+
+function setConnectedState() {
+  var connected = link !== null;
+  statusDot.className = connected ? "dot on" : "dot";
+  statusText.textContent = connected ? link.label + (robot.role ? " - " + robot.role + " " + (robot.fw || "") : "") : "Not connected";
+  document.getElementById("connectBleButton").textContent = connected && link.kind === "ble" ? "Disconnect" : "Bluetooth";
+  document.getElementById("connectUsbButton").textContent = connected && link.kind === "usb" ? "Disconnect" : "USB cable / paired Bluetooth (Serial)";
+  document.getElementById("connectBleButton").disabled = !navigator.bluetooth || (connected && link.kind !== "ble");
+  document.getElementById("connectUsbButton").disabled = !navigator.serial || (connected && link.kind !== "usb");
+  render();
+}
+
+function handleLinkLost(reason) {
+  if (!link) {
+    return;
+  }
+  link = null;
+  robot = freshRobot();
+  logLine("Disconnected" + (reason ? ": " + reason : ""));
+  setConnectedState();
+}
+
+function connectUsb() {
+  var port = null, reader = null, writer = null;
+  // (the classic serial Bluetooth ID, so Chrome lists paired HC-05 / HC-06 modules too)
+  navigator.serial.requestPort({ allowedBluetoothServiceClassIds: ["00001101-0000-1000-8000-00805f9b34fb"] }).then(function (chosenPort) {
+    port = chosenPort;
+    return port.open({ baudRate: SERIAL_BAUD });
+  }).then(function () {
+    writer = port.writable.getWriter();
+    reader = port.readable.getReader();
+    var info = port.getInfo ? port.getInfo() : {};
+    link = {
+      kind: "usb", label: info.bluetoothServiceClassId ? "Bluetooth (paired)" : "USB",
+      write: function (bytes) { return writer.write(bytes); },
+      close: function () {
+        link = null;
+        return reader.cancel().catch(function () {}).then(function () {
+          writer.releaseLock();
+          return port.close();
+        }).catch(function () {}).then(setConnectedState);
+      }
+    };
+    port.addEventListener("disconnect", function () { handleLinkLost("USB unplugged"); });
+    (function pump() {
+      reader.read().then(function (result) {
+        if (!result.done) {
+          handleIncomingBytes(result.value);
+          pump();
+        }
+      }).catch(function (error) {
+        if (link && link.kind === "usb") {
+          handleLinkLost(error.message);
+        }
+      });
+    })();
+    linked(2500);   // opening the port resets the Uno: let it boot
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "USB: " + error.message;
+  });
+}
+
+function connectBle() {
+  var device = null, tx = null, rx = null, mode = "response";
+  var filters = [{ services: [BLE_SERVICE_UUID] }, { services: [BLE_NUS_SERVICE_UUID] }, { namePrefix: "HC" }, { namePrefix: "HM" }, { namePrefix: "JDY" },
+                 { namePrefix: "BT" }, { namePrefix: "MLT" }, { namePrefix: "MLK" }];
+  (storageGet("mlk-robot-names") || []).forEach(function (name) { filters.push({ name: name }); });
+  navigator.bluetooth.requestDevice({ filters: filters, optionalServices: [BLE_SERVICE_UUID, BLE_NUS_SERVICE_UUID] }).then(function (chosenDevice) {
+    device = chosenDevice;
+    device.addEventListener("gattserverdisconnected", function () { handleLinkLost("Bluetooth dropped"); });
+    document.getElementById("connectWorking").textContent = "Connecting to " + device.name + "...";
+    return device.gatt.connect();
+  }).then(function (server) {
+    return server.getPrimaryService(BLE_SERVICE_UUID).catch(function () { return server.getPrimaryService(BLE_NUS_SERVICE_UUID); });
+  }).then(function (service) {
+    return service.getCharacteristics();
+  }).then(function (characteristics) {
+    characteristics.forEach(function (c) {
+      var p = c.properties || {};
+      if (!tx && (p.write || p.writeWithoutResponse)) { tx = c; }
+      if (!rx && (p.notify || p.indicate)) { rx = c; }
+    });
+    if (!tx) {
+      throw new Error("no writable characteristic");
+    }
+    mode = tx.properties.writeWithoutResponse ? "noresponse" : "response";
+    function writeChunk(chunk) {
+      if (mode === "noresponse" && tx.writeValueWithoutResponse) {
+        return tx.writeValueWithoutResponse(chunk);
+      }
+      return tx.writeValueWithResponse ? tx.writeValueWithResponse(chunk) : tx.writeValue(chunk);
+    }
+    link = {
+      kind: "ble", label: device.name || "Bluetooth",
+      write: function (bytes) {
+        var chain = Promise.resolve();
+        for (var offset = 0; offset < bytes.length; offset += BLE_CHUNK_SIZE) {
+          (function (chunk) {
+            chain = chain.then(function () {
+              return writeChunk(chunk).catch(function () {
+                mode = mode === "noresponse" ? "response" : "noresponse";
+                return writeChunk(chunk);
+              });
+            });
+          })(bytes.slice(offset, offset + BLE_CHUNK_SIZE));
+        }
+        return Promise.race([chain, pause(1500)]);
+      },
+      close: function () {
+        link = null;
+        if (device.gatt.connected) {
+          device.gatt.disconnect();
+        }
+        setConnectedState();
+        return Promise.resolve();
+      }
+    };
+    if (!rx) {
+      return null;
+    }
+    rx.addEventListener("characteristicvaluechanged", function (event) { handleIncomingBytes(event.target.value); });
+    return rx.startNotifications().catch(function () { /* sending still works */ });
+  }).then(function () {
+    linked(400);
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "Bluetooth: " + error.message;
+    if (device && device.gatt && device.gatt.connected) {
+      device.gatt.disconnect();
+    }
+    setConnectedState();
+  });
+}
+
+// ---------------------------------------------------------------------------
+// The robot: ir.ino says "ir: <key>", "drive: ...", "program: ...", "step n: ...",
+// "run: ...", "stop: something ahead", "gesture: ...", "P,<slot>,..." and "U,<mm>".
+// ---------------------------------------------------------------------------
+
+function freshRobot() {
+  return { role: null, fw: null, pin: null, state: "", slots: {} };
+}
+var robot = freshRobot();
+var heard = document.getElementById("heard");
+var KEY_GLYPH = { up: "▲", down: "▼", left: "◀", right: "▶", ok: "OK" };
+
+function handleRobotLine(line) {
+  logLine("< " + line);
+  replyWaiters = replyWaiters.filter(function (waiter) {
+    if (!waiter.pattern.test(line)) {
+      return true;
+    }
+    clearTimeout(waiter.timer);
+    waiter.resolve(line);
+    return false;
+  });
+  var match;
+  if ((match = /^(ir|rename|calibration|mecanum_holonomic) v(\S+)/.exec(line))) {
+    robot.role = match[1];
+    robot.fw = match[2];
+  } else if ((match = /^ir: receiver on pin (\d+)/.exec(line))) {
+    robot.pin = match[1];
+  } else if ((match = /^ir: (up|down|left|right|ok|[0-9*#])$/.exec(line))) {
+    heard.textContent += (KEY_GLYPH[match[1]] || match[1]) + " ";
+    if (heard.textContent.length > 60) {
+      heard.textContent = heard.textContent.slice(-60);
+    }
+  } else if (/^ir: key 0x/.test(line)) {
+    robot.state = line + " (another remote? add its codes to IR_KEYS)";
+  } else if (/^(drive|program|run|stop|calibrate|step \d+|gesture): /.test(line) || /^move: /.test(line)) {
+    robot.state = line;
+  } else if ((match = /^P,(\d)(.*)$/.exec(line))) {
+    robot.slots[match[1]] = match[2].replace(/^,/, "");
+  } else if ((match = /^U,(-?\d+)/.exec(line))) {
+    robot.state = match[1] < 0 ? "Sonar: nothing within 4 m" : "Sonar: " + match[1] + " mm" + (match[1] < 250 ? " - too close, it will not go forward" : "");
+  }
+  render();
+}
+
+function linked(waitMs) {
+  setConnectedState();
+  document.getElementById("connectWorking").textContent = "Reading the robot...";
+  pause(waitMs).then(function () {
+    return ask("?\n", /^ready/, 8000);
+  }).then(function () {
+    document.getElementById("connectWorking").textContent = "";
+    setConnectedState();
+    if (robot.role === "ir") {
+      sendCommand("p?;\n");
+    }
+  }).catch(function (error) {
+    document.getElementById("connectWorking").textContent = "Connected, but " + error.message + ". Is ir.ino on it?";
+    setConnectedState();
+  });
+}
+
+function render() {
+  var connected = !!link;
+  if (connected) {
+    statusText.textContent = link.label + (robot.role ? " - " + robot.role + " " + (robot.fw || "") : "");
+  }
+  var isIr = connected && robot.role === "ir";
+  var box = document.getElementById("connectResult");
+  box.hidden = !(connected && robot.role);
+  box.className = "result " + (robot.role === "ir" ? "done" : "bad");
+  box.innerHTML = robot.role === "ir" ? '<div class="headline">Connected ✓</div><div>ir ' + escapeHtml(robot.fw || "") +
+    (robot.pin ? " - the receiver is read on pin D" + escapeHtml(robot.pin) : "") + ". Keys the robot hears show below; tap the remote drawing to press keys from here.</div>" :
+    '<div class="headline">Not ir.ino</div><div>This robot runs ' + escapeHtml(robot.role || "?") + ". Flash ir.ino and connect again.</div>";
+  document.getElementById("robotState").textContent = robot.state;
+  ["stopButton", "sonarButton", "slotsButton", "sendButton"].forEach(function (id) { document.getElementById(id).disabled = !isIr; });
+  document.getElementById("remoteDrawing").className = "remote" + (isIr ? " live" : "");
+  var slots = document.getElementById("slots");
+  var keys = Object.keys(robot.slots).sort();
+  slots.innerHTML = keys.map(function (slot) {
+    var steps = robot.slots[slot];
+    return '<div><span class="n">' + slot + "</span>" + (steps ? escapeHtml(steps.split(",").map(describeStep).join(", ")) : '<span class="empty">empty</span>') + "</div>";
+  }).join("");
+}
+
+// "f50" -> "forward 50 cm", "t-90" -> "turn left 90 deg"
+function describeStep(code) {
+  var match = /^([fblrt])(-?\d+)$/.exec(code);
+  if (!match) {
+    return code;
+  }
+  var n = parseInt(match[2], 10);
+  if (match[1] === "t") {
+    return "turn " + (n < 0 ? "left " : "right ") + Math.abs(n) + " deg";
+  }
+  return { f: "forward", b: "back", l: "left", r: "right" }[match[1]] + " " + n + " cm";
+}
+
+function pressKey(key) {
+  if (!link || robot.role !== "ir") {
+    return;
+  }
+  sendCommand("i" + key + ";\n");
+}
+
+document.getElementById("connectBleButton").addEventListener("click", function () {
+  if (link && link.kind === "ble") { setTimeout(function () { if (link) { link.close(); } }, 100); } else { connectBle(); }
+});
+document.getElementById("connectUsbButton").addEventListener("click", function () {
+  if (link && link.kind === "usb") { setTimeout(function () { if (link) { link.close(); } }, 100); } else { connectUsb(); }
+});
+document.getElementById("stopButton").addEventListener("click", function () { sendCommand("x\n"); });
+document.getElementById("sonarButton").addEventListener("click", function () { sendCommand("u\n"); });
+document.getElementById("slotsButton").addEventListener("click", function () { robot.slots = {}; sendCommand("p?;\n"); });
+document.getElementById("clearHeardButton").addEventListener("click", function () { heard.textContent = ""; robot.state = ""; render(); });
+document.getElementById("sendButton").addEventListener("click", sendTyped);
+document.getElementById("commandInput").addEventListener("keydown", function (event) { if (event.key === "Enter") { event.preventDefault(); sendTyped(); } });
+function sendTyped() {
+  var input = document.getElementById("commandInput");
+  var text = input.value.trim();
+  if (!text || !link) {
+    return;
+  }
+  sendCommand(text + "\n");
+  input.value = "";
+  if (/^p/.test(text)) {
+    setTimeout(function () { robot.slots = {}; sendCommand("p?;\n", true); }, 600);
+  }
+}
+Array.prototype.forEach.call(document.querySelectorAll("#remoteDrawing .btn[data-key]"), function (keyElement) {
+  keyElement.addEventListener("click", function () { pressKey(keyElement.getAttribute("data-key")); });
+});
+if (!navigator.bluetooth && !navigator.serial) {
+  document.getElementById("connectWorking").textContent = "This browser cannot talk to the robot. Use Chrome (Android, Windows, Mac). The instructions above work without it.";
+}
+setConnectedState();
+
+// Chrome on Android crashes when a page leaves with a Bluetooth or serial
+// connection open: disconnect before following a link, and on the way out.
+(function () {
+  function closeLink() {
+    if (link && link.close) {
+      try { link.close(); } catch (error) { /* already gone */ }
+    }
+  }
+  window.addEventListener("pagehide", closeLink);
+  var anchors = document.querySelectorAll("a[href]");
+  for (var i = 0; i < anchors.length; i++) {
+    anchors[i].addEventListener("click", function (event) {
+      if (!link || this.target === "_blank" || /^#/.test(this.getAttribute("href")) || this.hasAttribute("download")) {
+        return;
+      }
+      event.preventDefault();
+      var href = this.href;
+      closeLink();
+      setTimeout(function () { location.href = href; }, 250);
+    });
+  }
+})();
+</script>
+</body>
+</html>

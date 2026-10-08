@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12. When Sensors Lie &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 12 &middot; 60 minutes</p>
+  <h1>When Sensors Lie</h1>
+  <p class="subtitle">Noise, blind spots, and trusting the wrong number</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Make each sensor give a confidently wrong answer, and explain to somebody else why it happened.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Sensors do not measure what you think &mdash; they measure a proxy for it</li><li>Sonar measures echo time, not distance to the thing you care about</li><li>Line sensors measure reflection, not colour</li><li>A robot cannot tell a wrong reading from a right one; only you can</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>SENSE, interrogated. Every later lesson relies on sensors, so knowing their failure modes is knowing their limits.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Sonar versus a soft jumper: hold cloth in front. The reading jumps or reads clear. Sound is absorbed, not reflected.</li><li>Sonar versus an angled wall: turn a book to 45&deg;. The echo bounces away and never comes home.</li><li>Sonar versus a table edge: drive along a bench so the beam clears it. The robot is blind to something obviously there.</li><li>Line sensors versus a dark floor: contrast, not colour, is what they see.</li><li>Proximity versus sunlight: take it near a window. Infrared from the sun swamps the sensor.</li><li>For each one, write the sentence: 'It reported X because it actually measures Y.'</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Sample program</h2>
+    <p>Creep forward only while the way ahead is clear. Run it toward a soft jumper and watch it drive straight into something it says is not there.</p>
+    <pre class="program" id="samplePlain">V 4
+P 15
+I 6
+F 300
+Z
+I 5
+W 200
+Z
+Q</pre>
+    <button class="copy-button" data-copy="samplePlain">Copy to clipboard</button>
+    <p class="hint">Paste it into the Workshop's <b>Robot language</b> box, then press
+    <b>Text &rarr; blocks</b> to see it as blocks &mdash; or just send it straight to the robot.</p>
+  </section>
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Build an obstacle course the robot's sonar cannot see at all. How would you fix the robot &mdash; better sensor, or more of them?</li><li>Two sensors disagree. Write a rule for which to believe.</li><li>Where would a self-driving car have these same blind spots?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Readings jump around wildly near soft things</td><td>Weak echoes arrive late or not at all. This is the sensor's honest limit, not a fault.</td></tr><tr><td>Everything reads 400 cm</td><td>No echoes at all. Check NOECHO in Read sensors &mdash; that means the sensor never answered, which is different from seeing nothing.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>This lesson prevents a whole class of frustration later: when a maze run fails, the first question becomes 'did the sensor see it?' rather than 'is the code wrong?'. That is real debugging instinct.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="11-speed-and-traction.html">&larr; Getting Off the Line</a><a class="page-turn" href="13-two-robots-one-room.html">Two Robots, One Room &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+#!/bin/sh
+# Refuse to commit any file over 20 MB. Big videos are served locally by the
+# Show & Tell server (or linked from YouTube); GitHub rejects files over 100 MB
+# and a single oversized commit blocks every push after it.
+# Enable once per clone:  git config core.hooksPath .githooks
+limit=20000000
+bad=0
+for f in $(git diff --cached --name-only --diff-filter=AM); do
+  size=$(git cat-file -s ":$f" 2>/dev/null || echo 0)
+  if [ "$size" -gt "$limit" ]; then
+    echo "pre-commit: $f is $((size / 1000000)) MB (limit 20 MB). Add it to .gitignore instead." >&2
+    bad=1
+  fi
+done
+exit $bad

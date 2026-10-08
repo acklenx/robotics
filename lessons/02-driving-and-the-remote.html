@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02. Driving &amp; the Remote &mdash; Maker Lab Kids</title>
+<link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="site-nav"><a href="../2wd.html">2WD home</a><a href="index.html" class="active">Lessons</a><a href="../workshop.html">Workshop</a><a href="../MazeLab.html">Maze Lab</a><a href="../cheatsheet.html">Cheat sheet</a><a href="../index.html">Mecanum robot</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 02 &middot; 60 minutes</p>
+  <h1>Driving &amp; the Remote</h1>
+  <p class="subtitle">Commands, control, and who is in charge</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Drive the robot three different ways and explain what a command actually is.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>A command is a message, not a wish &mdash; something has to receive it</li><li>Two controllers, one robot: first one to act owns it</li><li>STOP always wins, from anybody</li><li>Dead-man control: hold to go, release to stop</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>Still mostly DO, but now you can see the SENSE half on the phone while you drive.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>IR remote first: arrows drive, OK stops, numbers pick modes. No phone needed &mdash; this is the controller that works when the wifi does not.</li><li>Connect a phone to the Workshop app. Watch the console: every button you press writes a line.</li><li>Drive with the joystick. Notice the motor bars move as you steer.</li><li>Two kids, one robot: one on the remote, one on the phone. Whoever acts first owns it; the other gets BUSY. Try to break it.</li><li>Press 0 on the remote to release control, then let the other person take over.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Drive a figure-8 around two chairs without touching either.</li><li>Have a partner shout directions while you drive with your eyes closed. Notice how bad the delay makes you.</li><li>Find the slowest speed the robot will still move at. Why does it stall below that?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>The phone will not connect</td><td>Bluetooth AND location must be on for Android Chrome. The page must be https or localhost.</td></tr><tr><td>Robot drives, then stops on its own after a moment</td><td>That is the dead-man safety: manual driving expires if the robot stops hearing from you. Hold the button, do not tap it.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The arbitration demo is worth the time. Kids fighting over one robot is a management problem right up until it becomes the lesson.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="01-robot-or-not.html">&larr; Robot or Not?</a><a class="page-turn" href="03-sensors.html">What the Robot Can Feel &rarr;</a></div>
+</main>
+
+<script src="../js/lesson-page.js"></script>
+</body>
+</html>

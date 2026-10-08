@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#15181c">
+<title>Mecanum Sticks 0.1.5 - Maker Lab Kids</title>
+<style>
+  :root {
+    --bg: #15181c;
+    --panel: #1e2329;
+    --panel-edge: #2b323b;
+    --ink: #e8ecef;
+    --ink-dim: #8a949e;
+    --orange: #ff7a1a;
+    --green: #45d483;
+    --red: #ff4545;
+    --blue: #4db8ff;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .bar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 8px 12px;
+    padding-top: max(8px, env(safe-area-inset-top));
+    background: var(--panel);
+    border-bottom: 1px solid var(--panel-edge);
+  }
+  .mlk-lockup { display: inline-flex; background: #fff; border-radius: 6px; padding: 2px 6px; line-height: 0; }
+  .mlk-lockup img { height: 22px; width: auto; display: block; }
+  @media (max-width: 560px) { .mlk-lockup { display: none; } }
+  .title { font-weight: 900; letter-spacing: 0.04em; font-size: 15px; white-space: nowrap; }
+  a { color: #ffa45c; }
+  .title a { color: var(--ink-dim); text-decoration: none; font-weight: 400; margin-right: 6px; }
+  .title span { color: var(--orange); }
+  .status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-dim); white-space: nowrap; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--red); }
+  .dot.on { background: var(--green); }
+  .spacer { flex: 1 1 auto; }
+  button {
+    font: inherit; font-size: 13px; font-weight: 700;
+    color: var(--ink); background: #2b323b;
+    border: 1px solid #3a434e; border-radius: 8px;
+    padding: 7px 12px; cursor: pointer;
+  }
+  button:disabled { opacity: 0.4; cursor: default; }
+  button.connected { background: var(--green); color: var(--bg); border-color: var(--green); }
+  .mode { display: inline-flex; border: 1px solid #3a434e; border-radius: 8px; overflow: hidden; }
+  .mode button { border: none; border-radius: 0; background: transparent; color: var(--ink-dim); padding: 7px 14px; }
+  .mode button.active { background: var(--orange); color: var(--bg); }
+  #stopButton { background: #cc2b2b; border-color: #cc2b2b; color: #fff; letter-spacing: 0.12em; padding: 7px 18px; }
+  .readout {
+    display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+    padding: 6px 12px; font-family: var(--mono); font-size: 12px; color: var(--ink-dim);
+  }
+  .readout b { color: var(--ink); font-weight: 600; }
+  #robotSays { color: var(--blue); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pads { flex: 1 1 auto; display: flex; min-height: 0; }
+  .stick { flex: 1 1 50%; position: relative; min-width: 0; }
+  .stick + .stick { border-left: 1px solid var(--panel-edge); }
+  .stick svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .base { fill: #1b2026; stroke: #3a434e; stroke-width: 2; }
+  .knob { fill: var(--orange); stroke: #fff3; stroke-width: 2; }
+  .knob.idle { fill: #4a5563; }
+  .origin { fill: none; stroke: var(--blue); stroke-width: 1.5; stroke-dasharray: 4 3; }
+  .sector { fill: #ffffff08; stroke: #3a434e; stroke-width: 1; }
+  .sector.hot { fill: #ff7a1a55; }
+  .sector.picked { fill: #45d48333; }
+  .label { fill: var(--ink-dim); font: 700 14px system-ui, sans-serif; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+  .label.small { font-size: 12px; }
+  .label.arrow { font-size: 24px; fill: var(--ink); }
+  .caption { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; font-size: 11px; color: var(--ink-dim); pointer-events: none; padding: 0 8px; padding-bottom: env(safe-area-inset-bottom); }
+  .notice { padding: 6px 12px; font-size: 12px; color: var(--orange); text-align: center; }
+  .notice[hidden] { display: none; }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+    <div class="title"><a href="index.html" title="Back to the Mecanum Workshop">&larr; Workshop</a>Mecanum Sticks <span>0.1.5</span></div>
+    <div class="status"><div class="dot" id="statusDot"></div><span id="statusText">Not connected</span></div>
+    <div class="spacer"></div>
+    <div class="mode" role="group" aria-label="Stick mode">
+      <button id="analogButton" class="active">Analog</button>
+      <button id="digitalButton">Digital</button>
+    </div>
+    <button id="connectBleButton">Bluetooth</button>
+    <button id="connectUsbButton">Serial</button>
+    <button id="stopButton">STOP</button>
+  </div>
+  <div class="notice" id="notice" hidden></div>
+  <div class="readout">
+    <span>fwd <b id="forwardReadout">0</b></span>
+    <span>right <b id="rightReadout">0</b></span>
+    <span>turn <b id="spinReadout">0</b></span>
+    <span id="speedItem">speed <b id="speedReadout">-</b></span>
+    <span id="robotSays"></span>
+  </div>
+  <div class="pads">
+    <div class="stick" id="leftStick"><svg></svg><div class="caption" id="leftCaption"></div></div>
+    <div class="stick" id="rightStick"><svg></svg><div class="caption" id="rightCaption"></div></div>
+  </div>
+
+<script>
+"use strict";
+
+// ---------------------------------------------------------------------------
+// Mecanum Sticks: a two-stick (mode 2) controller for mecanum_holonomic.
+// Every 50 ms the sticks become one body velocity, sent as
+// v<forward>,<right>,<spin>; (-100..100 % of full wheel speed). The robot
+// stops by itself if that stops arriving for 500 ms (VECTOR_TIMEOUT_MS), so
+// a dropped connection or a backgrounded tab cannot leave it driving.
+//
+// Analog (mode 2): right stick = which way to drive (Y forward / back, X
+//   strafe), left X = turn, left Y = speed: centre (where it springs back) is 50 %,
+//   up to 100 %, down to 0 = stop. Speeds are shares of the USABLE range,
+//   from the robot's start speed (below it the motors hum and do not turn;
+//   strafing starts higher) to full: a small push always moves it. Touch near
+//   a stick's centre and that point becomes the centre; lift and the stick
+//   returns to centre.
+// Digital: right stick = six crab directions (30, 90, 150, 210, 270, 330
+//   degrees: no straight forward or back), left stick = forward / back /
+//   turn, its corners pick the speed.
+// ---------------------------------------------------------------------------
+
+var APP_VERSION = "0.1.5";
+var FIRMWARE_COMPAT = "0.10.8";      // first sketch with the v command
+var SERIAL_BAUD = 9600;
+var BLE_SERVICE_UUID = 0xFFE0;
+var BLE_NUS_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+var BLE_CHUNK_SIZE = 20;
+var TICK_MS = 50;                   // how often the sticks are read
+var MIN_SEND_GAP_MS = 80;           // never faster than this (9600 baud, half-duplex Bluetooth)
+var REFRESH_MS = 150;               // resend an unchanged command this often (robot gives up at 500)
+var ANALOG_DEADZONE = 0.08;         // fraction of the stick radius
+var RECENTRE_RADIUS = 0.6;          // a touch inside this fraction of the radius becomes the centre
+var DIGITAL_DEADZONE = 0.3;
+var TURN_LIMIT = 0.6;               // full turn stick = this fraction of full wheel speed
+var CORNER_SPEEDS = { nw: 25, ne: 50, se: 75, sw: 100 };   // digital: left stick corners
+var RAMP_MS = 300;                  // 0 to full (and back) takes this long, like the robot's moves
+var STOP_BELOW = 0.04;              // speed (right Y) this low = stop
+var MODE_KEY = "mecanumSticksMode";
+var SPEED_KEY = "mecanumSticksDigitalSpeed";
+
+var statusDot = document.getElementById("statusDot");
+var statusText = document.getElementById("statusText");
+var connectUsbButton = document.getElementById("connectUsbButton");
+var connectBleButton = document.getElementById("connectBleButton");
+var notice = document.getElementById("notice");
+
+function showNotice(text) {
+  notice.textContent = text;
+  notice.hidden = !text;
+}
+
+function storageGet(key) {
+  try { return localStorage.getItem(key); } catch (error) { return null; }
+}
+function storageSet(key, value) {
+  try { localStorage.setItem(key, value); } catch (error) { /* blocked: fine for this visit */ }
+}
+
+// ---------------------------------------------------------------------------
+// Connection (same transports as the Mecanum Workshop app)
+// ---------------------------------------------------------------------------
+
+var link = null;           // { kind: "usb"|"ble", label, write(bytes) -> Promise, close() }
+var writing = false;       // a write is in flight; the next command waits for it
+var incomingLineBuffer = "";
+var lineDecoder = new TextDecoder();
+
+function setConnectedState() {
+  var connected = link !== null;
+  statusDot.className = connected ? "dot on" : "dot";
+  statusText.textContent = connected ? link.label : "Not connected";
+  connectUsbButton.textContent = connected && link.kind === "usb" ? "Disconnect" : "Serial";
+  connectBleButton.textContent = connected && link.kind === "ble" ? "Disconnect" : "Bluetooth";
+  connectUsbButton.className = connected && link.kind === "usb" ? "connected" : "";
+  connectBleButton.className = connected && link.kind === "ble" ? "connected" : "";
+  connectUsbButton.disabled = !navigator.serial || (connected && link.kind !== "usb");
+  connectBleButton.disabled = !navigator.bluetooth || (connected && link.kind !== "ble");
+  if (!navigator.serial && !navigator.bluetooth) {
+    showNotice("This browser has neither Web Bluetooth nor Web Serial. Use Chrome (Android, desktop) or Bluefy (iPhone).");
+  }
+}
+
+function robotSays(text) {
+  document.getElementById("robotSays").textContent = text;
+}
+
+// Where the robot's motors start, as shares of full speed (v is in % of
+// MAX_WHEEL_MM_PER_SEC): read from its K,cal at connect. Until then, or on
+// firmware without the numbers, 15 %.
+var robotStart = { forward: 0.15, strafe: 0.15, spin: 0.15, known: false };
+
+function readRobotCal(fields) {
+  var n = fields.map(Number);
+  if (n.length < 19 || !(n[5] > 0)) {
+    return;
+  }
+  var sLow = n[2], max = n[5], spinEff = n[6], strafeEff = n[7];
+  var strafeStart = n.length >= 20 && n[18] > 0 ? n[18] : sLow;   // 0.10.23 on: its own strafe start
+  // The body speed that puts the wheels at their start speed, as a share of v.
+  robotStart = { forward: sLow / max, strafe: strafeStart * strafeEff / max, spin: sLow * spinEff / max, known: true };
+}
+
+var calAsked = 0;
+function askRobotCal() {
+  if (link && !robotStart.known && calAsked < 2) {
+    calAsked++;
+    send("k?;");
+    setTimeout(askRobotCal, 3000);
+  }
+}
+
+function handleRobotLine(line) {
+  if (/^K,cal,/.test(line)) {
+    readRobotCal(line.slice(6).split(",").filter(function (f) { return !/^[a-z]$/.test(f); }));
+    return;
+  }
+  var banner = /^(?:mecanum_holonomic|mecanum_calibration|calibration) v(\d+\.\d+\.\d+)/.exec(line);
+  if (banner) {
+    var have = banner[1].split(".").map(Number);
+    var need = FIRMWARE_COMPAT.split(".").map(Number);
+    var older = have[0] !== need[0] ? have[0] < need[0] : have[1] !== need[1] ? have[1] < need[1] : have[2] < need[2];
+    showNotice(older ? "The robot runs mecanum_holonomic " + banner[1] + ". The sticks need " + FIRMWARE_COMPAT + " or newer (the v command): re-flash it." : "");
+  }
+  if (/^(tof: wall|stop$|sonar|imu|ir:|demo)/.test(line)) {
+    robotSays(line);
+  }
+}
+
+function handleIncomingBytes(bytes) {
+  incomingLineBuffer += lineDecoder.decode(bytes, { stream: true });
+  var newlineIndex = incomingLineBuffer.indexOf("\n");
+  while (newlineIndex >= 0) {
+    var line = incomingLineBuffer.slice(0, newlineIndex).replace(/\r$/, "");
+    incomingLineBuffer = incomingLineBuffer.slice(newlineIndex + 1);
+    if (line) {
+      handleRobotLine(line);
+    }
+    newlineIndex = incomingLineBuffer.indexOf("\n");
+  }
+}
+
+function handleLinkLost(reason) {
+  if (!link) {
+    return;
+  }
+  link = null;
+  robotStart.known = false;   // the next robot may start elsewhere
+  setConnectedState();
+  robotSays("Disconnected" + (reason ? ": " + reason : ""));
+}
+
+function connectUsb() {
+  var port = null, reader = null, writer = null;
+  // (the classic serial Bluetooth ID, so a paired HC-05 / HC-06 shows up here too, on Android as well)
+  navigator.serial.requestPort({ allowedBluetoothServiceClassIds: ["00001101-0000-1000-8000-00805f9b34fb"] }).then(function (chosenPort) {
+    port = chosenPort;
+    return port.open({ baudRate: SERIAL_BAUD });
+  }).then(function () {
+    writer = port.writable.getWriter();
+    reader = port.readable.getReader();
+    var info = port.getInfo ? port.getInfo() : {};
+    link = {
+      kind: "usb",
+      label: info.bluetoothServiceClassId ? "Bluetooth (SPP)" : "USB",
+      write: function (bytes) { return writer.write(bytes); },
+      close: function () {
+        link = null;
+        return reader.cancel().catch(function () {}).then(function () {
+          writer.releaseLock();
+          return port.close();
+        }).catch(function () {}).then(setConnectedState);
+      }
+    };
+    port.addEventListener("disconnect", function () { handleLinkLost("USB unplugged"); });
+    setConnectedState();
+    calAsked = 0;
+    setTimeout(askRobotCal, 2500);   // opening the port resets the Uno: let it boot
+    (function pump() {
+      reader.read().then(function (result) {
+        if (result.done) {
+          return;
+        }
+        handleIncomingBytes(result.value);
+        pump();
+      }).catch(function (error) {
+        if (link && link.kind === "usb") {
+          handleLinkLost(error.message);
+        }
+      });
+    })();
+  }).catch(function (error) {
+    robotSays("Serial: " + error.message);
+    setConnectedState();
+  });
+}
+
+// Robots renamed on the calibration page (their Bluetooth no longer starts
+// with HC): every name saved on this phone joins the Bluetooth list's filter.
+function savedRobotNames() {
+  try { return JSON.parse(localStorage.getItem("mlk-robot-names")) || []; } catch (error) { return []; }
+}
+
+function connectBle() {
+  var device = null, tx = null, rx = null, mode = "response";
+  navigator.bluetooth.requestDevice({
+    filters: [{ services: [BLE_SERVICE_UUID] }, { services: [BLE_NUS_SERVICE_UUID] }, { namePrefix: "HC" }, { namePrefix: "HM" }, { namePrefix: "JDY" }, { namePrefix: "BT" }, { namePrefix: "MLT" }, { namePrefix: "MLK" }].concat(savedRobotNames().map(function (name) { return { name: name }; })),
+    optionalServices: [BLE_SERVICE_UUID, BLE_NUS_SERVICE_UUID]
+  }).then(function (chosenDevice) {
+    device = chosenDevice;
+    device.addEventListener("gattserverdisconnected", function () { handleLinkLost("Bluetooth dropped"); });
+    robotSays("Connecting to " + device.name + "...");
+    return device.gatt.connect();
+  }).then(function (server) {
+    return server.getPrimaryService(BLE_SERVICE_UUID).catch(function () {
+      return server.getPrimaryService(BLE_NUS_SERVICE_UUID);
+    });
+  }).then(function (service) {
+    return service.getCharacteristics();
+  }).then(function (characteristics) {
+    // The kit's HC-06 notifies on FFE1 and takes writes on FFE2: pick by properties.
+    characteristics.forEach(function (c) {
+      var p = c.properties || {};
+      if (!tx && (p.write || p.writeWithoutResponse)) { tx = c; }
+      if (!rx && (p.notify || p.indicate)) { rx = c; }
+    });
+    if (!tx) {
+      throw new Error("no writable characteristic");
+    }
+    mode = tx.properties.writeWithoutResponse ? "noresponse" : "response";
+    function writeChunk(chunk) {
+      if (mode === "noresponse" && tx.writeValueWithoutResponse) {
+        return tx.writeValueWithoutResponse(chunk);
+      }
+      return tx.writeValueWithResponse ? tx.writeValueWithResponse(chunk) : tx.writeValue(chunk);
+    }
+    link = {
+      kind: "ble",
+      label: device.name || "Bluetooth",
+      write: function (bytes) {
+        var chain = Promise.resolve();
+        for (var offset = 0; offset < bytes.length; offset += BLE_CHUNK_SIZE) {
+          (function (chunk) {
+            chain = chain.then(function () {
+              return writeChunk(chunk).catch(function () {
+                mode = mode === "noresponse" ? "response" : "noresponse";   // flip once, like the Workshop app
+                return writeChunk(chunk);
+              });
+            });
+          })(bytes.slice(offset, offset + BLE_CHUNK_SIZE));
+        }
+        return Promise.race([chain, new Promise(function (resolve) { setTimeout(resolve, 1500); })]);
+      },
+      close: function () {
+        link = null;
+        if (device.gatt.connected) {
+          device.gatt.disconnect();
+        }
+        setConnectedState();
+        return Promise.resolve();
+      }
+    };
+    if (!rx) {
+      return null;
+    }
+    rx.addEventListener("characteristicvaluechanged", function (event) {
+      handleIncomingBytes(event.target.value);
+    });
+    return rx.startNotifications().catch(function () { /* sending still works */ });
+  }).then(function () {
+    setConnectedState();
+    robotSays("Connected");
+    calAsked = 0;
+    setTimeout(askRobotCal, 500);
+  }).catch(function (error) {
+    robotSays("Bluetooth: " + error.message);
+    if (device && device.gatt && device.gatt.connected) {
+      device.gatt.disconnect();
+    }
+    setConnectedState();
+  });
+}
+
+// Writes go one at a time; while one is in flight the newest command waits
+// and older unsent ones are dropped (only the latest stick position matters).
+var waitingText = null;
+function send(text) {
+  if (!link) {
+    return;
+  }
+  if (writing) {
+    waitingText = text;
+    return;
+  }
+  writing = true;
+  var activeLink = link;
+  Promise.resolve(activeLink.write(new TextEncoder().encode(text))).catch(function (error) {
+    robotSays("Write failed: " + error.message);
+  }).then(function () {
+    writing = false;
+    if (waitingText !== null && link === activeLink) {
+      var next = waitingText;
+      waitingText = null;
+      send(next);
+    }
+  });
+}
+
+connectUsbButton.addEventListener("click", function () {
+  if (link && link.kind === "usb") {
+    send("xx");
+    setTimeout(function () { if (link) { link.close(); } }, 150);
+  } else {
+    connectUsb();
+  }
+});
+connectBleButton.addEventListener("click", function () {
+  if (link && link.kind === "ble") {
+    send("xx");
+    setTimeout(function () { if (link) { link.close(); } }, 200);
+  } else {
+    connectBle();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Sticks
+// ---------------------------------------------------------------------------
+
+var SVG_NS = "http://www.w3.org/2000/svg";
+var mode = storageGet(MODE_KEY) === "digital" ? "digital" : "analog";
+var digitalSpeed = Number(storageGet(SPEED_KEY)) || 50;
+
+function svgElement(name, attributes, parent) {
+  var element = document.createElementNS(SVG_NS, name);
+  for (var key in attributes) {
+    element.setAttribute(key, attributes[key]);
+  }
+  if (parent) {
+    parent.appendChild(element);
+  }
+  return element;
+}
+
+// Compass angle of (x, y): degrees clockwise from straight up, 0..360.
+function compassDegrees(x, y) {
+  var degrees = Math.atan2(x, y) * 180 / Math.PI;
+  return degrees < 0 ? degrees + 360 : degrees;
+}
+
+// A pie slice from startDeg to endDeg (compass), radius r around (cx, cy).
+function wedgePath(cx, cy, r, startDeg, endDeg) {
+  function point(deg) {
+    var a = deg * Math.PI / 180;
+    return (cx + r * Math.sin(a)).toFixed(1) + " " + (cy - r * Math.cos(a)).toFixed(1);
+  }
+  return "M " + cx + " " + cy + " L " + point(startDeg) + " A " + r + " " + r + " 0 0 1 " + point(endDeg) + " Z";
+}
+
+// Sectors per stick in digital mode. "at" = centre angle; label drawn there.
+var LEFT_SECTORS = [
+  { name: "forward", at: 0, label: "▲" },
+  { name: "ne", at: 45, label: CORNER_SPEEDS.ne + "%", corner: true },
+  { name: "turnRight", at: 90, label: "↻" },
+  { name: "se", at: 135, label: CORNER_SPEEDS.se + "%", corner: true },
+  { name: "back", at: 180, label: "▼" },
+  { name: "sw", at: 225, label: CORNER_SPEEDS.sw + "%", corner: true },
+  { name: "turnLeft", at: 270, label: "↺" },
+  { name: "nw", at: 315, label: CORNER_SPEEDS.nw + "%", corner: true }
+];
+var RIGHT_SECTORS = [30, 90, 150, 210, 270, 330].map(function (at) {
+  return { name: "crab" + at, at: at, label: "↑", rotate: at };
+});
+
+function Stick(element, side) {
+  this.element = element;
+  this.side = side;
+  this.svg = element.querySelector("svg");
+  this.pointerId = null;
+  this.x = 0;               // -1..1, right positive
+  this.y = 0;               // -1..1, up positive
+  this.origin = null;       // where the touch set the centre (page px)
+  var stick = this;
+  element.addEventListener("pointerdown", function (event) { stick.down(event); });
+  element.addEventListener("pointermove", function (event) { stick.move(event); });
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (type) {
+    element.addEventListener(type, function (event) { stick.up(event); });
+  });
+}
+
+Stick.prototype.geometry = function () {
+  var rect = this.element.getBoundingClientRect();
+  var radius = Math.max(40, Math.min(rect.width, rect.height - 30) * 0.42);
+  return { rect: rect, cx: rect.width / 2, cy: (rect.height - 20) / 2, radius: radius };
+};
+
+Stick.prototype.down = function (event) {
+  if (this.pointerId !== null) {
+    return;
+  }
+  event.preventDefault();
+  this.pointerId = event.pointerId;
+  try { this.element.setPointerCapture(event.pointerId); } catch (error) { /* synthetic events */ }
+  var g = this.geometry();
+  var touchX = event.clientX - g.rect.left, touchY = event.clientY - g.rect.top;
+  var fromCentre = Math.hypot(touchX - g.cx, touchY - g.cy) / g.radius;
+  // Analog: a touch near the middle becomes the centre, so the stick starts
+  // at rest under the finger wherever it landed. Further out it deflects at once.
+  this.origin = mode === "analog" && fromCentre < RECENTRE_RADIUS ? { x: touchX, y: touchY } : { x: g.cx, y: g.cy };
+  this.move(event);
+};
+
+Stick.prototype.move = function (event) {
+  if (event.pointerId !== this.pointerId) {
+    return;
+  }
+  var g = this.geometry();
+  var dx = (event.clientX - g.rect.left - this.origin.x) / g.radius;
+  var dy = -(event.clientY - g.rect.top - this.origin.y) / g.radius;
+  var length = Math.hypot(dx, dy);
+  if (length > 1) {
+    dx /= length;
+    dy /= length;
+  }
+  this.x = dx;
+  this.y = dy;
+  this.render();
+};
+
+Stick.prototype.up = function (event) {
+  if (event.pointerId !== this.pointerId) {
+    return;
+  }
+  this.release();
+};
+
+Stick.prototype.release = function () {
+  this.pointerId = null;
+  this.origin = null;
+  this.x = 0;
+  this.y = 0;
+  this.render();
+};
+
+// Digital: which sector the stick points into, or null inside the dead zone.
+Stick.prototype.sector = function () {
+  if (Math.hypot(this.x, this.y) < DIGITAL_DEADZONE) {
+    return null;
+  }
+  var sectors = this.side === "left" ? LEFT_SECTORS : RIGHT_SECTORS;
+  var width = 360 / sectors.length;
+  var angle = compassDegrees(this.x, this.y);
+  for (var i = 0; i < sectors.length; i++) {
+    var offset = ((angle - sectors[i].at) % 360 + 540) % 360 - 180;
+    if (Math.abs(offset) <= width / 2) {
+      return sectors[i];
+    }
+  }
+  return null;
+};
+
+Stick.prototype.render = function () {
+  var g = this.geometry();
+  var svg = this.svg;
+  svg.setAttribute("viewBox", "0 0 " + g.rect.width.toFixed(0) + " " + g.rect.height.toFixed(0));
+  while (svg.firstChild) {
+    svg.removeChild(svg.firstChild);
+  }
+  svgElement("circle", { cx: g.cx, cy: g.cy, r: g.radius, class: "base" }, svg);
+  if (mode === "digital") {
+    var sectors = this.side === "left" ? LEFT_SECTORS : RIGHT_SECTORS;
+    var width = 360 / sectors.length;
+    var hot = this.sector();
+    sectors.forEach(function (sector) {
+      var cssClass = "sector";
+      if (hot === sector) {
+        cssClass += " hot";
+      } else if (sector.corner && CORNER_SPEEDS[sector.name] === digitalSpeed) {
+        cssClass += " picked";
+      }
+      svgElement("path", { d: wedgePath(g.cx, g.cy, g.radius, sector.at - width / 2, sector.at + width / 2), class: cssClass }, svg);
+      var a = sector.at * Math.PI / 180;
+      var lx = g.cx + g.radius * 0.7 * Math.sin(a), ly = g.cy - g.radius * 0.7 * Math.cos(a);
+      var label = svgElement("text", { x: lx.toFixed(1), y: ly.toFixed(1), class: sector.corner ? "label small" : sector.rotate !== undefined ? "label arrow" : "label" }, svg);
+      if (sector.rotate !== undefined) {
+        label.setAttribute("transform", "rotate(" + sector.rotate + " " + lx.toFixed(1) + " " + ly.toFixed(1) + ")");
+      }
+      label.textContent = sector.label;
+    });
+    svgElement("circle", { cx: g.cx, cy: g.cy, r: g.radius * DIGITAL_DEADZONE, class: "base" }, svg);
+  } else if (this.origin && (Math.abs(this.origin.x - g.cx) > 1 || Math.abs(this.origin.y - g.cy) > 1)) {
+    svgElement("circle", { cx: this.origin.x.toFixed(1), cy: this.origin.y.toFixed(1), r: g.radius * 0.18, class: "origin" }, svg);
+  }
+  // The knob is drawn around the base centre, wherever the touch set the
+  // centre: what it shows is the stick value, not the finger.
+  var active = this.pointerId !== null;
+  svgElement("circle", {
+    cx: (g.cx + this.x * g.radius).toFixed(1),
+    cy: (g.cy - this.y * g.radius).toFixed(1),
+    r: (g.radius * 0.28).toFixed(1),
+    class: active ? "knob" : "knob idle"
+  }, svg);
+};
+
+var leftStick = new Stick(document.getElementById("leftStick"), "left");
+var rightStick = new Stick(document.getElementById("rightStick"), "right");
+
+// Dead zone, then a gentle curve so small moves are fine and full is full.
+function shapeAxis(value) {
+  var magnitude = Math.abs(value);
+  if (magnitude < ANALOG_DEADZONE) {
+    return 0;
+  }
+  var scaled = (magnitude - ANALOG_DEADZONE) / (1 - ANALOG_DEADZONE);
+  return (value < 0 ? -1 : 1) * Math.pow(scaled, 1.5);
+}
+
+// Left Y: centre = 50 %, up to 100 %, down to 0.
+function analogSpeed() {
+  return Math.max(0, Math.min(1, 0.5 + 0.5 * shapeAxis(leftStick.y)));
+}
+
+// A share of the usable range: from the start share (where the motors turn
+// at all) to the speed setting's top, by how far the stick is pushed.
+function usable(start, speed, amount) {
+  var top = start + (1 - start) * speed;
+  return start + (top - start) * amount;
+}
+
+// The body velocity the sticks ask for, each -1..1 of full wheel speed.
+function sticksToVelocity() {
+  var forward = 0, right = 0, spin = 0;
+  if (mode === "analog") {
+    var speed = analogSpeed();
+    if (speed < STOP_BELOW) {
+      return { forward: 0, right: 0, spin: 0 };
+    }
+    var push = Math.hypot(rightStick.x, rightStick.y);
+    if (push >= ANALOG_DEADZONE) {
+      var ux = rightStick.x / push, uy = rightStick.y / push;
+      var amount = Math.pow((Math.min(1, push) - ANALOG_DEADZONE) / (1 - ANALOG_DEADZONE), 1.5);
+      var drive = usable(Math.abs(ux) > Math.abs(uy) ? robotStart.strafe : robotStart.forward, speed, amount);
+      forward = drive * uy;
+      right = drive * ux;
+    }
+    var turn = shapeAxis(leftStick.x);
+    if (turn !== 0) {
+      spin = (turn < 0 ? -1 : 1) * usable(robotStart.spin, speed, Math.abs(turn)) * TURN_LIMIT;
+      spin = (spin < 0 ? -1 : 1) * Math.max(Math.abs(spin), robotStart.spin);
+    }
+  } else {
+    var setting = digitalSpeed / 100;
+    var fraction = usable(robotStart.forward, setting, 1);
+    var leftSector = leftStick.sector();
+    if (leftSector) {
+      if (leftSector.corner) {
+        if (CORNER_SPEEDS[leftSector.name] !== digitalSpeed) {
+          digitalSpeed = CORNER_SPEEDS[leftSector.name];
+          storageSet(SPEED_KEY, String(digitalSpeed));
+          rightStick.render();
+        }
+      } else if (leftSector.name === "forward") {
+        forward = fraction;
+      } else if (leftSector.name === "back") {
+        forward = -fraction;
+      } else {
+        spin = (leftSector.name === "turnRight" ? 1 : -1) * Math.max(usable(robotStart.spin, setting, 1) * TURN_LIMIT, robotStart.spin);
+      }
+    }
+    var rightSector = rightStick.sector();
+    if (rightSector) {
+      var a = rightSector.at * Math.PI / 180;
+      var crab = usable(Math.abs(Math.sin(a)) > Math.abs(Math.cos(a)) ? robotStart.strafe : robotStart.forward, setting, 1);
+      forward += crab * Math.cos(a);
+      right += crab * Math.sin(a);
+    }
+  }
+  function clamp(value) { return Math.max(-1, Math.min(1, value)); }
+  return { forward: clamp(forward), right: clamp(right), spin: clamp(spin) };
+}
+
+// ---------------------------------------------------------------------------
+// The send loop
+// ---------------------------------------------------------------------------
+
+var lastSent = "v0,0,0;";
+var lastSentAt = 0;
+var zeroRepeats = 0;        // a stop goes out twice (a byte can be lost on Bluetooth)
+
+function velocityCommand(velocity) {
+  return "v" + Math.round(velocity.forward * 100) + "," + Math.round(velocity.right * 100) + "," + Math.round(velocity.spin * 100) + ";";
+}
+
+// Ease each part of the velocity toward the sticks: a jump to full knocks the
+// heading off. Starting, it jumps straight to the start share (below it the
+// motors only hum), and coming down it cuts from there to 0.
+var eased = { forward: 0, right: 0, spin: 0 };
+function ease(target) {
+  var step = TICK_MS / RAMP_MS;
+  var starts = { forward: robotStart.forward, right: robotStart.strafe, spin: robotStart.spin };
+  Object.keys(eased).forEach(function (key) {
+    var now = eased[key], want = target[key], start = starts[key];
+    if (want !== 0 && (now === 0 || (now > 0) !== (want > 0))) {
+      now = (want > 0 ? 1 : -1) * Math.min(Math.abs(want), start);   // hard start (or a reversal)
+    }
+    now += Math.max(-step, Math.min(step, want - now));
+    if (want === 0 && Math.abs(now) <= start) {
+      now = 0;                                                       // cut at the start speed
+    }
+    eased[key] = now;
+  });
+  return { forward: eased.forward, right: eased.right, spin: eased.spin };
+}
+
+function tick() {
+  var velocity = ease(sticksToVelocity());
+  var command = velocityCommand(velocity);
+  document.getElementById("forwardReadout").textContent = Math.round(velocity.forward * 100);
+  document.getElementById("rightReadout").textContent = Math.round(velocity.right * 100);
+  document.getElementById("spinReadout").textContent = Math.round(velocity.spin * 100);
+  document.getElementById("speedReadout").textContent = mode === "digital" ? digitalSpeed + "%" :
+    Math.round(analogSpeed() * 100) + "%";
+  if (!link) {
+    return;
+  }
+  var now = Date.now();
+  var stopped = command === "v0,0,0;";
+  if (stopped) {
+    if (lastSent !== command) {
+      zeroRepeats = 2;
+    }
+    if (zeroRepeats > 0 && now - lastSentAt >= MIN_SEND_GAP_MS) {
+      zeroRepeats--;
+      lastSent = command;
+      lastSentAt = now;
+      send(command);
+    }
+    return;
+  }
+  if ((command !== lastSent && now - lastSentAt >= MIN_SEND_GAP_MS) || now - lastSentAt >= REFRESH_MS) {
+    lastSent = command;
+    lastSentAt = now;
+    send(command);
+  }
+}
+setInterval(tick, TICK_MS);
+
+function stopEverything() {
+  eased = { forward: 0, right: 0, spin: 0 };
+  leftStick.release();
+  rightStick.release();
+  lastSent = "x";
+  send("xx");
+}
+document.getElementById("stopButton").addEventListener("pointerdown", function (event) {
+  event.preventDefault();
+  stopEverything();
+});
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) {
+    stopEverything();
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Mode switch
+// ---------------------------------------------------------------------------
+
+function setMode(newMode) {
+  mode = newMode;
+  storageSet(MODE_KEY, mode);
+  document.getElementById("analogButton").className = mode === "analog" ? "active" : "";
+  document.getElementById("digitalButton").className = mode === "digital" ? "active" : "";
+  document.getElementById("leftCaption").textContent = mode === "analog"
+    ? "up / down = speed (centre 50 %, bottom stop)  ·  left / right = turn"
+    : "forward · back · turn  ·  corners = speed";
+  document.getElementById("rightCaption").textContent = mode === "analog"
+    ? "up / down = forward / back  ·  left / right = strafe"
+    : "six crab directions";
+  leftStick.release();
+  rightStick.release();
+}
+document.getElementById("analogButton").addEventListener("click", function () { setMode("analog"); });
+document.getElementById("digitalButton").addEventListener("click", function () { setMode("digital"); });
+window.addEventListener("resize", function () { leftStick.render(); rightStick.render(); });
+
+setMode(mode);
+setConnectedState();
+
+// Chrome on Android crashes when a page leaves with a Bluetooth or serial
+// connection open: disconnect before following a link, and on the way out.
+(function () {
+  function closeLink() {
+    if (link && link.close) {
+      try { link.close(); } catch (error) { /* already gone */ }
+    }
+  }
+  window.addEventListener("pagehide", closeLink);
+  var anchors = document.querySelectorAll("a[href]");
+  for (var i = 0; i < anchors.length; i++) {
+    anchors[i].addEventListener("click", function (event) {
+      if (!link || this.target === "_blank" || /^#/.test(this.getAttribute("href"))) {
+        return;
+      }
+      event.preventDefault();
+      var href = this.href;
+      closeLink();
+      setTimeout(function () { location.href = href; }, 250);
+    });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Robot Is Not The Point — Grades 6-12</title>
+<style>
+  /* One page, every time. The dashed outline on screen shows where the paper
+     ends, so nothing sneaks onto a second sheet without you noticing. */
+  @page { size: letter portrait; margin: 0.4in; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { display: flex; justify-content: center; padding: 24px 12px; }
+  .sheet {
+    width: 7.7in; min-height: 10.2in; padding: 0.34in 0.4in;
+    position: relative;
+    /* Deliberately NOT overflow:hidden. If your real dates and prices run
+       longer than the placeholders, the flyer should visibly spill onto a
+       second page so you notice, rather than quietly swallowing a line. */
+    overflow: visible;
+  }
+  @media screen { .sheet { outline: 1px dashed #bbb; outline-offset: 10px; } }
+  @media print {
+    body { padding: 0; display: block; }
+    .sheet { width: auto; height: auto; outline: none; }
+  }
+  .fill { white-space: nowrap; }
+
+  body { background: #e8e4dc; font-family: Georgia, "Times New Roman", serif; }
+  .sheet { background: #fbf9f4; color: #1a1714; }
+  .rule { height: 7px; background: #b3311f; margin-bottom: 13px; }
+  .kicker { font-family: "Segoe UI", system-ui, sans-serif; font-size: 9pt;
+    letter-spacing: 0.24em; text-transform: uppercase; color: #b3311f; font-weight: 700; }
+  h1 { font-size: 36pt; line-height: 1.04; margin: 8px 0 10px; letter-spacing: -0.015em; }
+  .deck { font-size: 12.5pt; line-height: 1.5; color: #453e36; font-style: italic;
+    border-bottom: 1px solid #d8d0c4; padding-bottom: 12px; margin-bottom: 13px; }
+  .cols { column-count: 2; column-gap: 0.32in; }
+  .cols p { font-size: 10.2pt; line-height: 1.55; margin-bottom: 8px; }
+  .cols p:first-of-type:first-letter {
+    float: left; font-size: 34pt; line-height: 0.82; padding: 3px 6px 0 0; color: #b3311f; font-weight: bold;
+  }
+  .pull {
+    break-inside: avoid; border-top: 3px solid #1a1714; border-bottom: 3px solid #1a1714;
+    padding: 9px 0; margin: 4px 0 9px; font-size: 13pt; line-height: 1.32; font-weight: bold;
+  }
+  .box {
+    background: #1a1714; color: #fbf9f4; padding: 13px 16px; margin-top: 10px;
+    display: flex; gap: 16px;
+  }
+  .box div { flex: 1; }
+  .box b { font-family: "Segoe UI", system-ui, sans-serif; display: block; font-size: 8.5pt;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #e2a79c; margin-bottom: 2px; }
+  .box span { font-size: 11.5pt; font-weight: bold; }
+  footer {
+    position: absolute; left: 0.4in; right: 0.4in; bottom: 0.34in;
+    border-top: 1px solid #d8d0c4; padding-top: 9px;
+    font-family: "Segoe UI", system-ui, sans-serif; font-size: 9.5pt;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  footer .org { font-size: 12pt; font-weight: 800; }
+  footer .org small { display: block; font-size: 8.5pt; letter-spacing: 0.16em; color: #b3311f; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="rule"></div>
+  <div class="kicker">Maker Lab Kids &middot; After school &middot; Grades 6&ndash;12</div>
+  <h1>The robot is not<br>the point.</h1>
+  <div class="deck">Fifteen weeks of building, wiring and programming &mdash;
+  aimed squarely at the habit underneath: figuring out why something did not
+  work, and finding out for yourself.</div>
+
+  <div class="cols">
+    <p>Everyone's robot drives in week six. That part is not hard, and it is
+    not what we are selling. What happens next is: it drifts to the left. It
+    stops seeing a wall that is obviously there. It runs perfectly on Tuesday
+    and badly on Thursday.</p>
+
+    <div class="pull">A student who can find out why is doing engineering. One
+    who tries settings until it works is doing something else.</div>
+
+    <p>So we teach the finding out. Measure twice and compare the numbers.
+    Change one thing. Ask what the sensor is actually detecting, which is never
+    quite what you assumed. Discover that the batteries were the problem all
+    along and that four sessions of clever theories were wasted &mdash; which
+    stings once and is remembered for years.</p>
+
+    <p>By the second half students are designing their own additions: a sensor
+    on an arm, a bumper, a new behaviour that nobody demonstrated. They wire it,
+    program it, and explain what it costs. Every design trades something away,
+    and being able to name the trade is the skill.</p>
+
+    <p>The term ends with a maze race on a course nobody has seen, and a
+    showcase where each team explains its strategy, its results, and what still
+    beats it. Explaining it to someone else is the last test of understanding
+    it, which is why we make it the finale.</p>
+
+    <p>It starts smaller than you would expect. Week one is a brushbot: a
+    motor, a battery, a toothbrush head, and a machine that moves. We build up
+    from there, because the students who get furthest are the ones who were
+    never once told to just follow the steps.</p>
+  </div>
+
+  <div class="box">
+    <div><b>Meets</b><span class="fill">[ DAY &amp; TIME ]</span></div>
+    <div><b>Starts</b><span class="fill">[ START DATE ]</span></div>
+    <div><b>Runs</b><span>15 weeks</span></div>
+    <div><b>Where</b><span class="fill">[ LOCATION ]</span></div>
+    <div><b>Cost</b><span class="fill">[ PRICE ]</span></div>
+  </div>
+
+  <footer>
+    <div class="org"><img src="../img/lockup.png" alt="Maker Lab Kids" style="height:30pt;width:auto;display:inline-block;vertical-align:middle;background:#fff;border-radius:5pt;padding:2pt 5pt"><small>Make. Learn. Share.</small></div>
+    <div><span class="fill">[ SIGN-UP LINK ]</span> &middot; <span class="fill">[ EMAIL / PHONE ]</span></div>
+  </footer>
+
+</div>
+</body>
+</html>

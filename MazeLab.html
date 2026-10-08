@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Maze Lab — Maker Lab Kids</title>
+<style>
+  :root {
+    --bg: #15181c;
+    --panel: #1e2329;
+    --panel-edge: #2b323b;
+    --ink: #e8ecef;
+    --ink-dim: #8a949e;
+    --orange: #ff7a1a;
+    --green: #45d483;
+    --red: #ff4545;
+    --purple: #b07aff;
+    --blue: #4db8ff;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .app { max-width: 520px; margin: 0 auto; padding: 12px 14px 24px; display: flex; flex-direction: column; gap: 12px; }
+  header { text-align: left; }
+  .wordmark { font-size: 15px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+  .wordmark small { display: block; font-weight: 500; letter-spacing: 0.08em; color: var(--ink-dim); font-size: 10px; margin-top: 2px; }
+
+  .panel { background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 12px; padding: 12px; }
+  .panel-label { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 8px; }
+
+  select {
+    width: 100%; font: inherit; font-size: 14px; color: var(--ink);
+    background: #262c34; border: 1px solid var(--panel-edge); border-radius: 8px; padding: 10px;
+  }
+
+  #mazeCanvas { width: 100%; border-radius: 10px; background: #dfd8c8; display: block; touch-action: none; }
+
+  .control-row { display: flex; gap: 8px; }
+  .control-row button {
+    flex: 1; font: inherit; font-weight: 800; font-size: 14px; letter-spacing: 0.06em;
+    color: var(--ink); background: #262c34; border: 1px solid var(--panel-edge);
+    border-radius: 10px; padding: 12px 0; cursor: pointer;
+  }
+  #runButton { background: var(--green); color: var(--bg); border-color: var(--green); }
+  #resetButton { color: #ff6b6b; }
+  a { color: #ffa45c; }
+
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .slider-row label { font-size: 11px; color: var(--ink-dim); min-width: 74px; letter-spacing: 0.06em; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--orange); height: 26px; }
+  .slider-row .slider-value { font-family: var(--mono); font-size: 12px; min-width: 4ch; text-align: right; }
+
+  .sensor-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .sensor-chip {
+    font-family: var(--mono); font-size: 10px; text-align: center;
+    border: 1px solid var(--panel-edge); border-radius: 8px; padding: 7px 2px;
+    color: var(--ink-dim); background: #12151a; line-height: 1.4;
+  }
+  .sensor-chip.hot { border-color: var(--orange); color: var(--orange); background: #2a1c10; }
+  .sensor-chip b { display: block; font-size: 12px; }
+
+  .program-lines { display: flex; flex-direction: column; gap: 3px; font-family: var(--mono); font-size: 12px; }
+  .program-line {
+    border-radius: 6px; padding: 6px 9px; background: #262c34; color: var(--ink);
+    border-left: 4px solid var(--panel-edge); white-space: pre;
+  }
+  .program-line.motion { border-left-color: var(--orange); }
+  .program-line.control { border-left-color: var(--green); }
+  .program-line.sensing { border-left-color: var(--purple); }
+  .program-line.setting { border-left-color: var(--blue); }
+  .program-line.current { background: var(--orange); color: var(--bg); font-weight: 700; }
+  .indent-1 { margin-left: 18px; }
+  .indent-2 { margin-left: 36px; }
+  .indent-3 { margin-left: 54px; }
+
+  .copy-button {
+    margin-top: 8px; width: 100%; font: inherit; font-size: 12px; font-weight: 700;
+    color: var(--ink-dim); background: #12151a; border: 1px solid var(--panel-edge);
+    border-radius: 8px; padding: 9px 0; cursor: pointer;
+  }
+
+  .lesson { font-size: 13px; line-height: 1.6; color: var(--ink); }
+  .lesson h3 { font-size: 13px; margin: 10px 0 4px; color: var(--orange); letter-spacing: 0.04em; }
+  .lesson p { margin: 6px 0; }
+  .lesson .challenge { border-left: 3px solid var(--green); padding-left: 10px; color: var(--ink); margin: 8px 0; }
+  .lesson code { font-family: var(--mono); background: #12151a; border-radius: 4px; padding: 1px 5px; font-size: 12px; }
+
+  #eventLog {
+    font-family: var(--mono); font-size: 11px; line-height: 1.55; color: var(--ink-dim);
+    background: #12151a; border: 1px solid var(--panel-edge); border-radius: 8px;
+    padding: 8px 10px; height: 130px; overflow-y: auto; white-space: pre-wrap;
+  }
+  #eventLog .sense { color: var(--purple); }
+  #eventLog .act { color: var(--orange); }
+  #eventLog .good { color: var(--green); }
+  #eventLog .bad { color: var(--red); }
+
+  .banner {
+    display: none; text-align: center; font-weight: 900; font-size: 16px; letter-spacing: 0.2em;
+    border-radius: 10px; padding: 12px;
+  }
+  .banner.win { display: block; background: #12351f; color: var(--green); border: 1px solid var(--green); }
+  .banner.crash { display: block; background: #3a1e1e; color: var(--red); border: 1px solid var(--red); }
+</style>
+
+<style>
+  .mazelab-site-header {
+    border-bottom: 1px solid #2b323b; padding: 10px 16px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .mazelab-wordmark { font-size: 12px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: #e8ecef; }
+  .mazelab-wordmark small { display: block; font-weight: 500; letter-spacing: 0.08em; color: #8a949e; font-size: 10px; text-transform: none; margin-top: 2px; }
+  .mlk-lockup { display: inline-flex; background: #fff; border-radius: 8px; padding: 3px 8px; line-height: 0; }
+  .mlk-lockup img { height: 30px; width: auto; display: block; }
+  .mazelab-site-nav { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+  .mazelab-site-nav a { color: #8a949e; text-decoration: none; font-size: 13px; font-weight: 700; padding: 7px 12px; border-radius: 8px; border: 1px solid transparent; }
+  .mazelab-site-nav a.active { color: #15181c; background: #ff7a1a; }
+</style>
+</head>
+<body>
+<header class="mazelab-site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="mazelab-wordmark">Robot Workshop<small>Make. Learn. Share.</small></div>
+  <nav class="mazelab-site-nav">
+    <a href="./2wd.html">2WD home</a>
+    <a href="./lessons/index.html">Lessons</a>
+    <a href="./workshop.html">Workshop</a>
+    <a href="./MazeLab.html" class="active">Maze Lab</a>
+    <a href="./index.html">Mecanum robot</a>
+  </nav>
+</header>
+<div class="app">
+
+  <header>
+    <div class="wordmark">Maze Lab<small>Maker Lab Kids · test your maze code before the robot does</small></div>
+  </header>
+
+  <div class="panel">
+    <div class="panel-label">Lesson</div>
+    <select id="exampleSelect"></select>
+    <div style="height:8px"></div>
+    <div class="panel-label">Maze on the floor</div>
+    <select id="mazeSelect"></select>
+  </div>
+
+  <canvas id="mazeCanvas" width="488" height="488"></canvas>
+
+  <div id="resultBanner" class="banner"></div>
+
+  <div class="panel">
+    <div class="control-row">
+      <button id="runButton">RUN</button>
+      <button id="pauseButton">PAUSE</button>
+      <button id="resetButton">RESET</button>
+    </div>
+    <div class="slider-row">
+      <label>Sim speed</label>
+      <input type="range" id="simSpeedSlider" min="1" max="8" step="1" value="3">
+      <span class="slider-value" id="simSpeedValue">3x</span>
+    </div>
+    <div class="slider-row">
+      <label>Wheel drift</label>
+      <input type="range" id="driftSlider" min="0" max="100" step="5" value="0">
+      <span class="slider-value" id="driftValue">0%</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">What the robot senses right now</div>
+    <div class="sensor-strip" id="sensorStrip"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">The program (watch the highlight move)</div>
+    <div class="program-lines" id="programLines"></div>
+    <button class="copy-button" id="copyProgramButton">Copy program text → paste into Robot Workshop</button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">Robot's diary — sense → think → do</div>
+    <div id="eventLog"></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-label">The lesson</div>
+    <div class="lesson" id="lessonPanel"></div>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+// ============================ CORE-START ====================================
+// Everything between CORE-START and CORE-END is DOM-free on purpose: the same
+// code is unit-tested headless in Node, so every sample program below is
+// PROVEN to solve its maze before a kid ever sees it.
+// ============================================================================
+
+var CELL_CM = 30.5;                 // one 12-inch room
+var GRID_COLS = 4;
+var GRID_ROWS = 4;
+var ROBOT_RADIUS_CM = 7;
+var FRONT_SENSOR_OFFSET_CM = 6;
+var PROX_ANGLE_DEG = 35;
+var PROX_RANGE_CM = 16;
+var FRONT_WALL_THRESHOLD_CM = 25;
+var DRIVE_CM_PER_MS = CELL_CM / 900;   // calibrated: 900 ms = 1 cell at speed 5
+var TURN_DEG_PER_MS = 90 / 350;        // calibrated: 350 ms = 90 degrees
+var MAX_ZERO_DURATION_OPS = 200;
+
+// ---- Maze library ----------------------------------------------------------
+// hWalls[row][col]: wall segment ABOVE row (row 0..4). vWalls[row][col]:
+// wall segment LEFT of col (col 0..4). 1 = wall present.
+
+function buildOuterWalls() {
+  var hWalls = [];
+  var vWalls = [];
+  var r, c;
+  for (r = 0; r <= GRID_ROWS; r++) {
+    hWalls.push([]);
+    for (c = 0; c < GRID_COLS; c++) {
+      hWalls[r].push(r === 0 || r === GRID_ROWS ? 1 : 0);
+    }
+  }
+  for (r = 0; r < GRID_ROWS; r++) {
+    vWalls.push([]);
+    for (c = 0; c <= GRID_COLS; c++) {
+      vWalls[r].push(c === 0 || c === GRID_COLS ? 1 : 0);
+    }
+  }
+  return { hWalls: hWalls, vWalls: vWalls };
+}
+
+function makeMaze(name, note, mutate) {
+  var shell = buildOuterWalls();
+  var maze = {
+    name: name,
+    note: note,
+    hWalls: shell.hWalls,
+    vWalls: shell.vWalls,
+    start: { col: 0, row: 3, headingDeg: 0 },   // bottom-left, facing east
+    exit: null                                    // set by mutate
+  };
+  mutate(maze);
+  return maze;
+}
+
+// Exit helper: opens a gap in the outer wall of the given cell on a side
+// ("N","S","E","W") and lays finish tape just inside it.
+function openExit(maze, col, row, side) {
+  if (side === "E") { maze.vWalls[row][col + 1] = 0; }
+  if (side === "W") { maze.vWalls[row][col] = 0; }
+  if (side === "N") { maze.hWalls[row][col] = 0; }
+  if (side === "S") { maze.hWalls[row + 1][col] = 0; }
+  maze.exit = { col: col, row: row, side: side };
+}
+
+var MAZE_LIBRARY = {};
+
+MAZE_LIBRARY.hallway = makeMaze("Hallway (easiest)",
+  "One straight corridor along the bottom.",
+  function (maze) {
+    var c;
+    for (c = 0; c < GRID_COLS; c++) { maze.hWalls[3][c] = 1; } // seal corridor roof
+    openExit(maze, 3, 3, "E");
+  });
+
+MAZE_LIBRARY.bigL = makeMaze("The Big L",
+  "East along the bottom, then north up the right side.",
+  function (maze) {
+    maze.hWalls[3][0] = 1; maze.hWalls[3][1] = 1; maze.hWalls[3][2] = 1; // corridor roof, gap at col 3
+    maze.vWalls[0][3] = 1; maze.vWalls[1][3] = 1; maze.vWalls[2][3] = 1; // left wall of the climb
+    openExit(maze, 3, 0, "N");
+  });
+
+MAZE_LIBRARY.staircase = makeMaze("The Staircase",
+  "East, north, east, north... a repeating pattern (hint hint).",
+  function (maze) {
+    // Path: (0,3)E->(1,3)N->(1,2)E->(2,2)N->(2,1)E->(3,1)N->(3,0), exit E.
+    // Walls carve the staircase: block everything not on the path.
+    maze.hWalls[3][0] = 1;                       // roof over (0,3)
+    maze.vWalls[3][2] = 1;                       // right wall of (1,3)
+    maze.hWalls[2][0] = 1;                       // roof of (0,2)... close off left column
+    maze.vWalls[2][1] = 1;                       // keep (1,2) corridor
+    maze.hWalls[2][1] = 1;                       // roof over (1,2)
+    maze.vWalls[2][3] = 1;                       // right wall of (2,2)
+    maze.hWalls[1][1] = 1;                       // roof of (1,1) region
+    maze.vWalls[1][2] = 1;                       // keep (2,1) corridor
+    maze.hWalls[1][2] = 1;                       // roof over (2,1)
+    maze.vWalls[0][3] = 1;                       // left wall of (3,0)
+    openExit(maze, 3, 0, "E");
+  });
+
+// Three rearrangements of the same four "rooms" — sensor code must beat ALL.
+MAZE_LIBRARY.teamA = makeMaze("Team Arrangement A",
+  "Four 2x2 room modules, arrangement A.",
+  function (maze) {
+    maze.hWalls[3][1] = 1; maze.hWalls[3][2] = 1;
+    maze.vWalls[2][2] = 1; maze.hWalls[2][2] = 1;
+    maze.vWalls[1][3] = 1; maze.hWalls[1][0] = 1;
+    openExit(maze, 3, 0, "N");
+  });
+
+MAZE_LIBRARY.teamB = makeMaze("Team Arrangement B",
+  "Same rooms, shuffled. Dead reckoning from A fails here.",
+  function (maze) {
+    maze.hWalls[3][1] = 1; maze.hWalls[3][2] = 1;
+    maze.vWalls[2][1] = 1; maze.vWalls[1][2] = 1;
+    maze.hWalls[1][2] = 1; maze.vWalls[0][2] = 1;
+    openExit(maze, 3, 0, "N");
+  });
+
+MAZE_LIBRARY.teamC = makeMaze("Team Arrangement C",
+  "Shuffled again. Sensors don't care.",
+  function (maze) {
+    maze.vWalls[3][2] = 1; maze.hWalls[2][0] = 1;
+    maze.hWalls[2][1] = 1; maze.vWalls[1][1] = 1;
+    maze.hWalls[1][3] = 1; maze.vWalls[0][2] = 1;
+    openExit(maze, 3, 0, "N");
+  });
+
+// ---- Wall geometry ---------------------------------------------------------
+
+function listWallSegments(maze) {
+  if (maze.cachedSegments) {
+    return maze.cachedSegments;
+  }
+  var segments = [];
+  var r, c;
+  for (r = 0; r <= GRID_ROWS; r++) {
+    for (c = 0; c < GRID_COLS; c++) {
+      if (maze.hWalls[r][c]) {
+        segments.push({ x1: c * CELL_CM, y1: r * CELL_CM, x2: (c + 1) * CELL_CM, y2: r * CELL_CM });
+      }
+    }
+  }
+  for (r = 0; r < GRID_ROWS; r++) {
+    for (c = 0; c <= GRID_COLS; c++) {
+      if (maze.vWalls[r][c]) {
+        segments.push({ x1: c * CELL_CM, y1: r * CELL_CM, x2: c * CELL_CM, y2: (r + 1) * CELL_CM });
+      }
+    }
+  }
+  maze.cachedSegments = segments;
+  return segments;
+}
+
+function distancePointToSegment(px, py, segment) {
+  var dx = segment.x2 - segment.x1;
+  var dy = segment.y2 - segment.y1;
+  var lengthSquared = dx * dx + dy * dy;
+  var t = lengthSquared === 0 ? 0 :
+    ((px - segment.x1) * dx + (py - segment.y1) * dy) / lengthSquared;
+  t = Math.max(0, Math.min(1, t));
+  var nearestX = segment.x1 + t * dx;
+  var nearestY = segment.y1 + t * dy;
+  return Math.hypot(px - nearestX, py - nearestY);
+}
+
+function raycastToWalls(maze, originX, originY, headingDeg) {
+  var radians = headingDeg * Math.PI / 180;
+  var dirX = Math.cos(radians);
+  var dirY = -Math.sin(radians); // world y grows downward
+  var closest = 9999;
+  var segments = listWallSegments(maze);
+  var i;
+  for (i = 0; i < segments.length; i++) {
+    var s = segments[i];
+    var sx = s.x2 - s.x1;
+    var sy = s.y2 - s.y1;
+    var denominator = dirX * sy - dirY * sx;
+    if (Math.abs(denominator) < 1e-9) {
+      continue;
+    }
+    var tRay = ((s.x1 - originX) * sy - (s.y1 - originY) * sx) / denominator;
+    var tSeg;
+    if (Math.abs(sx) > Math.abs(sy)) {
+      tSeg = (originX + tRay * dirX - s.x1) / sx;
+    } else {
+      tSeg = (originY + tRay * dirY - s.y1) / sy;
+    }
+    if (tRay > 0 && tSeg >= 0 && tSeg <= 1 && tRay < closest) {
+      closest = tRay;
+    }
+  }
+  return closest;
+}
+
+function positionCollides(maze, x, y) {
+  var segments = listWallSegments(maze);
+  var i;
+  for (i = 0; i < segments.length; i++) {
+    if (distancePointToSegment(x, y, segments[i]) < ROBOT_RADIUS_CM) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// ---- Sensors (mirror the kernel's readSensorCondition) ---------------------
+
+function exitTapeContains(maze, x, y) {
+  var e = maze.exit;
+  var cx = (e.col + 0.5) * CELL_CM;
+  var cy = (e.row + 0.5) * CELL_CM;
+  var half = CELL_CM / 2;
+  var tapeDepth = 7;
+  if (e.side === "E") { return x > cx + half - tapeDepth && Math.abs(y - cy) < half; }
+  if (e.side === "W") { return x < cx - half + tapeDepth && Math.abs(y - cy) < half; }
+  if (e.side === "N") { return y < cy - half + tapeDepth && Math.abs(x - cx) < half; }
+  return y > cy + half - tapeDepth && Math.abs(x - cx) < half;
+}
+
+function readMazeSensor(state, maze, sensorId) {
+  var radians = state.headingDeg * Math.PI / 180;
+  var forwardX = Math.cos(radians);
+  var forwardY = -Math.sin(radians);
+  var leftX = -forwardY;   // 90 degrees left of heading
+  var leftY = forwardX;
+
+  if (sensorId === 1 || sensorId === 2) {
+    var lateral = sensorId === 1 ? 3 : -3;
+    var sx = state.x + forwardX * FRONT_SENSOR_OFFSET_CM + leftX * lateral;
+    var sy = state.y + forwardY * FRONT_SENSOR_OFFSET_CM + leftY * lateral;
+    return exitTapeContains(maze, sx, sy);
+  }
+  if (sensorId === 3 || sensorId === 8) {
+    var leftHit = raycastToWalls(maze, state.x, state.y, state.headingDeg + PROX_ANGLE_DEG) < PROX_RANGE_CM;
+    return sensorId === 3 ? leftHit : !leftHit;
+  }
+  if (sensorId === 4 || sensorId === 7) {
+    var rightHit = raycastToWalls(maze, state.x, state.y, state.headingDeg - PROX_ANGLE_DEG) < PROX_RANGE_CM;
+    return sensorId === 4 ? rightHit : !rightHit;
+  }
+  if (sensorId === 5 || sensorId === 6) {
+    var frontCm = raycastToWalls(maze, state.x, state.y, state.headingDeg) - FRONT_SENSOR_OFFSET_CM;
+    return sensorId === 5 ? frontCm < FRONT_WALL_THRESHOLD_CM : frontCm >= FRONT_WALL_THRESHOLD_CM;
+  }
+  return false;
+}
+
+function measureFrontCm(state, maze) {
+  return Math.max(0, raycastToWalls(maze, state.x, state.y, state.headingDeg) - FRONT_SENSOR_OFFSET_CM);
+}
+
+// ---- Program parsing & interpreter (mirrors robot_kernel.ino) --------------
+
+var SENSOR_NAMES = {
+  1: "left line on finish tape", 2: "right line on finish tape",
+  3: "left prox sees wall", 4: "right prox sees wall",
+  5: "wall ahead < 25 cm", 6: "front clear",
+  7: "right side clear", 8: "left side clear"
+};
+
+function parseProgramText(programText) {
+  var instructions = [];
+  var lines = programText.split("\n");
+  var i;
+  for (i = 0; i < lines.length; i++) {
+    var trimmed = lines[i].trim();
+    if (trimmed.length === 0 || trimmed.charAt(0) === "#") {
+      continue;
+    }
+    var op = trimmed.charAt(0).toUpperCase();
+    var valid = "FBLRWVEPQIZX".indexOf(op) >= 0;
+    if (!valid) {
+      continue;
+    }
+    instructions.push({ op: op, arg: parseInt(trimmed.slice(1), 10) || 0 });
+  }
+  return instructions;
+}
+
+function findMatchingEnd(instructions, fromIndex, openOp, closeOp) {
+  var depth = 0;
+  var i;
+  for (i = fromIndex + 1; i < instructions.length; i++) {
+    if (instructions[i].op === openOp) {
+      depth = depth + 1;
+    } else if (instructions[i].op === closeOp) {
+      if (depth === 0) {
+        return i;
+      }
+      depth = depth - 1;
+    }
+  }
+  return instructions.length - 1;
+}
+
+function createSimulationState(maze, programText, driftPercent) {
+  return {
+    x: (maze.start.col + 0.5) * CELL_CM,
+    y: (maze.start.row + 0.5) * CELL_CM,
+    headingDeg: maze.start.headingDeg,
+    instructions: parseProgramText(programText),
+    programCounter: -1,
+    instructionEndTime: 0,
+    loopStack: [],
+    speedLevel: 5,
+    timeMs: 0,
+    running: true,
+    finished: false,
+    crashedThisInstruction: false,
+    crashCount: 0,
+    driftTurnScale: 1 + (driftPercent / 100) * 0.18,
+    driftVeerDegPerCm: (driftPercent / 100) * 0.55,
+    trail: [],
+    crashMarks: [],
+    events: [],
+    currentMotion: "idle"
+  };
+}
+
+function logEvent(state, kind, text) {
+  state.events.push({ kind: kind, text: text, timeMs: Math.round(state.timeMs) });
+  if (state.events.length > 400) {
+    state.events.shift();
+  }
+}
+
+function speedScale(state) {
+  return (60 + state.speedLevel * 21.7) / 168; // PWM curve relative to level 5
+}
+
+function beginTimedMotion(state, motion, durationMs) {
+  state.currentMotion = motion;
+  state.instructionEndTime = state.timeMs + durationMs;
+  state.crashedThisInstruction = false;
+}
+
+function advanceProgramCounter(state, maze) {
+  var zeroDurationGuard = 0;
+  while (zeroDurationGuard < MAX_ZERO_DURATION_OPS) {
+    zeroDurationGuard = zeroDurationGuard + 1;
+    state.programCounter = state.programCounter + 1;
+
+    if (state.programCounter >= state.instructions.length) {
+      state.running = false;
+      state.currentMotion = "idle";
+      logEvent(state, "act", "Program finished (ran out of instructions).");
+      return;
+    }
+
+    var instruction = state.instructions[state.programCounter];
+    var op = instruction.op;
+    var arg = instruction.arg;
+
+    if (op === "F") { logEvent(state, "act", "F " + arg + " — drive forward " + (arg * DRIVE_CM_PER_MS * speedScale(state)).toFixed(0) + " cm"); beginTimedMotion(state, "forward", arg); return; }
+    if (op === "B") { logEvent(state, "act", "B " + arg + " — back up"); beginTimedMotion(state, "backward", arg); return; }
+    if (op === "L") { logEvent(state, "act", "L " + arg + " — spin left ~" + Math.round(arg * TURN_DEG_PER_MS) + "\u00B0"); beginTimedMotion(state, "spinLeft", arg); return; }
+    if (op === "R") { logEvent(state, "act", "R " + arg + " — spin right ~" + Math.round(arg * TURN_DEG_PER_MS) + "\u00B0"); beginTimedMotion(state, "spinRight", arg); return; }
+    if (op === "W") { logEvent(state, "act", "W " + arg + " — wait"); beginTimedMotion(state, "idle", arg); return; }
+    if (op === "V") { state.speedLevel = Math.max(0, Math.min(9, arg)); logEvent(state, "act", "V " + arg + " — speed level " + state.speedLevel); }
+    else if (op === "E") { logEvent(state, "act", "E " + arg + " — point sonar servo"); }
+    else if (op === "P") {
+      state.loopStack.push({ startIndex: state.programCounter, remaining: Math.max(1, arg) });
+      logEvent(state, "act", "P " + arg + " — repeat " + arg + " times");
+    }
+    else if (op === "Q") {
+      if (state.loopStack.length > 0) {
+        var top = state.loopStack[state.loopStack.length - 1];
+        top.remaining = top.remaining - 1;
+        if (top.remaining > 0) {
+          state.programCounter = top.startIndex;
+        } else {
+          state.loopStack.pop();
+          logEvent(state, "act", "Q — loop done");
+        }
+      }
+    }
+    else if (op === "I") {
+      var truth = readMazeSensor(state, maze, arg);
+      var frontNote = (arg === 5 || arg === 6) ? " (front " + measureFrontCm(state, maze).toFixed(0) + " cm)" : "";
+      logEvent(state, "sense", "I " + arg + " — " + (SENSOR_NAMES[arg] || "?") + frontNote + " \u2192 " + (truth ? "TRUE, running its block" : "false, skipping"));
+      if (!truth) {
+        state.programCounter = findMatchingEnd(state.instructions, state.programCounter, "I", "Z");
+      }
+    }
+    else if (op === "Z") { /* end-if marker */ }
+    else if (op === "X") {
+      logEvent(state, "act", "X — end program");
+      state.programCounter = state.instructions.length;
+    }
+  }
+  state.running = false; // guard tripped: malformed program
+}
+
+function tryMove(state, maze, distanceCm) {
+  var veer = state.driftVeerDegPerCm * Math.abs(distanceCm);
+  state.headingDeg = state.headingDeg - veer; // drift always pulls one way
+  var radians = state.headingDeg * Math.PI / 180;
+  var newX = state.x + Math.cos(radians) * distanceCm;
+  var newY = state.y - Math.sin(radians) * distanceCm;
+  if (positionCollides(maze, newX, newY)) {
+    if (!state.crashedThisInstruction) {
+      state.crashedThisInstruction = true;
+      state.crashCount = state.crashCount + 1;
+      state.crashMarks.push({ x: state.x, y: state.y });
+      logEvent(state, "bad", "BUMP! Wheels spinning against a wall. Dead reckoning thinks it's moving \u2014 it isn't.");
+    }
+    return;
+  }
+  state.x = newX;
+  state.y = newY;
+}
+
+function advanceSimulation(state, maze, deltaMs) {
+  if (!state.running || state.finished) {
+    return;
+  }
+
+  var remaining = deltaMs;
+  while (remaining > 0 && state.running && !state.finished) {
+    if (state.timeMs >= state.instructionEndTime) {
+      advanceProgramCounter(state, maze);
+      if (!state.running) {
+        break;
+      }
+    }
+    var sliceMs = Math.min(remaining, state.instructionEndTime - state.timeMs, 16);
+    if (sliceMs <= 0) {
+      sliceMs = Math.min(remaining, 16);
+    }
+
+    if (state.currentMotion === "forward") {
+      tryMove(state, maze, DRIVE_CM_PER_MS * speedScale(state) * sliceMs);
+    } else if (state.currentMotion === "backward") {
+      tryMove(state, maze, -DRIVE_CM_PER_MS * speedScale(state) * sliceMs);
+    } else if (state.currentMotion === "spinLeft") {
+      state.headingDeg = state.headingDeg + TURN_DEG_PER_MS * sliceMs * state.driftTurnScale;
+    } else if (state.currentMotion === "spinRight") {
+      state.headingDeg = state.headingDeg - TURN_DEG_PER_MS * sliceMs * state.driftTurnScale;
+    }
+
+    state.timeMs = state.timeMs + sliceMs;
+    remaining = remaining - sliceMs;
+
+    if (state.trail.length === 0 ||
+        Math.hypot(state.x - state.trail[state.trail.length - 1].x,
+                   state.y - state.trail[state.trail.length - 1].y) > 2.5) {
+      state.trail.push({ x: state.x, y: state.y });
+    }
+
+    var outsideGrid = state.x < -2 || state.y < -2 ||
+        state.x > GRID_COLS * CELL_CM + 2 || state.y > GRID_ROWS * CELL_CM + 2;
+    if (outsideGrid || (exitTapeContains(maze, state.x, state.y) && state.currentMotion === "forward")) {
+      state.finished = true;
+      state.running = false;
+      logEvent(state, "good", "OUT! Escaped in " + (state.timeMs / 1000).toFixed(1) + " s with " + state.crashCount + " wall bump(s).");
+    }
+  }
+}
+
+// ---- Sample lessons --------------------------------------------------------
+
+var EXAMPLES = [
+  {
+    id: "straight",
+    title: "1. Straight Shot (dead reckoning)",
+    mazeId: "hallway",
+    program: "# calibrated: 900 ms = one 12in room at speed 5\nV 5\nF 3600",
+    lesson: "<p>The simplest maze code possible: <b>no sensors at all.</b> We measured that at speed 5 the robot crosses one 12-inch room in about 900 ms. Three rooms ahead... so <code>F 2700</code>, right? <b>Nope!</b> You start in the MIDDLE of room 1, and you must drive out THROUGH the doorway — about 3½ rooms, so we use <code>F 3600</code> for a clean exit. (Try 2700: the robot parks politely in the last room. Off-by-half-a-room is the hello-world of robot bugs.) Driving by stopwatch like this is called <b>dead reckoning</b> \u2014 sailors named it centuries ago.</p><h3>The big idea: calibration</h3><p>Nobody handed us the number 900. You <i>measure</i> it: run <code>F 1000</code> on the real floor, measure how far the robot went, do the math. Different floors, different batteries, different robots = different numbers. Calibration is real engineering.</p><div class='challenge'>CHALLENGE: your robot goes 34 cm in 1000 ms. How many ms for one 30.5 cm room? For this whole hallway?</div><div class='challenge'>CHALLENGE: change speed with <code>V 9</code>. Why does the robot now overshoot? (Watch the log \u2014 it tells you the cm.)</div>"
+  },
+  {
+    id: "bigL",
+    title: "2. The Big L (turns!)",
+    mazeId: "bigL",
+    program: "V 5\nF 2700\nL 350\nF 3600",
+    lesson: "<p>Now we need a corner. Our calibration says <code>L 350</code> \u2248 90\u00B0. Drive east to the last column (<code>F 2700</code> — center to center, so 3 rooms exactly), face north, then drive up AND out the door (<code>F 3600</code> — lesson 1's half-room rule again).</p><h3>The big idea: turns are calibration too</h3><p>350 ms isn't magic \u2014 it's measured, and it's <b>fragile</b>. Try 300 or 400 and watch the path bend wrong. On carpet vs. tile the number changes. This is exactly why we're adding a <b>gyroscope</b> to the robot later: a gyro measures the turn instead of guessing it by stopwatch.</p><div class='challenge'>CHALLENGE: make the robot do a full 360\u00B0 spin in the middle of the hallway and still escape.</div><div class='challenge'>CHALLENGE: nudge the drift slider to 20%. Which breaks first \u2014 the driving or the turning? Why?</div>"
+  },
+  {
+    id: "staircase",
+    title: "3. The Staircase (loops = patterns)",
+    mazeId: "staircase",
+    program: "V 5\nP 3\nF 900\nL 350\nF 900\nR 350\nQ\nF 900",
+    lesson: "<p>Look at the maze: east, up, east, up, east, up. When you catch yourself writing the same lines three times \u2014 <b>stop</b>. That's what loops are for. <code>P 3 ... Q</code> means \u201crepeat this block 3 times.\u201d</p><h3>The big idea: see the pattern, code the pattern</h3><p>Fourteen lines of copy-paste became six. Shorter code has fewer places to be wrong, and changing the step size means editing <i>one</i> number instead of three. Programmers call this DRY: Don't Repeat Yourself.</p><div class='challenge'>CHALLENGE: rewrite this WITHOUT the loop (just F/L/R lines). Same result? Now make the maze 6 steps tall in your head \u2014 which version would you rather fix?</div><div class='challenge'>CHALLENGE: what does <code>P 4</code> do here? Predict first, then run. (Prediction before testing is a scientist habit.)</div>"
+  },
+  {
+    id: "drift",
+    title: "4. Drift Happens (why dead reckoning fails)",
+    mazeId: "staircase",
+    program: "V 5\nP 3\nF 900\nL 350\nF 900\nR 350\nQ\nF 900",
+    lesson: "<p>Same maze, same program as lesson 3 \u2014 but this time, <b>drag the Wheel Drift slider to 40% and run it.</b> Then 70%. Watch the breadcrumb trail bend and the robot grind into a wall.</p><h3>The big idea: error accumulates</h3><p>Real wheels slip. Real motors aren't twins. Real batteries sag. Each move adds a tiny error, and errors <b>add up</b> \u2014 a 2\u00B0 wobble per turn is nothing on turn one and a disaster by turn six. Dead reckoning is a prediction, and predictions rot.</p><p>This is the whole reason sensors exist: a sensor <i>checks reality</i> instead of trusting the plan. It's also why real robots (and rockets, and your phone) carry gyros and accelerometers \u2014 to measure the error and fix it live.</p><div class='challenge'>CHALLENGE: find the biggest drift % where the program still escapes. That number is your program's <b>error budget</b>.</div><div class='challenge'>CHALLENGE: could you make the program more drift-proof by driving the middle of rooms instead of hugging walls? Try shorter moves with tiny corrections.</div>"
+  },
+  {
+    id: "bumper",
+    title: "5. The Bumper (sensors beat maps)",
+    mazeId: "teamA",
+    program: "V 5\nP 60\nR 350\nI 5\nL 350\nZ\nI 5\nL 350\nZ\nI 5\nL 350\nZ\nF 900\nI 1\nX\nZ\nQ",
+    lesson: "<p>Zero maze knowledge \u2014 this program has never seen the map. The strategy is the famous <b>right-hand rule</b>: keep your right hand on the wall and you WILL find the exit of any normal maze. In robot: every room, first turn right. Wall there? Turn back left and check ahead. Wall too? Check left. Then step exactly one room and do it all again.</p><h3>Big idea #1: sense \u2192 think \u2192 do</h3><p>Watch the diary: sense (wall?), think (which block runs?), do (turn or step). That loop is the heartbeat of every robot ever built \u2014 including the ones on Mars.</p><h3>Big idea #2: re-sensing replaces ELSE</h3><p>Our language has no ELSE. The trick: after each turn, <code>I 5</code> senses AGAIN from the <i>new</i> direction. Three little if-blocks in a row check right, then straight, then left \u2014 acting exactly like a chain of if/else-ifs. Acting and then re-measuring beats trying to know everything up front.</p><h3>Big idea #3: it doesn't care about the maze</h3><p><b>Switch the maze dropdown to Team Arrangement B, then C, and run the SAME program.</b> It escapes all of them. Your beautiful staircase code from lesson 3 can't do that \u2014 and on race day, the rooms get shuffled...</p><div class='challenge'>CHALLENGE: find this program's drift budget (lesson 4 style). It tolerates some \u2014 but the turns are still stopwatch-guesses, so it's not immune. What sensor would FIX the turns? (Rhymes with \u201cgyro.\u201d)</div><div class='challenge'>CHALLENGE: why turn RIGHT first? Edit it to a left-hand rule. Does it still escape all three arrangements? Is it faster or slower on each?</div>"
+  },
+  {
+    id: "hybrid",
+    title: "6. The Hybrid Racer (best of both)",
+    mazeId: "teamA",
+    program: "V 5\nF 1800\nL 350\nP 60\nR 350\nI 5\nL 350\nZ\nI 5\nL 350\nZ\nI 5\nL 350\nZ\nF 900\nI 1\nX\nZ\nQ",
+    lesson: "<p>Race-day thinking: dead reckoning is FAST but fragile; sensing is TOUGH but slow. So... do both. Blast two known-open rooms on a stopwatch (<code>F 1800</code>), snap to face north (we memorized THAT much), then hand over to the right-hand-rule stepper for the unknown part.</p><h3>The big idea: engineering is trade-offs</h3><p>There is no \u201cbest\u201d program \u2014 there's the best program <i>for the situation</i>. Speed vs. reliability, simple vs. smart, plan vs. react. Choosing the mix on purpose is what makes you an engineer instead of a copy-paster.</p><div class='challenge'>CHALLENGE: run this SAME hybrid on arrangement B. The memorized blast that was safe on A \u2014 is it still safe? Find where memory helps and where it betrays you.</div><div class='challenge'>CHALLENGE: design your own hybrid for arrangement C and race a friend's. Same maze, different mixes \u2014 whose trade-off wins?</div><div class='challenge'>BOSS CHALLENGE: when our gyro arrives, turns become exact degrees instead of milliseconds. Which of these six programs improves the most? Argue it out.</div>"
+  }
+];
+
+// ============================= CORE-END =====================================
+
+// ---------------------------------------------------------------------------
+// UI wiring
+// ---------------------------------------------------------------------------
+
+var mazeCanvas = document.getElementById("mazeCanvas");
+var drawingContext = mazeCanvas.getContext("2d");
+var exampleSelect = document.getElementById("exampleSelect");
+var mazeSelect = document.getElementById("mazeSelect");
+var runButton = document.getElementById("runButton");
+var pauseButton = document.getElementById("pauseButton");
+var resetButton = document.getElementById("resetButton");
+var simSpeedSlider = document.getElementById("simSpeedSlider");
+var simSpeedValue = document.getElementById("simSpeedValue");
+var driftSlider = document.getElementById("driftSlider");
+var driftValue = document.getElementById("driftValue");
+var sensorStrip = document.getElementById("sensorStrip");
+var programLinesElement = document.getElementById("programLines");
+var eventLogElement = document.getElementById("eventLog");
+var lessonPanel = document.getElementById("lessonPanel");
+var resultBanner = document.getElementById("resultBanner");
+var copyProgramButton = document.getElementById("copyProgramButton");
+
+var activeExample = EXAMPLES[0];
+var activeMaze = MAZE_LIBRARY[activeExample.mazeId];
+var simulationState = null;
+var simulationPaused = true;
+var renderedEventCount = 0;
+var pixelsPerCm = mazeCanvas.width / (GRID_COLS * CELL_CM);
+
+function populateSelectors() {
+  var i;
+  for (i = 0; i < EXAMPLES.length; i++) {
+    var option = document.createElement("option");
+    option.value = EXAMPLES[i].id;
+    option.textContent = EXAMPLES[i].title;
+    exampleSelect.appendChild(option);
+  }
+  var mazeIds = Object.keys(MAZE_LIBRARY);
+  for (i = 0; i < mazeIds.length; i++) {
+    var mazeOption = document.createElement("option");
+    mazeOption.value = mazeIds[i];
+    mazeOption.textContent = MAZE_LIBRARY[mazeIds[i]].name;
+    mazeSelect.appendChild(mazeOption);
+  }
+}
+
+function classifyLine(op) {
+  if ("FBLR".indexOf(op) >= 0) { return "motion"; }
+  if ("PQ".indexOf(op) >= 0) { return "control"; }
+  if ("IZX".indexOf(op) >= 0) { return "sensing"; }
+  return "setting";
+}
+
+function describeLine(op, arg) {
+  if (op === "F") { return "F " + arg + "   drive forward " + arg + " ms"; }
+  if (op === "B") { return "B " + arg + "   drive backward " + arg + " ms"; }
+  if (op === "L") { return "L " + arg + "   spin left (~" + Math.round(arg * TURN_DEG_PER_MS) + "\u00B0)"; }
+  if (op === "R") { return "R " + arg + "   spin right (~" + Math.round(arg * TURN_DEG_PER_MS) + "\u00B0)"; }
+  if (op === "W") { return "W " + arg + "   wait " + arg + " ms"; }
+  if (op === "V") { return "V " + arg + "   set speed level " + arg; }
+  if (op === "E") { return "E " + arg + "   point sonar to " + arg + "\u00B0"; }
+  if (op === "P") { return "P " + arg + "   repeat " + arg + " times \u23ce"; }
+  if (op === "Q") { return "Q     \u21b0 end repeat"; }
+  if (op === "I") { return "I " + arg + "   if " + (SENSOR_NAMES[arg] || "?") + " \u23ce"; }
+  if (op === "Z") { return "Z     \u21b0 end if"; }
+  return "X     end program";
+}
+
+function renderProgramLines() {
+  programLinesElement.innerHTML = "";
+  var indent = 0;
+  var i;
+  for (i = 0; i < simulationState.instructions.length; i++) {
+    var instruction = simulationState.instructions[i];
+    if (instruction.op === "Q" || instruction.op === "Z") {
+      indent = Math.max(0, indent - 1);
+    }
+    var lineElement = document.createElement("div");
+    lineElement.className = "program-line " + classifyLine(instruction.op) +
+      (indent > 0 ? " indent-" + Math.min(indent, 3) : "");
+    lineElement.id = "programLine" + i;
+    lineElement.textContent = describeLine(instruction.op, instruction.arg);
+    programLinesElement.appendChild(lineElement);
+    if (instruction.op === "P" || instruction.op === "I") {
+      indent = indent + 1;
+    }
+  }
+}
+
+function highlightCurrentLine() {
+  var lines = programLinesElement.children;
+  var i;
+  for (i = 0; i < lines.length; i++) {
+    lines[i].classList.remove("current");
+  }
+  var current = document.getElementById("programLine" + simulationState.programCounter);
+  if (current) {
+    current.classList.add("current");
+  }
+}
+
+var SENSOR_CHIP_IDS = [5, 6, 3, 4, 7, 8, 1, 2];
+
+function renderSensorStrip() {
+  sensorStrip.innerHTML = "";
+  var i;
+  for (i = 0; i < SENSOR_CHIP_IDS.length; i++) {
+    var sensorId = SENSOR_CHIP_IDS[i];
+    var chip = document.createElement("div");
+    chip.className = "sensor-chip";
+    chip.id = "sensorChip" + sensorId;
+    chip.innerHTML = "<b>" + sensorId + "</b>" + SENSOR_NAMES[sensorId].split(" ").slice(0, 3).join(" ");
+    sensorStrip.appendChild(chip);
+  }
+}
+
+function updateSensorStrip() {
+  var i;
+  for (i = 0; i < SENSOR_CHIP_IDS.length; i++) {
+    var sensorId = SENSOR_CHIP_IDS[i];
+    var chip = document.getElementById("sensorChip" + sensorId);
+    var hot = readMazeSensor(simulationState, activeMaze, sensorId);
+    chip.className = hot ? "sensor-chip hot" : "sensor-chip";
+  }
+}
+
+function appendNewEvents() {
+  while (renderedEventCount < simulationState.events.length) {
+    var eventRecord = simulationState.events[renderedEventCount];
+    renderedEventCount = renderedEventCount + 1;
+    var line = document.createElement("div");
+    line.className = eventRecord.kind;
+    line.textContent = (eventRecord.timeMs / 1000).toFixed(1) + "s  " + eventRecord.text;
+    eventLogElement.appendChild(line);
+    while (eventLogElement.childNodes.length > 250) {
+      eventLogElement.removeChild(eventLogElement.firstChild);
+    }
+  }
+  eventLogElement.scrollTop = eventLogElement.scrollHeight;
+}
+
+function drawMazeAndRobot() {
+  var context = drawingContext;
+  var scale = pixelsPerCm;
+  context.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+
+  // floor grid
+  context.strokeStyle = "#c9c0aa";
+  context.lineWidth = 1;
+  var g;
+  for (g = 1; g < GRID_COLS; g++) {
+    context.beginPath();
+    context.moveTo(g * CELL_CM * scale, 0);
+    context.lineTo(g * CELL_CM * scale, mazeCanvas.height);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(0, g * CELL_CM * scale);
+    context.lineTo(mazeCanvas.width, g * CELL_CM * scale);
+    context.stroke();
+  }
+
+  // exit tape
+  var exit = activeMaze.exit;
+  context.fillStyle = "#2e7d46";
+  var tapePx = 7 * scale;
+  var ex = exit.col * CELL_CM * scale;
+  var ey = exit.row * CELL_CM * scale;
+  var cellPx = CELL_CM * scale;
+  if (exit.side === "E") { context.fillRect(ex + cellPx - tapePx, ey, tapePx, cellPx); }
+  if (exit.side === "W") { context.fillRect(ex, ey, tapePx, cellPx); }
+  if (exit.side === "N") { context.fillRect(ex, ey, cellPx, tapePx); }
+  if (exit.side === "S") { context.fillRect(ex, ey + cellPx - tapePx, cellPx, tapePx); }
+
+  // start marker
+  context.fillStyle = "rgba(69, 212, 131, 0.25)";
+  context.fillRect(activeMaze.start.col * cellPx, activeMaze.start.row * cellPx, cellPx, cellPx);
+
+  // walls
+  context.strokeStyle = "#3a3428";
+  context.lineWidth = 6;
+  context.lineCap = "round";
+  var segments = listWallSegments(activeMaze);
+  var s;
+  for (s = 0; s < segments.length; s++) {
+    context.beginPath();
+    context.moveTo(segments[s].x1 * scale, segments[s].y1 * scale);
+    context.lineTo(segments[s].x2 * scale, segments[s].y2 * scale);
+    context.stroke();
+  }
+
+  // breadcrumb trail
+  context.fillStyle = "rgba(255, 122, 26, 0.55)";
+  var t;
+  for (t = 0; t < simulationState.trail.length; t++) {
+    context.beginPath();
+    context.arc(simulationState.trail[t].x * scale, simulationState.trail[t].y * scale, 2.4, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  // crash marks
+  context.strokeStyle = "#c62828";
+  context.lineWidth = 3;
+  var k;
+  for (k = 0; k < simulationState.crashMarks.length; k++) {
+    var mark = simulationState.crashMarks[k];
+    var mx = mark.x * scale;
+    var my = mark.y * scale;
+    context.beginPath();
+    context.moveTo(mx - 6, my - 6); context.lineTo(mx + 6, my + 6);
+    context.moveTo(mx - 6, my + 6); context.lineTo(mx + 6, my - 6);
+    context.stroke();
+  }
+
+  // sensor rays
+  var radians = simulationState.headingDeg * Math.PI / 180;
+  var rx = simulationState.x * scale;
+  var ry = simulationState.y * scale;
+
+  function drawRay(angleOffsetDeg, lengthCm, color) {
+    var a = (simulationState.headingDeg + angleOffsetDeg) * Math.PI / 180;
+    context.strokeStyle = color;
+    context.lineWidth = 2;
+    context.setLineDash([4, 4]);
+    context.beginPath();
+    context.moveTo(rx, ry);
+    context.lineTo(rx + Math.cos(a) * lengthCm * scale, ry - Math.sin(a) * lengthCm * scale);
+    context.stroke();
+    context.setLineDash([]);
+  }
+
+  var frontCm = Math.min(measureFrontCm(simulationState, activeMaze), 60);
+  drawRay(0, frontCm + FRONT_SENSOR_OFFSET_CM,
+    readMazeSensor(simulationState, activeMaze, 5) ? "#e53935" : "#2e7d46");
+  drawRay(PROX_ANGLE_DEG, PROX_RANGE_CM,
+    readMazeSensor(simulationState, activeMaze, 3) ? "#e53935" : "rgba(46,125,70,0.5)");
+  drawRay(-PROX_ANGLE_DEG, PROX_RANGE_CM,
+    readMazeSensor(simulationState, activeMaze, 4) ? "#e53935" : "rgba(46,125,70,0.5)");
+
+  // front distance label
+  context.fillStyle = "#3a3428";
+  context.font = "bold 11px system-ui";
+  context.fillText(measureFrontCm(simulationState, activeMaze).toFixed(0) + " cm",
+    rx + Math.cos(radians) * 26, ry - Math.sin(radians) * 26);
+
+  // robot body
+  context.save();
+  context.translate(rx, ry);
+  context.rotate(-radians);
+  context.fillStyle = "#ff7a1a";
+  context.strokeStyle = "#b35008";
+  context.lineWidth = 2;
+  context.beginPath();
+  context.moveTo(9 * scale, 0);
+  context.lineTo(-6 * scale, 6.5 * scale);
+  context.lineTo(-3.5 * scale, 0);
+  context.lineTo(-6 * scale, -6.5 * scale);
+  context.closePath();
+  context.fill();
+  context.stroke();
+  context.restore();
+}
+
+function updateResultBanner() {
+  if (simulationState.finished) {
+    resultBanner.className = "banner win";
+    resultBanner.textContent = "ESCAPED! " + (simulationState.timeMs / 1000).toFixed(1) + "s \u00B7 " +
+      simulationState.crashCount + " bump(s)";
+  } else if (!simulationState.running && simulationState.timeMs > 0) {
+    resultBanner.className = "banner crash";
+    resultBanner.textContent = "PROGRAM ENDED INSIDE THE MAZE";
+  } else {
+    resultBanner.className = "banner";
+  }
+}
+
+function resetSimulation() {
+  activeMaze = MAZE_LIBRARY[mazeSelect.value];
+  simulationState = createSimulationState(activeMaze, activeExample.program, Number(driftSlider.value));
+  simulationPaused = true;
+  renderedEventCount = 0;
+  eventLogElement.innerHTML = "";
+  renderProgramLines();
+  renderSensorStrip();
+  updateSensorStrip();
+  updateResultBanner();
+  drawMazeAndRobot();
+}
+
+function loadExample(exampleId) {
+  var i;
+  for (i = 0; i < EXAMPLES.length; i++) {
+    if (EXAMPLES[i].id === exampleId) {
+      activeExample = EXAMPLES[i];
+    }
+  }
+  mazeSelect.value = activeExample.mazeId;
+  lessonPanel.innerHTML = activeExample.lesson;
+  resetSimulation();
+}
+
+var lastFrameTime = 0;
+
+function animationFrame(timestamp) {
+  var deltaMs = Math.min(50, timestamp - lastFrameTime);
+  lastFrameTime = timestamp;
+  if (!simulationPaused && simulationState.running && !simulationState.finished) {
+    advanceSimulation(simulationState, activeMaze, deltaMs * Number(simSpeedSlider.value));
+    highlightCurrentLine();
+    updateSensorStrip();
+    appendNewEvents();
+    updateResultBanner();
+  }
+  drawMazeAndRobot();
+  requestAnimationFrame(animationFrame);
+}
+
+runButton.addEventListener("click", function () {
+  if (!simulationState.running && (simulationState.finished || simulationState.timeMs > 0)) {
+    resetSimulation();
+  }
+  simulationPaused = false;
+});
+pauseButton.addEventListener("click", function () { simulationPaused = true; });
+resetButton.addEventListener("click", resetSimulation);
+
+exampleSelect.addEventListener("change", function () { loadExample(exampleSelect.value); });
+mazeSelect.addEventListener("change", resetSimulation);
+simSpeedSlider.addEventListener("input", function () { simSpeedValue.textContent = simSpeedSlider.value + "x"; });
+driftSlider.addEventListener("input", function () {
+  driftValue.textContent = driftSlider.value + "%";
+  resetSimulation();
+});
+
+copyProgramButton.addEventListener("click", function () {
+  var cleanProgram = simulationState.instructions.map(function (instruction) {
+    return instruction.op + (("QZX".indexOf(instruction.op) >= 0) ? "" : " " + instruction.arg);
+  }).join("\n");
+  navigator.clipboard.writeText(cleanProgram).then(function () {
+    copyProgramButton.textContent = "Copied! Paste into the Workshop's program box.";
+  }).catch(function () {
+    copyProgramButton.textContent = cleanProgram; // fallback: show it for manual copy
+  });
+});
+
+populateSelectors();
+loadExample(EXAMPLES[0].id);
+requestAnimationFrame(animationFrame);
+</script>
+</body>
+</html>

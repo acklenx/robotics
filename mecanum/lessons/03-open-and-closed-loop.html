@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>03. Did It Actually Turn? - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 03 &middot; 60 minutes</p>
+  <h1>Did It Actually Turn?</h1>
+  <p class="subtitle">Open loop vs closed loop</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Run the same move with the IMU off and on, measure the difference, and explain what the robot 'knows' in each case.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Open loop: do the plan and hope (timed motors, no checking)</li><li>Closed loop: measure what actually happened and correct</li><li>The IMU (MPU-6050 or BNO055) measures how far the robot has turned</li><li>Feedback is the THINK that turns a toy into a robot</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>With heading hold off, the robot drives the square on timing alone: it never checks. With it on, it senses its heading the whole way, thinks about the error, and corrects as it goes, then squares up at the end if anything is left.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Mark a start spot and a start direction with tape (an arrow on the floor).</li><li>Check the IMU: in the app console type i. You should see 'on MPU-6050 0x68' (or BNO055 0x28).</li><li>Watch the Sensors tab: the big IMU number is the heading, 0 to 360 degrees clockwise. Turn the robot by hand and watch it follow.</li><li>Program tab: open 'Example: IMU showdown (square without, then with)' and read the steps. Heading hold off, a square, wait 3 seconds, heading hold on, the same square.</li><li>Press RUN. During the first square, mark where each corner really is and which way the robot ends up facing. The block it is doing lights up.</li><li>During the second square, mark the corners again. Compare the two sets of marks and measure how many degrees off the robot faced at the end of each.</li><li>Run it twice more. Is the open-loop error the same every time? Is the closed-loop one?</li><li>Drive by hand with the pad: strafe sideways with heading hold on (in), then off (if). With it on, the nose stays pointing the same way.</li><li>Discuss: what did the robot know in the second square that it did not know in the first?</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Lift one side of the robot slightly while it turns (carefully). Which mode notices?</li><li>Run on carpet and on a smooth floor, heading hold off. Does the error change?</li><li>Build your own test in the Program tab: turn right 90 four times, with heading hold off and then on.</li><li>Could a robot be closed loop without an IMU? What else could it measure?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>i says 'none found'</td><td>SDA and SCL swapped, or a loose wire. A4 is SDA, A5 is SCL.</td></tr><tr><td>Heading drifts slowly when sitting still</td><td>The MPU-6050 measures its offset during the first second after power-on. Restart with the robot sitting still.</td></tr><tr><td>IMU on, but the turn is still wrong</td><td>Check the IMU is flat and firmly mounted. A loose board measures its own wobble.</td></tr><tr><td>'move: slowing to N%' in the console</td><td>The robot slowed the whole move so no wheel goes over its top speed. The path stays the same, it just takes longer.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>This is the strongest demo in the course. Do the open-loop square first and let them see the scatter before revealing the IMU. On an uncalibrated robot each closed-loop move ends with a little wiggle: the settle step correcting what is left. After auto-calibration (lesson 4) the moves stop early enough for their momentum to land them on target, and the wiggle mostly disappears: point that out too.</p>
+    <p><strong>Ages:</strong> K-5: 'eyes closed vs eyes open' walking a turn across the room, then the robot. 6-12: talk about error, proportional correction (the sketch corrects 3 rad/s per rad of error), and gyro drift.</p>
+    <p><strong>Materials:</strong> Robot with MPU-6050 or BNO055, tape for start marks, protractor or a printed angle mat, app for the console.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="02-sensing.html">&larr; Same Job, Different Physics</a><a class="page-turn" href="04-calibration.html">Every Robot Is Different &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

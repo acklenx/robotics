@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>05. Sideways Is a Direction - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 05 &middot; 60 minutes</p>
+  <h1>Sideways Is a Direction</h1>
+  <p class="subtitle">Mecanum wheels and adding arrows</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Predict how the robot will move from the direction of each wheel, then drive a path a normal car cannot.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>Each mecanum wheel pushes at 45 degrees</li><li>Four 45-degree pushes add up to forward, sideways, diagonal or spin</li><li>Moving and turning are separate: you can do both at once</li><li>Adding arrows (vectors) is how the robot plans every move</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>DO gets interesting. The robot works out four wheel speeds from three wishes: how fast forward, how fast sideways, how fast turning.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Look at the rollers: they form an X seen from above. Draw each wheel's push arrow on a whiteboard.</li><li>Act it out: four kids are wheels, each pushing at 45 degrees. Who pushes which way to go sideways?</li><li>Drive with the app's pad: w forward, d strafe right, q and e spin. Feel the difference between strafing and turning. With an IMU, the robot holds its nose steady while you strafe.</li><li>Try the two-stick controller page (sticks.html): the left stick sets the speed and turns, the right stick picks which way to slide, so it can slide and turn at the same time. Move and turn at the same time.</li><li>Program tab: open 'Example: crab box' and RUN it: slide right, forward, slide left, back, nose always pointing the same way. Then build a crab zigzag yourself: a repeat with 'drive toward 45 degrees' and 'drive toward -45 degrees' inside.</li><li>Run circle strafe face-in (pk, or 9 on the remote) with a person standing at the middle. The robot circles them, staring at them the whole way.</li><li>Use the Demos tab size slider to shrink circle strafe to 25% for small rooms. Look at its preview: the ticks show where the nose points.</li><li>Program tab: 'Example: J-turn there and back' drives a straight line while the body spins 180. The path stays straight even though the robot is turning.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Walk the crab box yourself, keeping your face pointing one way.</li><li>Which of these moves would a normal car find impossible? Which would it find easy?</li><li>Drive a square without ever turning the nose (only w, d, s, a).</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Strafing drifts forward or backward</td><td>Floor or roller differences. Calibrate (lesson 4); on a slippery floor it gets better, on thick carpet worse.</td></tr><tr><td>The robot spins instead of strafing</td><td>A motor is wired backwards or on the wrong corner. Check with t0-t3.</td></tr><tr><td>A move slower than expected</td><td>The robot slowed the move to keep every wheel under its top speed (it says 'move: slowing to N%').</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The 'four kids as wheels' activity is worth the chaos. Vectors land far better acted out than drawn.</p>
+    <p><strong>Ages:</strong> K-5: 'walk sideways while looking at the teacher', remote driving, the crab box program. 6-12: write the wheel equations (forward + strafe + spin, forward - strafe - spin, ...) and build a program that needs all three at once.</p>
+    <p><strong>Materials:</strong> Robot, IR remote, app (Drive, Program and Demos tabs), whiteboard, open floor about 2 m by 2 m.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="04-calibration.html">&larr; Every Robot Is Different</a><a class="page-turn" href="06-feedback-tuning.html">Too Much, Too Little, Just Right &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

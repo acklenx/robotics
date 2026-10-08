@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>02. Same Job, Different Physics - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 02 &middot; 60 minutes</p>
+  <h1>Same Job, Different Physics</h1>
+  <p class="subtitle">Laser, sonar and infrared</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Measure the same distances with the laser and the sonar, predict which one will be fooled by each object, and explain why.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>The laser (VL53L0X) times a pulse of light; the sonar (HC-SR04) times a click of sound</li><li>Light travels in a narrow beam; sound spreads out in a wide cone</li><li>Every sensor has things it cannot see</li><li>The remote talks in infrared light your eyes cannot see, but a phone camera can</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>Today is all SENSE. Two sensors answer the same question, 'how far is the wall?', with completely different physics, and they disagree in interesting ways.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Connect the Mecanum Workshop app and open the Sensors tab. Find the 'Laser rangefinder and sonar' panel.</li><li>Press Watch (rw). Both numbers update five times a second: the big number is the laser in mm, the line below it is the sonar. 'nothing in range' and 'no echo' mean 'I got nothing back'.</li><li>Hold a book flat in front of the robot at 20 cm, 50 cm and 1 m. Write down both readings each time. Do they agree?</li><li>Now predict, then test: a fuzzy sweater, a window or glass door, a chair leg off to one side, a plastic bottle, your hand.</li><li>Chair leg to the side: the sonar's wide cone often 'sees' it; the laser's narrow beam usually does not. Fuzzy sweater: sound gets soaked up. Glass: the laser can go straight through or bounce.</li><li>Point the IR remote at a phone camera and press a key. The 'invisible' light shows up as a flicker on the screen.</li><li>Make a class table: object, laser, sonar, who was right, why.</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>Find the farthest thing the laser can still see. Past about 1.2 m it says 'nothing in range'.</li><li>Find an object the sonar sees and the laser misses, and the other way round.</li><li>Which sensor would you put on the front of a robot vacuum? Which on a robot that drives past windows?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>Laser panel says 'not found'</td><td>The VL53L0X was not found at start-up. Check SDA to A4 and SCL to A5, then restart the robot; it only looks once, at power-on.</td></tr><tr><td>Sonar says 'A2/A3 used by sensors'</td><td>A line or light sensor is wired to A2 or A3 in the running layout. The sonar steps aside on purpose. Use the ADS1115 layout or move those sensors.</td></tr><tr><td>Laser always reads short</td><td>The little coloured protective film is still on the sensor window. Peel it off.</td></tr><tr><td>Both numbers jump around</td><td>Normal near the edge of what each can see. Hold the object still and read several times.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>The goal is not 'which sensor is best' but 'every sensor has blind spots, and you can predict them from the physics'. Let them be wrong in their predictions; the surprises are the memorable part.</p>
+    <p><strong>Ages:</strong> K-5: just two objects (book and sweater) and the phone-camera trick; talk about bats and dolphins for sonar. 6-12: compute speed of sound from the sonar (343 m/s, there and back) and discuss why the laser needs picosecond timing.</p>
+    <p><strong>Materials:</strong> Robot with laser and sonar, app on a tablet or laptop, tape measure, book, fuzzy sweater or towel, glass or window, chair, phone with a camera.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="01-robot-or-not.html">&larr; Robot or Not?</a><a class="page-turn" href="03-open-and-closed-loop.html">Did It Actually Turn? &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>

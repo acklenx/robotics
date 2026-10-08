@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>10. The 32 KB Backpack - Maker Lab Kids</title>
+<link rel="stylesheet" href="../../css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
+  <div class="wordmark">Mecanum Robot<small>Intro to Robotics</small></div>
+  <nav class="site-nav"><a href="../../index.html">Home</a><a href="index.html">Lessons</a><a href="../index.html">Mecanum app</a><a href="../sticks.html">Sticks</a></nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">Lesson 10 &middot; 60 minutes</p>
+  <h1>The 32 KB Backpack</h1>
+  <p class="subtitle">Engineering is choosing</p>
+
+  <section class="card goal">
+    <h2>Today's goal</h2>
+    <p>Choose a feature set that fits in the Arduino's memory, justify every choice, and prove it fits by compiling it.</p>
+  </section>
+
+  <section class="card">
+    <h2>Ideas in this lesson</h2>
+    <ul><li>The Arduino Uno has about 32 KB for the program, and our sketch nearly fills it</li><li>Every feature costs memory, and you cannot have everything</li><li>Good engineering is choosing what matters for THIS robot</li><li>Compile flags (USE_...) switch features in and out</li></ul>
+  </section>
+
+  <section class="card sense">
+    <h2>Sense &rarr; Think &rarr; Do</h2>
+    <p>Before any robot senses, thinks or does anything, someone chose which senses, thoughts and actions it has room for. Today you are that someone.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the session runs</h2>
+    <ol><li>Show the budget: about 32.2 KB in all. The default build uses about 32.2 KB: it is full.</li><li>Hand out the price list: IMU 1.9 KB, laser 1.3 KB, IR remote 0.8 KB, 20 extra demos 0.75 KB, ADS1115 inputs 0.35 KB, mux 0.34 KB (off by default), sonar 0.3 KB.</li><li>Each group picks a mission: maze runner, line racer, show robot for a party, classroom-safe robot.</li><li>Choose a loadout for the mission. It must fit. Write why each feature is in or out.</li><li>Open the sketch and set the USE_ flags at the top (1 = in, 0 = out). Compile in the Arduino IDE and read 'Sketch uses N bytes'. Did your estimate match?</li><li>Flash it and show the robot doing its mission. The app greys out demos the robot does not have.</li><li>Discuss: the extra demos and everything else do not quite fit together. Which would you drop, and why?</li></ol>
+  </section>
+
+  <section class="card">
+    <h2>Try this</h2>
+    <ul><li>A phone has a million times more memory. Why would anyone still build robots on an Uno?</li><li>Which feature is the best value (most useful per KB) for your mission?</li><li>If you had 1 KB more, what would you add?</li></ul>
+  </section>
+
+  <section class="card">
+    <h2>When it goes wrong</h2>
+    <table class="watch">
+      <tr><th>What you see</th><th>What it means</th></tr>
+      <tr><td>'Sketch too big' when compiling</td><td>Over budget: turn one more feature off and compile again.</td></tr><tr><td>A feature is missing on the robot</td><td>Its USE_ flag is 0, or the part was not found at start-up (check the console).</td></tr><tr><td>Demos greyed out in the app</td><td>Built without USE_EXTRA_DEMOS. Expected: the robot tells the app which demos it has.</td></tr>
+    </table>
+  </section>
+
+  <details class="card teacher">
+    <summary>Notes for the grown-up</summary>
+    <p>This lesson works best for older kids, but the trade-off idea works at any age as a 'packing for a trip' game. The real story: this sketch went from 84 bytes free to fitting a laser, an IR remote and a sonar by rewriting parts to be smaller. Then in 0.10.19 the laser had to come out to make room for calibration saved on the robot, and in 0.10.20 it came back: the calibration runs moved into their own program, calibration.ino (then named mecanum_calibration.ino), made from the same source with the sensors left out. Two programs sharing one EEPROM is how real products do it: a factory test program, then the product.</p>
+    <p><strong>Ages:</strong> K-5: 'pack the backpack' with paper cards for each feature and a fixed number of slots. 6-12: compile real builds and compare estimated vs actual sizes.</p>
+    <p><strong>Materials:</strong> Laptop with Arduino IDE (or arduino-cli) and the sketch, robot, USB cable, feature price cards, mission cards.</p>
+  </details>
+
+  <div class="page-turns"><a class="page-turn" href="09-robots-go-wrong.html">&larr; Robots Go Wrong</a><a class="page-turn" href="index.html">All lessons &rarr;</a></div>
+</main>
+
+<script src="../../js/lesson-page.js"></script>
+</body>
+</html>
