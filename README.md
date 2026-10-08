@@ -6,10 +6,13 @@ and rename pages, the two-stick controller, the lesson pages, the 2WD robot's
 app and lessons, the maze simulator, and the robots' firmware (ir.ino,
 mecanum_holonomic.ino, calibration.ino, rename.ino).
 
-It is a static site: no build step. Cloudflare Pages serves this repository as
-is (build command: none; output directory: /). `_headers` carries the
-Content-Security-Policy, which has no unsafe-eval: the Blocks page runs its
-programs in an interpreter for that reason.
+It is a static site with no build step, served by GitHub Pages from the main
+branch's root: Settings, Pages, "Deploy from a branch", main, "/ (root)",
+custom domain robots.makerlabkids.com, "Enforce HTTPS". The DNS record lives at
+Cloudflare: a CNAME for `robots` pointing at `acklenx.github.io` (DNS only).
+`CNAME` and `.nojekyll` here are what GitHub Pages reads. `_headers` is kept
+for a host that honours it (Cloudflare Pages); GitHub Pages serves no custom
+headers, which is fine: no page uses eval, so no policy is needed for safety.
 
 The pages that need a robot (Web Serial, Web Bluetooth) only work over https
 or on localhost. `npm run serve` serves the site on port 8191.

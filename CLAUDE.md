@@ -5,8 +5,10 @@ that used to live under /abot/ on makerlabkids.com. The site root here is what
 /abot/ was there, so `mecanum/ir.html` is https://robots.makerlabkids.com/mecanum/ir.html.
 Links to the main site are absolute (https://makerlabkids.com/...).
 
-Static site, no build. Cloudflare Pages deploys main. `_headers` sets a
-Content-Security-Policy without unsafe-eval: never add eval or new Function to a page.
+Static site, no build. GitHub Pages serves the main branch's root at the custom
+domain (CNAME file; .nojekyll keeps Jekyll off). Never add eval or new Function to
+a page: makerlabkids.com's CSP forbids it and the Blocks page runs programs in an
+interpreter for that reason.
 
 ## Mecanum calibration sketch
 
