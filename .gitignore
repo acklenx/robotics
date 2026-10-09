@@ -1,5 +1,6 @@
-node_modules/
-scripts/node_modules/
+node_modules
+scripts/node_modules
+.wrangler/
 temp/
 .DS_Store
 *.mp4
