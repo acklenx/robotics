@@ -1,14 +1,13 @@
 # CLAUDE.md
 
-This repository is robots.makerlabkids.com: the robot workshop pages and firmware
+This repository is robotics.makerlabkids.com: the robot workshop pages and firmware
 that used to live under /abot/ on makerlabkids.com. The site root here is what
-/abot/ was there, so `mecanum/ir.html` is https://robots.makerlabkids.com/mecanum/ir.html.
+/abot/ was there, so `mecanum/ir.html` is https://robotics.makerlabkids.com/mecanum/ir.html.
 Links to the main site are absolute (https://makerlabkids.com/...).
 
-Static site, no build. GitHub Pages serves the main branch's root at the custom
-domain (CNAME file; .nojekyll keeps Jekyll off). Never add eval or new Function to
-a page: makerlabkids.com's CSP forbids it and the Blocks page runs programs in an
-interpreter for that reason.
+Static site, no build. Cloudflare Pages deploys main from the GitHub repository
+acklenx/robotics to https://robotics.makerlabkids.com. `_headers` sets a
+Content-Security-Policy without unsafe-eval: never add eval or new Function to a page.
 
 ## Mecanum calibration sketch
 

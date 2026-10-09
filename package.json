@@ -1,7 +1,7 @@
 {
   "name": "robots-makerlabkids",
   "version": "1.0.0",
-  "description": "robots.makerlabkids.com: the Maker Lab Kids robot workshop (mecanum and 2WD robots): apps, lessons, firmware, tests",
+  "description": "robotics.makerlabkids.com: the Maker Lab Kids robot workshop (mecanum and 2WD robots): apps, lessons, firmware, tests",
   "private": true,
   "scripts": {
     "serve": "python3 -m http.server 8191 --bind 0.0.0.0",
