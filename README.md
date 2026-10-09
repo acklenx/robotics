@@ -17,12 +17,22 @@ or on localhost. `npm run serve` serves the site on port 8191.
 
 ## Tests
 
+The tooling lives in `scripts/` (its package.json is there on purpose: one at
+the root would make Cloudflare Pages try to install dependencies for a site
+that needs none).
+
 ```
-npm install
-node scripts/check-mecanum-shared.js   # the three sketches share one motion engine
-node scripts/check-mecanum-blocks.js   # the Blocks page under the real CSP (headless Chrome)
-npm run test:mecanum                   # every simulator suite (needs arduino-cli + simavr)
-npm run test:site                      # every page parses, every internal link resolves
+cd scripts && npm install
+npm run check:shared     # the three sketches share one motion engine
+npm run check:blocks     # the Blocks page under the real CSP (headless Chrome)
+npm run test:mecanum     # every simulator suite (needs arduino-cli + simavr)
+npm run test:site        # every page parses, every internal link resolves
+```
+
+(`npm run test:workshop`, the 2WD app's headless test, has crashed in jsdom
+since before the move: "fetch is not defined" inside Blockly. Not yet fixed.)
+
+```
 ```
 
 Enable the 20 MB guard once per clone: `git config core.hooksPath .githooks`.

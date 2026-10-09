@@ -5,12 +5,13 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const siteRoot = path.resolve(__dirname, "..");   // the site root: one level up
 
 let failures = 0;
 function fail(message) { failures++; console.log("FAIL " + message); }
 function pass(message) { console.log("PASS " + message); }
 
-const root = __dirname;
+const root = path.resolve(__dirname, '..');   // the site root: one level up
 const skipDirectories = ["node_modules", ".git"];
 
 function collectHtmlFiles(directory, found) {
