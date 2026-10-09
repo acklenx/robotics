@@ -31,8 +31,6 @@ npm run test:site        # every page parses, every internal link resolves
 
 (`npm run test:workshop`, the 2WD app's headless test, has crashed in jsdom
 since before the move: "fetch is not defined" inside Blockly. Not yet fixed.)
-
-```
 ```
 
 Enable the 20 MB guard once per clone: `git config core.hooksPath .githooks`.
