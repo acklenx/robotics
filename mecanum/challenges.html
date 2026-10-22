@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
+<title>Remote Challenges 0.1.0 - Maker Lab Kids</title>
+<style>
+  :root {
+    --ink: #1c1f24;
+    --dim: #5b6670;
+    --orange: #e65100;
+    --blue: #0b6fb3;
+    --green: #1f8a4c;
+    --red: #c62828;
+    --purple: #5b47c9;
+    --paper: #fff;
+    --panel: #f4f6f8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #e9ecef; }
+  body { color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 13px; line-height: 1.35; }
+  .sheet { background: var(--paper); max-width: 8.5in; margin: 16px auto; padding: 0.45in 0.5in; box-shadow: 0 2px 14px rgba(0,0,0,0.15); }
+  .top { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .top img { height: 72px; width: auto; }
+  .top h1 { font-size: 22px; margin: 0; line-height: 1.1; }
+  .top .sub { color: var(--dim); font-size: 13px; }
+  .top .back { margin-left: auto; font-size: 12px; }
+  .top.small { margin-top: 0; }
+  .top.small img { height: 36px; }
+  .top.small h1 { font-size: 16px; }
+  p { margin: 4px 0; }
+  .dim { color: var(--dim); }
+  .key {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 1.75em; height: 1.75em; padding: 0 0.4em; margin: 1px 1px;
+    border-radius: 6px; background: #fff; border: 1.5px solid #9aa4ae; color: var(--ink);
+    font-weight: 700; font-size: 12px; line-height: 1; vertical-align: middle;
+  }
+  .key.star { border-color: var(--orange); color: var(--orange); }
+  .key.pound { border-color: var(--red); color: var(--red); }
+  .key.arrow { border-color: var(--blue); color: var(--blue); }
+  .key.ok { border-color: var(--green); color: var(--green); }
+  .key.turn { border-color: var(--purple); color: var(--purple); }
+  .say { color: var(--green); font-weight: 700; }
+
+  .legend { background: var(--panel); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; font-size: 12.5px; }
+  .legend .how { grid-column: 1 / -1; border-top: 1px solid #dde2e6; padding-top: 5px; margin-top: 2px; }
+  .legend .row { display: flex; align-items: center; gap: 7px; }
+  .legend svg { flex: 0 0 auto; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card { background: var(--panel); border-radius: 10px; padding: 8px 10px; display: grid; grid-template-columns: 150px 1fr; gap: 6px 10px; align-items: start; }
+  .card .pic { background: #fff; border: 1px solid #dde2e6; border-radius: 8px; width: 150px; height: 120px; }
+  .card .pic svg { display: block; }
+  .card h2 { font-size: 14.5px; margin: 0 0 3px; line-height: 1.15; }
+  .card h2 .n { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--orange); color: #fff; font-size: 12.5px; margin-right: 6px; vertical-align: middle; }
+  .card .goal { margin: 0 0 4px; }
+  .card .uses { font-size: 11.5px; color: var(--dim); margin-top: 3px; }
+  .card .tip { font-size: 12px; color: var(--dim); margin-top: 3px; }
+  .card.own .pic { background-image: linear-gradient(#eef1f4 1px, transparent 1px), linear-gradient(90deg, #eef1f4 1px, transparent 1px); background-size: 15px 15px; }
+  .page2 { margin-top: 14px; }
+  .foot { margin-top: 10px; font-size: 12px; color: var(--dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  details.answers { margin-top: 14px; background: var(--panel); border-radius: 10px; padding: 8px 12px; }
+  details.answers summary { cursor: pointer; font-weight: 700; color: var(--orange); }
+  details.answers table { border-collapse: collapse; margin-top: 6px; }
+  details.answers td { padding: 3px 6px; border-bottom: 1px solid #dde2e6; vertical-align: middle; }
+  details.answers td.seq { white-space: nowrap; }
+
+  @media (max-width: 640px) {
+    .grid, .legend { grid-template-columns: 1fr; }
+    .sheet { margin: 0; padding: 16px; box-shadow: none; }
+  }
+  @media print {
+    html, body { background: #fff; }
+    .sheet { margin: 0; padding: 0; box-shadow: none; max-width: none; }
+    .top .back, .no-print { display: none; }
+    .card, .legend { break-inside: avoid; page-break-inside: avoid; }
+    .page2 { break-before: page; page-break-before: always; margin-top: 0; }
+    .key { color: #000; background: #fff; border-color: #999; }
+    .key.star { border-color: var(--orange); color: var(--orange); }
+    .key.pound { border-color: var(--red); color: var(--red); }
+    .key.arrow { border-color: var(--blue); color: var(--blue); }
+    .key.ok { border-color: var(--green); color: var(--green); }
+    .key.turn { border-color: var(--purple); color: var(--purple); }
+    .card, .legend { background: #fff; border: 1px solid #c8ced4; }
+    .card .pic, .card .pic svg { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah-o" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0.5 L8,4 L0,7.5 z" fill="#e65100"/></marker>
+    <marker id="ah-p" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0.5 L8,4 L0,7.5 z" fill="#5b47c9"/></marker>
+    <marker id="ah-b" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0.5 L8,4 L0,7.5 z" fill="#0b6fb3"/></marker>
+  </defs>
+</svg>
+<div class="sheet">
+  <div class="top">
+    <img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
+    <div><h1>Remote challenges: can you program it?</h1><div class="sub">Program each shape from the remote, save it in a slot, run it. Does the robot draw the picture?</div></div>
+    <a class="back" href="remote-guide.html">The remote guide &rarr;</a>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="grid" id="page1"></div>
+
+  <div class="page2">
+    <div class="top small">
+      <img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
+      <div><h1>Remote challenges, page 2</h1><div class="sub">The last ones slide sideways. Watch the nose: it keeps pointing the same way.</div></div>
+    </div>
+    <div class="grid" id="page2"></div>
+  </div>
+
+  <div class="foot">
+    <span>Stuck? The remote guide has every key. Save a challenge in its own slot so you can run them all.</span>
+    <span>Pressed <span class="key star">*</span> by mistake? Wait 3 seconds, it forgets. <span class="key pound">#</span> always gets you out.</span>
+  </div>
+
+  <details class="answers no-print">
+    <summary>Answers (for the instructor, not printed)</summary>
+    <p class="dim">One way to do each one. Any program that draws the shape counts. After the last <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span>, press <span class="key ok">OK</span> to try it without saving.</p>
+    <table id="answers"></table>
+  </details>
+</div>
+
+<script>
+// Steps: f/b forward/back cm, l/r slide cm, q/e forward diagonals left/right cm,
+// t turn degrees (negative = left), p pause s, n repeat times in all, c circle cm across.
+// The drawing is made from the steps, so it always shows what the robot does.
+const CHALLENGES = [
+  { title: 'Out and back', goal: 'Drive out 50 cm, then come straight back to where you started.', steps: [['f',50],['b',50]] },
+  { title: 'Turn around', goal: 'Drive out 50 cm, spin to face home, drive back. You end up facing the other way.', steps: [['f',50],['t',180],['f',50]] },
+  { title: 'The L', goal: 'Forward 50 cm, turn right, forward 30 cm.', steps: [['f',50],['t',90],['f',30]], tip: 'No number after a turn means 90.' },
+  { title: 'The square', goal: 'Four sides of 30 cm and four right turns, back to the start.', steps: [['f',30],['t',90],['n',4]], tip: 'Eight steps the long way. Can you do it in three with the 8 key?' },
+  { title: 'The stop sign', goal: 'Forward 40 cm, stop for 2 seconds, then 40 cm more.', steps: [['f',40],['p',2],['f',40]] },
+  { title: 'The triangle', goal: 'Three sides of 40 cm. Every corner is the same turn.', steps: [['f',40],['t',120],['n',3]], tip: 'All the turns together add up to 360. So each one is...?' },
+  { title: 'The stairs', goal: 'Up 25, right 25, up 25, right 25, up 25, right 25. Turn right, then turn left, and repeat.', steps: [['f',25],['t',90],['f',25],['t',-90],['n',3]] },
+  { title: 'The circle', goal: 'A circle 50 cm across. The nose points at the middle all the way round.', steps: [['c',50]], tip: 'One key does it. Which one?' },
+  { title: 'The star', goal: 'Five points. Each side is 40 cm and every turn is 144 degrees.', steps: [['f',40],['t',144],['n',5]] },
+  { title: 'The spiral', goal: 'Each side is longer than the last: 20, 40, 60, 80. Turn right between them.', steps: [['f',20],['t',90],['f',40],['t',90],['f',60],['t',90],['f',80]], tip: 'No repeat here: every step is different.' },
+  { title: 'The hexagon', goal: 'Six sides of 20 cm. How big is each turn?', steps: [['f',20],['t',60],['n',6]] },
+  { title: 'The crab', goal: 'Slide 30 cm to the right, then 30 cm back to the left. No turning!', steps: [['r',30],['l',30]], tip: 'The nose points forward the whole time.' },
+  { title: 'The square, no turning', goal: 'The same square as number 4, but the robot never turns: forward, slide right, back, slide left.', steps: [['f',30],['r',30],['b',30],['l',30]], tip: 'Which way does the nose point at the end?' },
+  { title: 'Dodge the cone', goal: 'Forward 15, swerve right around the cone on the diagonal, swerve back, forward 15.', steps: [['f',15],['e',30],['q',30],['f',15]], props: [{ type: 'cone', x: 0, y: 36 }], nolabels: true, tip: 'The diagonal keys are 7 and 9.' },
+  { title: 'Make your own', goal: 'Draw a path on the grid, then program it. Each square is 10 cm. Does the robot draw your shape?', own: true },
+];
+
+const KEY = {
+  f: '<span class="key arrow">&#9650;</span>', b: '<span class="key arrow">&#9660;</span>',
+  l: '<span class="key arrow">&#9664;</span>', r: '<span class="key arrow">&#9654;</span>',
+  tl: '<span class="key turn">1</span>', tr: '<span class="key turn">3</span>',
+  q: '<span class="key">7</span>', e: '<span class="key">9</span>', p: '<span class="key">5</span>',
+  n: '<span class="key">8</span>', c: '<span class="key">0</span>',
+  star: '<span class="key star">*</span>', ok: '<span class="key ok">OK</span>',
+};
+const keyFor = s => s[0] === 't' ? (s[1] < 0 ? KEY.tl : KEY.tr) : KEY[s[0]];
+const digits = v => String(v).split('').map(d => '<span class="key">' + d + '</span>').join('');
+
+// Expand repeats: an n sends the run back to the step after the previous n, n times in all.
+function expand(steps) {
+  const out = []; let loopStart = 0;
+  for (const s of steps) {
+    if (s[0] === 'n') {
+      const body = out.slice(loopStart);
+      for (let i = 1; i < s[1]; i++) out.push(...body.map(b => Object.assign({}, b, { again: true })));
+      loopStart = out.length;
+    } else out.push({ k: s[0], v: s[1], again: false });
+  }
+  return out;
+}
+
+const C = { o: '#e65100', p: '#5b47c9', b: '#0b6fb3', g: '#1f8a4c', r: '#c62828' };
+const rad = d => d * Math.PI / 180;
+const dirOf = h => [Math.sin(rad(h)), -Math.cos(rad(h))];   // heading 0 = up, y down on screen
+
+// Walk the steps: geometry in cm, then fit to the box in px.
+function draw(ch, W, H) {
+  const items = []; let x = 0, y = 0, h = 0;
+  const pts = [[0, 0]];
+  const start = { x: 0, y: 0, h: 0 };
+  const said = new Set();
+  const once = (kind, v) => { if (ch.nolabels) return null; const id = kind + ':' + v; if (said.has(id)) return null; said.add(id); return String(v); };
+  for (const s of expand(ch.steps || [])) {
+    const d = dirOf(h);
+    if (s.k === 'f' || s.k === 'b') {
+      const sign = s.k === 'f' ? 1 : -1;
+      const nx = x + sign * s.v * d[0], ny = y + sign * s.v * d[1];
+      items.push({ t: 'line', a: [x, y], b: [nx, ny], c: C.o, back: s.k === 'b', label: once('drive', s.v), h });
+      x = nx; y = ny; pts.push([x, y]);
+    } else if (s.k === 'l' || s.k === 'r' || s.k === 'q' || s.k === 'e') {
+      const ang = s.k === 'l' ? h - 90 : s.k === 'r' ? h + 90 : s.k === 'q' ? h - 45 : h + 45;
+      const dd = dirOf(ang);
+      const nx = x + s.v * dd[0], ny = y + s.v * dd[1];
+      items.push({ t: 'line', a: [x, y], b: [nx, ny], c: C.b, dash: true, label: once('slide', s.v), h: ang });
+      x = nx; y = ny; pts.push([x, y]);
+      items.push({ t: 'bot', p: [x, y], h, kind: 'ghost' });
+    } else if (s.k === 't') {
+      items.push({ t: 'arc', p: [x, y], from: h, to: h + s.v, label: once('turn', Math.abs(s.v)) });
+      h += s.v;
+    } else if (s.k === 'p') {
+      items.push({ t: 'clock', p: [x, y], label: s.v + ' s' });
+    } else if (s.k === 'c') {
+      const r = s.v / 2, cx = x + r * d[0], cy = y + r * d[1];
+      items.push({ t: 'circle', c: [cx, cy], r, p: [x, y], label: String(s.v) });
+      pts.push([cx - r, cy - r], [cx + r, cy + r]);
+    }
+  }
+  for (const pr of ch.props || []) { items.push({ t: pr.type, p: [pr.x, pr.y * -1] }); pts.push([pr.x, -pr.y]); }
+  const end = { x, y, h };
+
+  // fit
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  let minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  if (maxx - minx < 20) { minx -= 10; maxx += 10; }
+  if (maxy - miny < 20) { miny -= 10; maxy += 10; }
+  const pad = 22;
+  const sc = Math.min((W - 2 * pad) / (maxx - minx), (H - 2 * pad) / (maxy - miny));
+  const ox = (W - (maxx - minx) * sc) / 2 - minx * sc, oy = (H - (maxy - miny) * sc) / 2 - miny * sc;
+  const P = p => [p[0] * sc + ox, p[1] * sc + oy];
+  const f2 = n => n.toFixed(1);
+
+  let svg = '';
+  const bot = (p, hd, kind) => {
+    const q = P(p);
+    const home = kind === 'end' && Math.abs(end.x - start.x) < 1 && Math.abs(end.y - start.y) < 1;
+    const fill = kind === 'start' ? '#c8f0d6' : home ? 'none' : kind === 'end' ? '#ffd6d6' : '#fff';
+    const stroke = kind === 'start' ? C.g : kind === 'end' ? C.r : '#9aa4ae';
+    const k = home ? 1.4 : 1;
+    const dash = home ? ' stroke-dasharray="3 2"' : '';
+    return '<g transform="translate(' + f2(q[0]) + ',' + f2(q[1]) + ') rotate(' + hd + ') scale(' + k + ')"' + (kind === 'ghost' ? ' opacity="0.8"' : '') + '>' +
+      '<rect x="-5" y="-6" width="10" height="13" rx="2.5" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1.4"' + dash + '/>' +
+      '<path d="M-4,-6 L0,-11 L4,-6 z" fill="' + stroke + '"/></g>';
+  };
+  for (const it of items) {
+    if (it.t === 'line') {
+      let a = P(it.a), b = P(it.b);
+      if (it.back) { const d = dirOf(it.h); const off = [-d[1] * 4, d[0] * 4]; a = [a[0] + off[0], a[1] + off[1]]; b = [b[0] + off[0], b[1] + off[1]]; }
+      const m = it.c === C.o ? 'ah-o' : 'ah-b';
+      svg += '<line x1="' + f2(a[0]) + '" y1="' + f2(a[1]) + '" x2="' + f2(b[0]) + '" y2="' + f2(b[1]) + '" stroke="' + it.c + '" stroke-width="2"' + (it.dash ? ' stroke-dasharray="4 3"' : '') + ' marker-end="url(#' + m + ')"/>';
+      if (it.label) {
+        const d = dirOf(it.h); const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+        const side = it.back ? 1 : -1;   // labels to the left of travel, back moves to the right
+        const lx = mid[0] + side * -d[1] * 8, ly = mid[1] + side * d[0] * 8;
+        svg += '<text x="' + f2(lx) + '" y="' + f2(ly) + '" font-size="9" fill="' + it.c + '" text-anchor="middle" dominant-baseline="middle">' + it.label + '</text>';
+      }
+    } else if (it.t === 'arc') {
+      const q = P(it.p), r = 10, a0 = it.from, a1 = it.to, sweep = a1 > a0 ? 1 : 0, large = Math.abs(a1 - a0) > 180 ? 1 : 0;
+      const s0 = dirOf(a0), s1 = dirOf(a1);
+      svg += '<path d="M' + f2(q[0] + r * s0[0]) + ',' + f2(q[1] + r * s0[1]) + ' A' + r + ',' + r + ' 0 ' + large + ',' + sweep + ' ' + f2(q[0] + r * s1[0]) + ',' + f2(q[1] + r * s1[1]) + '" fill="none" stroke="' + C.p + '" stroke-width="1.8" marker-end="url(#ah-p)"/>';
+      if (it.label) {
+        const sm = dirOf((a0 + a1) / 2);
+        svg += '<text x="' + f2(q[0] + (r + 9) * sm[0]) + '" y="' + f2(q[1] + (r + 9) * sm[1]) + '" font-size="8.5" fill="' + C.p + '" text-anchor="middle" dominant-baseline="middle">' + it.label + '&#176;</text>';
+      }
+    } else if (it.t === 'clock') {
+      const q = P(it.p);
+      svg += '<circle cx="' + f2(q[0]) + '" cy="' + f2(q[1]) + '" r="6" fill="#fff" stroke="' + C.r + '" stroke-width="1.5"/>' +
+        '<path d="M' + f2(q[0]) + ',' + f2(q[1] - 4) + ' L' + f2(q[0]) + ',' + f2(q[1]) + ' L' + f2(q[0] + 3) + ',' + f2(q[1] + 1) + '" fill="none" stroke="' + C.r + '" stroke-width="1.3"/>' +
+        '<text x="' + f2(q[0] + 9) + '" y="' + f2(q[1]) + '" font-size="9" fill="' + C.r + '" dominant-baseline="middle">' + it.label + '</text>';
+    } else if (it.t === 'circle') {
+      const c = P(it.c), r = it.r * sc, q = P(it.p);
+      // one lap, the nose on the middle: the robot slides left and comes round
+      svg += '<circle cx="' + f2(c[0]) + '" cy="' + f2(c[1]) + '" r="' + f2(r) + '" fill="none" stroke="' + C.o + '" stroke-width="2" stroke-dasharray="4 3"/>';
+      const ang = [120, 240];   // arrowheads on the lap, going round to the left from the start
+      for (const a of ang) {
+        const s0 = dirOf(180 + a - 6), s1 = dirOf(180 + a);
+        svg += '<path d="M' + f2(c[0] + r * s0[0]) + ',' + f2(c[1] + r * s0[1]) + ' A' + f2(r) + ',' + f2(r) + ' 0 0,0 ' + f2(c[0] + r * s1[0]) + ',' + f2(c[1] + r * s1[1]) + '" fill="none" stroke="' + C.o + '" stroke-width="2" marker-end="url(#ah-o)"/>';
+      }
+      svg += '<circle cx="' + f2(c[0]) + '" cy="' + f2(c[1]) + '" r="2" fill="' + C.o + '"/>';
+      svg += '<line x1="' + f2(c[0] - r) + '" y1="' + f2(c[1]) + '" x2="' + f2(c[0] + r) + '" y2="' + f2(c[1]) + '" stroke="' + C.o + '" stroke-width="1" stroke-dasharray="2 2"/>';
+      svg += '<text x="' + f2(c[0]) + '" y="' + f2(c[1] - 6) + '" font-size="9" fill="' + C.o + '" text-anchor="middle">' + it.label + ' across</text>';
+      svg += bot([it.c[0] - it.r, it.c[1]], 90, 'ghost');   // a quarter of the way round, nose on the middle
+      svg += bot([it.c[0], it.c[1] - it.r], 180, 'ghost');
+    } else if (it.t === 'cone') {
+      const q = P(it.p);
+      svg += '<path d="M' + f2(q[0] - 5) + ',' + f2(q[1] + 5) + ' L' + f2(q[0]) + ',' + f2(q[1] - 6) + ' L' + f2(q[0] + 5) + ',' + f2(q[1] + 5) + ' z" fill="#ffb74d" stroke="' + C.o + '" stroke-width="1.2"/>';
+    } else if (it.t === 'bot') svg += bot(it.p, it.h, it.kind);
+  }
+  svg += bot([start.x, start.y], start.h, 'start');
+  svg += bot([end.x, end.y], end.h, 'end');
+  return '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true">' + svg + '</svg>';
+}
+
+function usesOf(ch) {
+  const seen = new Set(), out = [];
+  for (const s of ch.steps || []) { const k = keyFor(s); if (!seen.has(k)) { seen.add(k); out.push(k); } }
+  return out.join(' ');
+}
+
+function answerOf(ch) {
+  let seq = KEY.star + KEY.star + KEY.star + ' ';
+  for (const s of ch.steps) {
+    const v = s[0] === 't' ? Math.abs(s[1]) : s[1];
+    const dflt = (s[0] === 't' && v === 90) || (s[0] === 'p' && v === 1) || (s[0] === 'n' && v === 2) || (s[0] === 'c' && v === 100) || (!'tpnc'.includes(s[0]) && v === 25);
+    seq += KEY.star + keyFor(s) + (dflt ? '' : digits(v)) + ' ';
+  }
+  return seq + KEY.star + KEY.star + KEY.star + ' <span class="dim">slot</span> ' + KEY.star + KEY.star;
+}
+
+const page1 = document.getElementById('page1'), page2 = document.getElementById('page2'), answers = document.getElementById('answers');
+CHALLENGES.forEach((ch, i) => {
+  const n = i + 1;
+  const card = document.createElement('div');
+  card.className = 'card' + (ch.own ? ' own' : '');
+  card.innerHTML = '<div class="pic">' + (ch.own ? '' : draw(ch, 148, 118)) + '</div>' +
+    '<div><h2><span class="n">' + n + '</span>' + ch.title + '</h2><p class="goal">' + ch.goal + '</p>' +
+    (ch.own ? '' : '<div class="uses">Uses: ' + usesOf(ch) + '</div>') +
+    (ch.tip ? '<div class="tip">' + ch.tip + '</div>' : '') + '</div>';
+  (n <= 8 ? page1 : page2).appendChild(card);
+  if (!ch.own) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + n + '. ' + ch.title + '</td><td class="seq">' + answerOf(ch) + '</td>';
+    answers.appendChild(tr);
+  }
+});
+
+// legend
+const L = document.getElementById('legend');
+const lsvg = (w, inner) => '<svg width="' + w + '" height="22" viewBox="0 0 ' + w + ' 22" aria-hidden="true">' + inner + '</svg>';
+L.innerHTML =
+  '<div class="row">' + lsvg(44, '<line x1="2" y1="11" x2="40" y2="11" stroke="#e65100" stroke-width="2" marker-end="url(#ah-o)"/>') + '<span><b>Drive</b> forward or back, the number is cm</span></div>' +
+  '<div class="row">' + lsvg(44, '<path d="M12,11 A10,10 0 0,1 22,1" fill="none" stroke="#5b47c9" stroke-width="1.8" marker-end="url(#ah-p)"/><text x="30" y="16" font-size="9" fill="#5b47c9">90&#176;</text>') + '<span><b>Turn</b> on the spot, the number is degrees</span></div>' +
+  '<div class="row">' + lsvg(44, '<line x1="2" y1="11" x2="40" y2="11" stroke="#0b6fb3" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ah-b)"/>') + '<span><b>Slide</b> sideways or diagonal: the nose keeps pointing the same way</span></div>' +
+  '<div class="row">' + lsvg(44, '<g transform="translate(10,12)"><rect x="-5" y="-6" width="10" height="13" rx="2.5" fill="#c8f0d6" stroke="#1f8a4c" stroke-width="1.4"/><path d="M-4,-6 L0,-11 L4,-6 z" fill="#1f8a4c"/></g><g transform="translate(34,12)"><rect x="-5" y="-6" width="10" height="13" rx="2.5" fill="#ffd6d6" stroke="#c62828" stroke-width="1.4"/><path d="M-4,-6 L0,-11 L4,-6 z" fill="#c62828"/></g>') + '<span><b>Start</b> (green) and <b>finish</b> (red): the point is the nose</span></div>' +
+  '<div class="how"><b>Program it:</b> ' + KEY.star + KEY.star + KEY.star + ' <span class="say">wiggle</span>, then for each step ' + KEY.star + ' a move key and the number, ' + KEY.star + KEY.star + KEY.star + ' <span class="say">wiggle</span>, a slot ' + digits(1) + '..' + digits(9) + ' and ' + KEY.star + KEY.star + ' <span class="say">nod</span>. Run it: ' + KEY.star + ' slot. ' +
+  'Moves: ' + KEY.f + KEY.b + KEY.l + KEY.r + ' cm, ' + KEY.tl + KEY.tr + ' turn degrees, ' + KEY.q + KEY.e + ' diagonal cm, ' + KEY.p + ' pause seconds, ' + KEY.c + ' circle cm across, ' + KEY.n + ' do it all again, times in all.</div>';
+</script>
+</body>
+</html>

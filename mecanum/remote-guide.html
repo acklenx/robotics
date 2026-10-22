@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#ffffff">
-<title>Remote Guide 0.1.6 - Maker Lab Kids</title>
+<title>Remote Guide 0.1.12 - Maker Lab Kids</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -24,7 +24,7 @@
   body { color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; line-height: 1.35; }
   .sheet { background: var(--paper); max-width: 8.5in; margin: 16px auto; padding: 0.45in 0.5in; box-shadow: 0 2px 14px rgba(0,0,0,0.15); }
   .top { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
-  .top img { height: 36px; width: auto; }
+  .top img { height: 72px; width: auto; }
   .top h1 { font-size: 22px; margin: 0; line-height: 1.1; }
   .top .sub { color: var(--dim); font-size: 13px; }
   .top .back { margin-left: auto; font-size: 12px; }
@@ -47,7 +47,7 @@
   .key.turn { border-color: var(--purple); color: var(--purple); }
   .say { color: var(--green); font-weight: 700; }
   /* The kit's remote, as it looks: black body, white keys with white rings and black digits,
-     red * # OK, blue arrows on a white plus. Colours are kept when printing. */
+     red * # OK, blue arrows on a white plus. Colors are kept when printing. */
   .remote, .remote * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .remote { background: #121212; border-radius: 22px; padding: 22px 16px 24px; width: 236px; zoom: 0.8; margin: 8px auto; box-shadow: inset 0 0 0 3px #262626; }
   .remote .pad { display: grid; grid-template-columns: repeat(3, 56px); gap: 22px 16px; justify-content: center; }
@@ -115,7 +115,7 @@
     .remote { zoom: 0.72; }
     body { font-size: 13px; }
     /* Ink-light remote: white body with a thin outline, keys as outlined circles,
-       the coloured keys keep a pale tint, captions in dark grey */
+       the colored keys keep a pale tint, captions in dark gray */
     .remote { background: #fff; box-shadow: none; border: 1.5px solid #333; }
     .remote .btn { box-shadow: 0 0 0 1.5px #333; background: #fff; }
     .remote .btn.white { background: #fff; }
@@ -142,7 +142,7 @@
   <div class="cols">
     <div>
       <div class="box">
-        <h2>The keys</h2>
+        <h2>The IR remote control</h2>
         <div class="remote">
     <div class="pad">
       <div class="btn white"><b>1</b><small class="cap">turn left</small></div>
@@ -189,7 +189,7 @@
             The robot stays put and spins to face right. Then <span class="key arrow">&#9650;</span> goes that way.
             <svg width="120" height="46" viewBox="0 0 120 46" aria-hidden="true"><rect x="8" y="13" width="26" height="20" rx="3" fill="none" stroke="#5b47c9" stroke-width="2"/><polygon points="21,6 15,13 27,13" fill="#5b47c9"/><path d="M44 16 A14 14 0 0 1 72 16" fill="none" stroke="#5b47c9" stroke-width="2"/><polygon points="72,16 66,10 78,12" fill="#5b47c9"/><rect x="86" y="13" width="26" height="20" rx="3" fill="none" stroke="#5b47c9" stroke-width="2"/><polygon points="119,23 112,17 112,29" fill="#5b47c9"/></svg></div>
         </div>
-        <p style="margin-top:6px"><b>The number after a direction is how far:</b> centimetres for arrows, degrees for <span class="key turn">1</span> and <span class="key turn">3</span>.
+        <p style="margin-top:6px"><b>The number after a direction is how far:</b> centimeters for arrows, degrees for <span class="key turn">1</span> and <span class="key turn">3</span>.
         <span class="key star">*</span><span class="key turn">1</span><span class="key">2</span><span class="key">0</span> is <b>turn left 20 degrees</b>. No number? 25 cm, or a 90 degree turn.</p>
       </div>
 
@@ -237,8 +237,9 @@
         <div class="gest">
           <div><b>Wiggle</b> quick left-right<br>"Listening" / "which slot?"</div>
           <div><b>Nod</b> forward-back<br>"Got it", saved</div>
-          <div><b>Slow shake</b><br>"No": cancelled, empty slot, full</div>
+          <div><b>Slow shake</b><br>"No": canceled, empty slot, full</div>
         </div>
+      </div>
       <div class="box" style="margin-top:10px">
         <h2>Sample: around the box and back</h2>
         <p class="dim">A box sits in front of the robot. Go around it the long way, come back home facing the way you started. Saved in slot 2.</p>
@@ -281,12 +282,23 @@
           <div class="line after">Three steps instead of eight. No number after <span class="key arrow">&#9650;</span> means 25 cm, no number after <span class="key turn">3</span> means 90 degrees, and <span class="key">8</span><span class="key">4</span> does everything before it again until it has gone round 4 times in all. A 25 cm square.</div>
         </div>
       </div>
+      <div class="box" style="margin-top:10px">
+        <h2>Fix the distances: calibrate from the remote</h2>
+        <p class="dim">Every motor is a little different, and so is every floor (carpet, tile, wood). Calibrating makes the moves predictable.</p>
+        <table class="prog">
+          <tr><td class="keys"><span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span></td><td class="what"><span class="say">wiggle</span>, then a short forward push <span class="dim">= calibrating</span></td></tr>
+          <tr><td class="keys"><b>1</b> &nbsp;<span class="key arrow">&#9650;</span> <span class="key arrow">&#9660;</span> ... <span class="key ok">OK</span></td><td class="what"><b>Get the bot to move.</b> Push <span class="key arrow">&#9650;</span> once. Do all four wheels drive, equally? If not, push <span class="key arrow">&#9650;</span> again until they do. Then push <span class="key arrow">&#9660;</span> until it struggles, then <span class="key arrow">&#9650;</span> until it moves reliably. <span class="key ok">OK</span> <span class="dim">&rarr;</span> <span class="say">nod</span></td></tr>
+          <tr><td class="keys"><b>2</b> &nbsp;<span class="key ok">OK</span> <span class="key">9</span><span class="key">4</span> <span class="key ok">OK</span></td><td class="what"><b>One meter.</b> Robot on a mark. <span class="key ok">OK</span> drives forward 1 m. Measure it, type the cm it really went (here 94), <span class="key ok">OK</span> <span class="dim">&rarr;</span> <span class="say">nod</span></td></tr>
+          <tr><td class="keys">&nbsp; &nbsp; <span class="key arrow">&#9664;</span> or <span class="key arrow">&#9654;</span> <span class="key">3</span> <span class="key ok">OK</span></td><td class="what"><b>Drift.</b> Did it end left or right of a straight line? That arrow, the cm off (here 3), <span class="key ok">OK</span>. Straight? <span class="key ok">OK</span> alone.</td></tr>
+          <tr><td class="keys"><b>3</b> &nbsp;<span class="key ok">OK</span> <span class="key arrow">&#9654;</span> <span class="key">1</span><span class="key">0</span> <span class="key ok">OK</span></td><td class="what"><b>Four turns.</b> Mark where it faces. <span class="key ok">OK</span> turns right 90 four times. Past the mark? <span class="key arrow">&#9654;</span> and the degrees (here 10). Short? <span class="key arrow">&#9664;</span> and the degrees. Spot on? <span class="key ok">OK</span> alone.</td></tr>
+          <tr><td class="keys"><span class="say">nod + wiggle</span></td><td class="what"><b>Saved on the robot.</b> Run <span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span> again to get closer; each round builds on the last.</td></tr>
+        </table>
+        <p class="dim" style="margin-top:6px"><span class="key star">*</span> runs the step's test again and forgets digits typed so far. <span class="key pound">#</span> cancels and puts the saved numbers back.</p>
+      </div>
       <div class="foot" style="margin-top:10px">
-        <span>Point the remote at the robot's eye. One key at a time. Wait for the nod.</span>
         <span>Pressed <span class="key star">*</span> by mistake? Wait 3 seconds, it forgets. <span class="key pound">#</span> always gets you out.</span>
       </div>
     </div>
   </div>
-</div>
 </body>
 </html>
