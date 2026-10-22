@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#ffffff">
-<title>Robot Wiring 0.1.2 - Maker Lab Kids</title>
+<title>Robot Wiring 0.1.3 - Maker Lab Kids</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -258,6 +258,7 @@
   <div class="box">
     <b>If it does not work</b>
     <ul>
+      <li><b><code>b</code> says <code>B,0,0</code></b>: the resistors are pulling the pins to 0 V but the LDRs get no 5V. The LDR's hot leg is probably on the Gnd row; the labels on these shields can sit beside a different row than you expect. Test: a jumper from A4 straight to 5V should read 1023 (and in # # 1 the wheels spin). Then measure which header row really is 5V and move the LDR legs there.</li>
       <li><b>It never moves</b>: check with <code>b</code>. Both numbers should move when you cover the LDRs or shine the torch on them. If they don't, look for a loose wire or a missing resistor, or a gyro still plugged into A4/A5.</li>
       <li><b>It turns away from the light when following</b>: left and right are swapped (A4 is the left one).</li>
       <li><b>It reacts to the room, not the torch</b>: put the tubes on the LDRs, or use a brighter torch.</li>
