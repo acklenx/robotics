@@ -110,7 +110,7 @@ def side_view(state):
     tape_band = lambda x, y, w, h: f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="3" fill="#cfd8e3" fill-opacity="0.72" stroke="#8b9aab" stroke-width="1.5"/>'
     head = lambda x, y: f'<rect x="{x}" y="{y}" width="26" height="88" rx="8" fill="#f1e9d6" stroke="#b9a47a" stroke-width="2"/>'
     folded_back = state in ("side-z", "side-more-tape")
-    tape_end = ST + 46                   # the LDR tape: up the front, over the end, down the back to here
+    tape_end = ST + 46                   # the LDR tape: wrapped around from above the end down to here
     fold_y = tape_end + 14               # the bottom of the Z, just under that tape
     ldr_out = right + 28                 # the folded-back legs, outside the tape
     # the LDR: legs up out of the connector, over the top, down the back
@@ -131,9 +131,8 @@ def side_view(state):
     out.append(f'<rect x="{left}" y="{ST}" width="{HW}" height="{SH}" rx="3" fill="#202326" stroke="#4a5058" stroke-width="1.5"/>')
     out.append(f'<rect x="{left - 20}" y="{body_top}" width="20" height="96" rx="8" fill="{BODY}" stroke="#b89a62" stroke-width="1.5"/>')
     out.append(tape_band(left - 22, ST + 30, HW + 26, 64))                      # step 4: round 2 and 3
-    if state != "side-folded":   # step 8: one piece over the end, holding the LDR's legs down the back
-        out.append(f'<path d="M{left - 12} {tape_end} V{ST - 22} Q{left - 12} {ST - 40} {left + 6} {ST - 40} H{right - 6} '
-                   f'Q{right + 12} {ST - 40} {right + 12} {ST - 22} V{tape_end}" fill="none" stroke="#b8c5d3" stroke-opacity="0.85" stroke-width="22"/>')
+    if state != "side-folded":   # step 8: wrapped around like step 4, but high, sticking up past the end
+        out.append(tape_band(left - 26, ST - 40, HW + 40, tape_end - (ST - 40)))
     if folded_back:
         out.append(lead(f"M{ldr_out} {fold_y} V{ST - 50}"))                     # the folded-back legs lie over the tape
     if state == "side-more-tape":
@@ -145,8 +144,8 @@ def side_view(state):
         out.append(text(right + 40, ST + 190, "LDR folded"))
         out.append(text(right + 40, ST + 208, "onto the back"))
     if state == "side-taped":
-        out.append(text(right + 32, ST - 30, "tape over"))
-        out.append(text(right + 32, ST - 12, "the end"))
+        out.append(text(right + 32, ST - 30, "tape around,"))
+        out.append(text(right + 32, ST - 12, "past the end"))
     if state == "side-z":
         out.append(text(ldr_out + 22, ST - 110, "LDR back up,"))
         out.append(text(ldr_out + 22, ST - 92, "out of the top"))
@@ -156,9 +155,9 @@ def side_view(state):
         out.append(text(ldr_out + 22, ST + 58, "over the Z"))
     labels = {
         "side-folded": "Step 7, side view: the LDR's legs come out of the top, bend over and run down the back of the connectors, with the LDR lying against the back, the opposite side from the taped resistor.",
-        "side-taped": "Step 8, side view: a piece of tape runs up the front, over the end of the connectors and down the back, holding the LDR's legs against the back.",
+        "side-taped": "Step 8, side view: tape wrapped around the connectors like in step 4, but high up, sticking out past the end and covering where the LDR's legs bend, holding them against the back.",
         "side-z": "Step 9, side view: the LDR folded back up over the tape so it sticks out of the top again. Its legs make a Z: up out of the connector, down the back under the tape, and back up outside it.",
-        "side-more-tape": "Step 10, side view: more tape around everything, over the Z fold and the tape over the end, with the LDR still sticking out of the top.",
+        "side-more-tape": "Step 10, side view: more tape around everything, over the Z fold and the high tape from step 8, with the LDR still sticking out of the top.",
     }
     return f'<svg viewBox="30 0 320 440" role="img" aria-label="{labels[state]}">\n' + "\n".join(out) + "\n</svg>"
 
@@ -442,11 +441,11 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
         they must not touch, or even get close.</figcaption>
       </figure>
       <figure>
-        <h3 class="step-title">8. Tape over the end</h3>
+        <h3 class="step-title">8. Tape it high</h3>
         {figure("side-taped")}
-        <figcaption>Run a piece of tape up the front, over the end of the connectors
-        and down the back, over the LDR's legs. Keep it high, so the bend uses up only a little
-        of the legs.</figcaption>
+        <figcaption>Wrap tape around the connectors like in step 4, but higher up, so it
+        sticks out past the end and covers where the LDR's legs bend. Keeping it high means the bend
+        uses up only a little of the legs.</figcaption>
       </figure>
       <figure>
         <h3 class="step-title">9. Make the Z fold</h3>
@@ -457,8 +456,8 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
       <figure>
         <h3 class="step-title">10. More tape</h3>
         {figure("side-more-tape")}
-        <figcaption>More tape around everything, over the Z fold and the tape over the
-        end.</figcaption>
+        <figcaption>More tape around everything, over the Z fold and the tape from
+        step 8.</figcaption>
       </figure>
       <figure>
         <h3 class="step-title">11. Find the analog header</h3>
