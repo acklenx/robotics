@@ -1,4 +1,4 @@
-// ir.ino   (v0.10.76 - the mecanum robot driven and programmed from the kit's IR remote;
+// ir.ino   (v0.10.77 - the mecanum robot driven and programmed from the kit's IR remote;
 //           L293D shield, Bluetooth on A0/A1 as shipped, HC-SR04 sonar on A2/A3 as shipped,
 //           IR receiver on IR_RECEIVER_PIN)
 //
@@ -33,6 +33,9 @@
 //                     has saved to runs its built-in demo (1 square .. 9 dance)
 //   * 0               program 0: a circle 1 m across, facing in (always this)
 //   #                 cancel / stop, anywhere
+//   # # 1             follow the light: two LDRs (A4 left, A5 right) steer it toward a torch
+//   # # 2             run from the light: it backs away from a torch, nose turned to watch it
+//                     (either one: any key stops it; with no light it waits)
 //   # # #             calibrate (three steps; a test runs when you press OK, * runs it
 //                     again, OK confirms a number, # cancels and puts the saved numbers back):
 //     1 start power   a short forward pulse; DOWN = a bit less, UP = a bit more, OK keeps it
@@ -48,6 +51,7 @@
 //                  p<s> pause n<times> repeat, e.g. p3=f50 t90 n4;
 //                  p<n>=;  empties the slot
 //   u              one sonar reading (U,<mm>, -1 = nothing within ~4 m)
+//   b              one light reading: B,<left>,<right> (0..1023, brighter = higher)
 //   v<f>,<r>,<s>;  keep driving forward / right / clockwise at -100..100 % of full
 //                  speed (the Blocks page's keep-driving and the two-stick controller);
 //                  stops unless repeated within VECTOR_TIMEOUT_MS. No reply. The sonar
@@ -63,7 +67,7 @@
 #include <Arduino.h>
 #include <avr/eeprom.h>
 
-#define FIRMWARE_VERSION "0.10.76"   // same line as mecanum_holonomic (bump both together)
+#define FIRMWARE_VERSION "0.10.77"   // same line as mecanum_holonomic (bump both together)
 #define SKETCH_NAME "ir"
 
 // A program step (the IR sketch's own): which way, and how far / how many degrees
@@ -141,6 +145,24 @@ const int SONAR_STOP_MM = 250;                  // anything nearer ahead stops t
 const bool SONAR_STOPS_EVERYTHING = false;      // false: only forward motion (so it can back away); true: every move
 const unsigned long SONAR_PERIOD_MS = 60;       // how often it looks while moving
 const unsigned long SONAR_TIMEOUT_US = 25000;   // round trip, ~4.3 m (the u reading)
+
+// ===========================================================================
+// CONFIG - light sensors: two LDRs at the front corners (# # 1 / # # 2)
+// ===========================================================================
+// Each LDR makes a divider with a fixed resistor: 5V - LDR - pin - resistor - GND
+// reads HIGHER in brighter light (wired the other way round, set
+// LIGHT_BRIGHT_READS_HIGH false). A4 / A5 are free here, so the sonar stays on
+// A2 / A3 and still stops the robot short of whoever holds the torch.
+// The robot compares each LDR with the room's own light (it keeps learning
+// that while it sees no torch), so two LDRs that read a bit differently are fine.
+const byte LIGHT_LEFT_PIN = A4;                 // front left corner, looking 45 degrees left
+const byte LIGHT_RIGHT_PIN = A5;                // front right corner, looking 45 degrees right
+const bool LIGHT_BRIGHT_READS_HIGH = true;
+const int LIGHT_SEEN = 40;                      // this much over the room's light = a torch
+const unsigned int LIGHT_LOST_MS = 300;         // under half of that for this long = lost it
+const float LIGHT_SPEED_MM_PER_SEC = 400.0;     // straight at it (or away)
+const float LIGHT_SPIN_RAD_PER_SEC = 2.5;       // turning when the light is all on one side
+const unsigned long LIGHT_TICK_MS = 20;
 
 // ===========================================================================
 // CONFIG - programs and gestures
@@ -1448,6 +1470,82 @@ void handleKeyCalibrating(char key) {
   }
 }
 
+// ===========================================================================
+// LIGHT - follow a torch (# # 1) or run from it (# # 2)
+// ===========================================================================
+byte lightMode = 0;                // 0 off, 1 follow, 2 run away
+float lightLevel[2];               // smoothed reading, left and right
+float lightRoom[2];                // the room's light without the torch
+bool lightSeen = false;
+unsigned long lightTickAt = 0;
+unsigned long lightLastSeenAt = 0;
+
+int lightRead(byte side) {
+  int raw = analogRead(side ? LIGHT_RIGHT_PIN : LIGHT_LEFT_PIN);
+  return LIGHT_BRIGHT_READS_HIGH ? raw : 1023 - raw;
+}
+
+void printLightReading() {
+  out.print(F("B,"));
+  out.print(lightRead(0));
+  out.print(',');
+  out.println(lightRead(1));
+}
+
+void lightStop() {
+  if (!lightMode) return;
+  lightMode = 0;
+  movingForward = false;
+  stopAllWheels();
+  out.println(F("light: stop"));
+}
+
+void lightStart(byte mode) {
+  stopDriving(false);
+  gestureNod();
+  for (byte side = 0; side < 2; side++) lightLevel[side] = lightRoom[side] = lightRead(side);
+  lightMode = mode;
+  lightSeen = false;
+  lightTickAt = millis();
+  out.print(mode == 1 ? F("light: follow") : F("light: run away"));
+  out.print(F(" (left "));
+  out.print((int)lightLevel[0]);
+  out.print(F(", right "));
+  out.print((int)lightLevel[1]);
+  out.println(F(")"));
+}
+
+// Every LIGHT_TICK_MS while a light mode is on: smooth the readings, learn the
+// room while no torch is seen, and steer toward (or back away from) the torch.
+void lightTick() {
+  if (!lightMode || millis() - lightTickAt < LIGHT_TICK_MS) return;
+  lightTickAt = millis();
+  float extra[2];
+  for (byte side = 0; side < 2; side++) {
+    lightLevel[side] += (lightRead(side) - lightLevel[side]) * 0.25;
+    if (lightLevel[side] < lightRoom[side]) lightRoom[side] = lightLevel[side];
+    else if (!lightSeen) lightRoom[side] += (lightLevel[side] - lightRoom[side]) / 32;
+    extra[side] = max(lightLevel[side] - lightRoom[side], 0.0f);
+  }
+  float brightest = max(extra[0], extra[1]);
+  if (brightest > LIGHT_SEEN) lightLastSeenAt = millis();
+  bool seen = brightest > LIGHT_SEEN || (lightSeen && brightest > LIGHT_SEEN / 2 && millis() - lightLastSeenAt < LIGHT_LOST_MS);
+  if (seen != lightSeen) {
+    lightSeen = seen;
+    out.println(seen ? F("light: sees it") : F("light: lost it"));
+  }
+  if (!seen) {
+    stopAllWheels();
+    return;
+  }
+  // -1 = all on the left, +1 = all on the right
+  float side = (extra[1] - extra[0]) / (extra[0] + extra[1]);
+  float speed = LIGHT_SPEED_MM_PER_SEC * (1 - 0.6 * fabs(side));
+  movingForward = lightMode == 1;
+  if (movingForward && wallAhead()) speed = 0;     // close enough: just keep facing it
+  driveBody(lightMode == 1 ? speed : -speed, 0, side * LIGHT_SPIN_RAD_PER_SEC);
+}
+
 void handleKeyIdle(char key) {
   if (key == '*') {
     stars++;
@@ -1462,6 +1560,11 @@ void handleKeyIdle(char key) {
     return;
   }
   stars = 0;
+  if (pounds == 2 && (key == '1' || key == '2')) {
+    pounds = 0;
+    lightStart(key - '0');
+    return;
+  }
   if (key == '#') {
     stopDriving(true);
     pounds++;
@@ -1538,6 +1641,10 @@ void handleKey(char key) {
     case 'R': out.println(F("right")); break;
     case 'O': out.println(F("ok")); break;
     default: out.println(key); break;
+  }
+  if (lightMode) {
+    lightStop();
+    return;
   }
   if (remoteMode == IDLE) handleKeyIdle(key);
   else if (remoteMode == CALIBRATING) handleKeyCalibrating(key);
@@ -1686,7 +1793,7 @@ void handleConfigText(char *text) {
 }
 
 void printHelp() {
-  out.println(F("i<keys>; p?; p<n>; p<n>=<steps>; u v<f>,<r>,<s>; m<bearing>,<mm>,<turn>; k?; km<i>=<v>; kw; kd; kN<name>; x ?"));
+  out.println(F("i<keys>; p?; p<n>; p<n>=<steps>; u b v<f>,<r>,<s>; m<bearing>,<mm>,<turn>; k?; km<i>=<v>; kw; kd; kN<name>; x ?"));
   out.println(F("ready"));
 }
 
@@ -1720,7 +1827,8 @@ void handleCommand(char command) {
     }
   }
   switch (command) {
-    case 'x': stopDriving(false); out.println(F("stop")); break;
+    case 'x': lightStop(); stopDriving(false); out.println(F("stop")); break;
+    case 'b': printLightReading(); break;
     case 'u': out.print(F("U,")); out.println(sonarMm(SONAR_TIMEOUT_US)); break;
     case 'k':
     case 'm':
@@ -1782,5 +1890,6 @@ void loop() {
     handleCommand(incoming);
   }
   irPoll();
+  lightTick();
   btFlush();
 }

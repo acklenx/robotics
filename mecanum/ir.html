@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#15181c">
-<title>Remote Robot 0.1.11 - Maker Lab Kids</title>
+<title>Remote Robot 0.1.12 - Maker Lab Kids</title>
 <style>
   :root {
     --bg: #15181c;
@@ -294,6 +294,13 @@
     <p><b>Out of the box the slots hold nine demos:</b> 1 square, 2 crab box (slides only), 3 out and back, 4 triangle, 5 stairs, 6 spiral, 7 look around, 8 figure 8, 9 dance. Saving your own program in a slot replaces its demo.</p>
   </div>
 
+  <h2>4. Follow the light (or run from it)</h2>
+  <div class="card">
+    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">1</span> <span class="then">follow the light: shine a torch at its nose and walk away. It turns toward the bright side and comes after you.</span></p>
+    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">2</span> <span class="then">run from the light: shine the torch at it and it backs away, still watching the torch.</span></p>
+    <p>It <span class="answer">nods</span> when it starts. With no torch it just waits. <b>Any key stops it.</b> Needs the two light sensors (<a href="wiring.html">wiring</a>).</p>
+  </div>
+
   <div class="card warn">
     <h3 style="margin-top:0">Tips</h3>
     <p>Point the remote at the robot's receiver (the little black eye). Press keys one at a time. Wait for the nod before the next step.</p>
@@ -342,6 +349,7 @@
       <h3 style="margin-top:0">Set up a robot</h3>
       <p>Flash <a href="../ir/ir.ino" download><b>ir.ino</b></a> (Arduino IDE, Uno). It drives on the same motion numbers as mecanum_holonomic.ino, including a set saved by the <a href="calibration.html">Calibrate / Tune</a> page.</p>
       <p><b>IR receiver</b> (3 pins: OUT, VCC, GND): OUT to <b>D10</b>, the signal pin of the shield's <b>SER1</b> servo header, 5 V and GND beside it. No soldering. Any other pin works too: change <code>IR_RECEIVER_PIN</code> at the top of the sketch (the robot says which pin it uses when it boots).</p>
+      <p><b>Light sensors</b> (for # # 1 / # # 2): two LDRs, each with a fixed resistor: 5V - LDR - pin - resistor - GND. Left front corner to <b>A4</b>, right front corner to <b>A5</b>, each looking 45 degrees out. Unplug a gyro from A4/A5 first if there is one. Diagram and how to pick the resistor: <a href="wiring.html">Wiring</a>. Check them with <code>b</code>: cover one and its number drops.</p>
       <p><b>Sonar</b> (HC-SR04) stays where the kit puts it: trig A3, echo A2. Under 25 cm ahead = stop. <code>SONAR_STOP_MM</code> sets the distance; <code>SONAR_STOPS_EVERYTHING</code> makes it stop every move, not only forward ones.</p>
       <p>The remote is the kit's 17-key one (arrows, OK, 0-9, * #). Another remote prints <code>ir: key 0x.. not mapped</code> in the console below; its codes go in <code>IR_KEYS</code>.</p>
     </div>
@@ -388,7 +396,8 @@
           <tr><td><code>p3=f50 t90 n4;</code></td><td>store a program in slot 3 from the phone: f b l r cm, q e diagonals cm, t degrees (t-90 left), p pause s, n do it all again times (<code>p3=;</code> empties it). The <a href="blocks.html">Blocks editor</a> builds these lines from block programs and can send all nine slots at once.</td></tr>
           <tr><td><code>u</code></td><td>one sonar reading, <code>U,&lt;mm&gt;</code> (-1 = nothing within 4 m)</td></tr>
           <tr><td><code>v40,0,0;</code></td><td>keep driving forward / right / clockwise at -100..100 % (the Blocks page's keep-driving blocks and the Sticks page); stops unless repeated within half a second; the sonar zeroes the forward part near a wall</td></tr>
-          <tr><td><code>x</code></td><td>stop</td></tr>
+          <tr><td><code>b</code></td><td>one light reading, <code>B,&lt;left&gt;,&lt;right&gt;</code> (0-1023, brighter = higher)</td></tr>
+          <tr><td><code>x</code></td><td>stop (also ends follow / run from the light)</td></tr>
           <tr><td><code>m0,500,0;</code>  <code>k?;</code></td><td>a move and the motion numbers, as in calibration.ino</td></tr>
         </table>
         <div class="tools"><input id="commandInput" placeholder="type a command, Enter sends" style="flex:1 1 200px;font:inherit;font-size:15px;background:#11151a;color:var(--ink);border:1px solid #3a434e;border-radius:8px;padding:8px 10px"><button id="sendButton" disabled>Send</button></div>
@@ -660,10 +669,12 @@ function handleRobotLine(line) {
     }
   } else if (/^ir: key 0x/.test(line)) {
     robot.state = line + " (another remote? add its codes to IR_KEYS)";
-  } else if (/^(drive|program|run|stop|calibrate|step \d+|gesture): /.test(line) || /^move: /.test(line)) {
+  } else if (/^(drive|program|run|stop|calibrate|step \d+|gesture|light): /.test(line) || /^move: /.test(line)) {
     robot.state = line;
   } else if ((match = /^P,(\d)(.*)$/.exec(line))) {
     robot.slots[match[1]] = match[2].replace(/^,/, "");
+  } else if ((match = /^B,(\d+),(\d+)/.exec(line))) {
+    robot.state = "Light: left " + match[1] + ", right " + match[2] + " (cover one: it should drop)";
   } else if ((match = /^U,(-?\d+)/.exec(line))) {
     robot.state = match[1] < 0 ? "Sonar: nothing within 4 m" : "Sonar: " + match[1] + " mm" + (match[1] < 250 ? " - too close, it will not go forward" : "");
   }

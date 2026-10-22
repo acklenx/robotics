@@ -91,6 +91,17 @@ const script = [
   'send p7=q15 e15 p1 n2 c60;\\n', 'wait 300', 'send p?\\n', 'wait 1800',
   mark(),                            // 15 program 0: the circle
   press('*0'), 'wait 600', 'pwm', 'wait 14000',
+  mark(),                            // 16 follow the light (# # 1): LDRs on A4 / A5, room light ~2 V
+  'adc 4 2000', 'adc 5 2000', 'wait 100', 'send b\\n', 'wait 100',
+  press('##1'), 'wait 800', 'pwm',
+  'adc 5 3500', 'wait 500', 'pwm',
+  'adc 4 3500', 'wait 500', 'pwm', 'dirs',
+  'sonar 150', 'wait 300', 'pwm', 'sonar -1',
+  'adc 4 2000', 'adc 5 2000', 'wait 800', 'pwm',
+  press('O'), 'wait 300',
+  mark(),                            // 17 run from the light (# # 2); x stops it
+  press('##2'), 'wait 800', 'adc 4 3500', 'adc 5 3500', 'wait 500', 'pwm', 'dirs',
+  'send x\\n', 'wait 200', 'pwm', 'adc 4 2000', 'adc 5 2000',
   mark(),
   '',
 ].join('\n');
@@ -203,6 +214,27 @@ check(/program: slot 7 = 5 steps/.test(s) && /^P,7,q15,e15,p1,n2,c60$/m.test(s),
 s = sections[15];
 p = pwms(s);
 check(/run: program 0 \(circle, 1 m across, facing in\)/.test(s) && /step 1: circle, facing in, 100 cm across/.test(s) && p.length && moving(p[0]) && /run: done/.test(s), '* 0 runs the 1 m circle to the end');
+
+// 16 follow the light
+s = sections[16];
+p = pwms(s);
+const nums = (line) => (line || '').replace(/[^-\d ]/g, ' ').trim().split(/\s+/).map(Number);
+check(/^B,(\d+),\1$/m.test(s), 'b reads both LDRs (the same 2 V on each)');
+check(/light: follow \(left \d+, right \d+\)/.test(s) && /gesture: nod/.test(s), '# # 1 starts following with a nod and says the room light');
+check(p.length >= 5 && !moving(p[0]), 'no torch: it waits, motors off: ' + p[0]);
+const dirs = (text) => (text.match(/\[dirs [^\]]*\]/g) || []);   // [dirs FL FR RL RR]
+const [m1, m2, m3, m4] = nums(p[1]);   // M1 RL, M2 RR, M3 FR, M4 FL
+check(/light: sees it/.test(s) && moving(p[1]) && m4 > m3 && m1 > m2, 'torch on the right: it turns right (left wheels harder): ' + p[1]);
+check(moving(p[2]) && dirs(s)[0] === '[dirs + + + +]', 'torch on both: straight ahead, every wheel forward: ' + p[2] + ' ' + dirs(s)[0]);
+check(!nums(p[3]).some((n) => n > 0) || nums(p[3]).every((n) => n === 0), 'something 150 mm ahead: it stops going forward: ' + p[3]);
+check(/light: lost it/.test(s) && !moving(p[4]), 'torch gone: lost it, motors off: ' + p[4]);
+check(/light: stop/.test(s), 'OK stops light mode');
+
+// 17 run from the light
+s = sections[17];
+p = pwms(s);
+check(/light: run away/.test(s) && p.length >= 2 && moving(p[0]) && dirs(s)[0] === '[dirs - - - -]', '# # 2 with a torch ahead: it backs away, every wheel backward: ' + p[0] + ' ' + dirs(s)[0]);
+check(/light: stop/.test(s) && !moving(p[1]), 'x stops it');
 
 console.log(failures.length ? '\n' + failures.length + ' FAILED (see ' + path.join(build, 'output.txt') + ')' : '\nall passed');
 process.exit(failures.length ? 1 : 0);

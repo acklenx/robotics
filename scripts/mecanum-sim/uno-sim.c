@@ -17,6 +17,7 @@
 //   irpin <port> <bit>   where the IR receiver is: D 2 (the default, D2) or B 2 (D10)
 //   sonar <mm>      HC-SR04 on A3 trig / A2 echo: echo for that distance (-1 = none)
 //   pwm             print the four motor PWM duties (M1-M4, 0 when disconnected)
+//   dirs            print which way each wheel turns: [dirs FL FR RL RR], each + - or 0
 //   spinmodel <maxdps> <taums> [stall]   a robot whose gyro answers its motors: while
 //                   all four wheels run, it turns clockwise at maxdps * sqrt((duty-40)/215)
 //                   (dead below duty 40, like real gear motors), reaching that speed
@@ -360,6 +361,18 @@ static double wheelShareAt(int w, double stall) {
 }
 static double wheelShare(int w) { return wheelShareAt(w, spinModelStall); }
 
+// Each wheel's direction from the shield's 74HC595 (0 when off or braked).
+static void printDirs(void) {
+  printf("\n[dirs");
+  for (int w = 0; w < 4; w++) {
+    int c = wheelChannel[w];
+    int forward = (shiftLatched >> channelForwardBit[c]) & 1, reverse = (shiftLatched >> channelReverseBit[c]) & 1;
+    printf(" %s", channelDuty(c) == 0 || forward == reverse ? "0" : forward ? "+" : "-");
+  }
+  printf("]\n");
+  fflush(stdout);
+}
+
 static int anyMotorOn(void) {
   for (int c = 0; c < 4; c++) if (channelDuty(c) > 0) return 1;
   return 0;
@@ -483,6 +496,8 @@ static int runLive(void) {
             avr_raise_irq(avr_io_getirq(avr, AVR_IOCTL_ADC_GETIRQ, ADC_IRQ_ADC0 + ch), mv);
           } else if (strcmp(control, "pwm") == 0) {
             printPwm();
+          } else if (strcmp(control, "dirs") == 0) {
+            printDirs();
           } else if (handleDeviceCommand(control)) {
             // handled
           } else if (strcmp(control, "reboot") == 0 || strncmp(control, "flash ", 6) == 0) {
@@ -574,6 +589,8 @@ int main(int argc, char **argv) {
       boot();
     } else if (strcmp(line, "pwm") == 0) {
       printPwm();
+    } else if (strcmp(line, "dirs") == 0) {
+      printDirs();
     } else if (handleDeviceCommand(line)) {
       // handled
     } else if (line[0] && line[0] != '#') {
