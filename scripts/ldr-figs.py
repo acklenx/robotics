@@ -399,78 +399,92 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
     one goes. In the pictures, wire <b>1 is +5V</b>, wire <b>2 is Gnd</b> and wire <b>3 is A5</b>.</p>
     <div class="steps">
       <figure>
+        <h3 class="step-title">1. Bend the resistor</h3>
         {figure("ready")}
-        <figcaption><b>1.</b> Bend one lead of the 4.7k resistor back over its body, so both
+        <figcaption>Bend one lead of the 4.7k resistor back over its body, so both
         leads point the same way. The bent lead is the long one.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">2. Plug in the resistor</h3>
         {figure("plugged")}
-        <figcaption><b>2.</b> Push the <b>long bent lead into 2</b> (Gnd) and the <b>short
+        <figcaption>Push the <b>long bent lead into 2</b> (Gnd) and the <b>short
         straight lead into 3</b> (A5).</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">3. Fold the resistor down</h3>
         {figure("folded")}
-        <figcaption><b>3.</b> Fold the resistor down flat onto the plastic of connector 3, so it
+        <figcaption>Fold the resistor down flat onto the plastic of connector 3, so it
         covers the 3.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">4. Tape the resistor</h3>
         {figure("taped")}
-        <figcaption><b>4.</b> Tape connectors 2 and 3 together, with the resistor caught under
+        <figcaption>Tape connectors 2 and 3 together, with the resistor caught under
         the tape.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">5. Line up the LDR</h3>
         {figure("ldr-ready")}
-        <figcaption><b>5.</b> Spread the LDR's legs a little and line them up with <b>1</b> (+5V)
+        <figcaption>Spread the LDR's legs a little and line them up with <b>1</b> (+5V)
         and <b>3</b> (A5), either side of the taped Gnd connector.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">6. Plug in the LDR</h3>
         {figure("ldr-in")}
-        <figcaption><b>6.</b> Push the legs in, but leave the LDR standing well clear of the
+        <figcaption>Push the legs in, but leave the LDR standing well clear of the
         connectors.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">7. Fold the LDR back</h3>
         {figure("side-folded")}
-        <figcaption><b>7.</b> Fold the LDR down onto the <b>back</b> of the connectors, the
+        <figcaption>Fold the LDR down onto the <b>back</b> of the connectors, the
         opposite side from the resistor. <b>Keep its two legs apart</b>, spaced like in step 6:
         they must not touch, or even get close.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">8. Tape over the end</h3>
         {figure("side-taped")}
-        <figcaption><b>8.</b> Run a piece of tape up the front, over the end of the connectors
+        <figcaption>Run a piece of tape up the front, over the end of the connectors
         and down the back, over the LDR's legs. Keep it high, so the bend uses up only a little
         of the legs.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">9. Make the Z fold</h3>
         {figure("side-z")}
-        <figcaption><b>9.</b> Fold the LDR back up over the tape, so it sticks out of the top
+        <figcaption>Fold the LDR back up over the tape, so it sticks out of the top
         again. The Z fold stops it pulling out.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">10. More tape</h3>
         {figure("side-more-tape")}
-        <figcaption><b>10.</b> More tape around everything, over the Z fold and the tape over the
+        <figcaption>More tape around everything, over the Z fold and the tape over the
         end.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">11. Find the analog header</h3>
         {figure("board")}
-        <figcaption><b>11.</b> Find the analog header at the bottom right of the motor shield.
+        <figcaption>Find the analog header at the bottom right of the motor shield.
         Its rows are <b>+5V</b> on top, <b>Gnd</b> in the middle and <b>A0-5</b> along the edge.
         A0 is on the left, <b>A5 on the right</b>.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">12. Plug into A5</h3>
         {figure("header")}
-        <figcaption><b>12.</b> Push the ends of the three wires onto the <b>A5 column</b>, tight
+        <figcaption>Push the ends of the three wires onto the <b>A5 column</b>, tight
         against the motor connector: <b>+5V</b> on top, <b>Gnd</b> in the middle, <b>A5</b> at the
         edge.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">13. Tape it to the robot</h3>
         {figure("robot")}
-        <figcaption><b>13.</b> Tape the sensor to the front of the robot: A5 on the right, A4 on
+        <figcaption>Tape the sensor to the front of the robot: A5 on the right, A4 on
         the left. Point the LDR down at a spot on the floor <b>1 inch in front of the
         wheel</b>.</figcaption>
       </figure>
       <figure>
+        <h3 class="step-title">14. Build the left sensor</h3>
         {figure("header-all")}
-        <figcaption><b>14.</b> Repeat steps 1 to 13 for the <b>left</b> sensor, and plug it into
+        <figcaption>Repeat steps 1 to 13 for the <b>left</b> sensor, and plug it into
         <b>A4</b>.</figcaption>
       </figure>
     </div>
