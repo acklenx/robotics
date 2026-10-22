@@ -48,38 +48,46 @@ def prism(x0, x1, y0, y1, z0, z1, top, front, side):
     return "".join(out)
 
 
-def wheel(xc, yc, near):
-    """A mecanum wheel on the axle along x at (xc, yc), radius 32, 35 wide. near = the
-    face toward us is its outside (left wheels); far wheels show their inside."""
+def closeness(x, y, z):
+    """How near a robot point is to us (bigger = nearer): along the view direction of P()."""
+    return -x + 1.133 * y + 1.159 * z
+
+
+def disc(xf, yc, zc, radius, n=40):
+    return [P(xf, yc + radius * math.cos(t), zc + radius * math.sin(t)) for t in [2 * math.pi * k / n for k in range(n)]]
+
+
+def wheel(xc, yc, roller_sign):
+    """A mecanum wheel on an axle along x at (xc, yc): radius 32, 35 wide. We see its -x
+    face (the outside of a left wheel, the inside of a right one), so it is drawn back to
+    front: the far face, the rollers nearest-last, then the near face.
+    roller_sign: +1 or -1, which way the rollers wrap (so the four make an X from above)."""
     r, half = 32, 17.5
     zc = r
-    face_x = xc - half if near else xc + half    # the face that is closer to us is the -x one
-    back_x = xc + half if near else xc - half
-    out = []
-    n = 16
-    # rollers: slanted black bars around the tread, between the two rims
+    near_x, far_x = xc - half, xc + half
+    twist = roller_sign * half * 2 / r          # 45 degrees: the roller turns its own length around the tread
+    out = [poly(disc(far_x, yc, zc, r * 0.98), "#0f1013")]
+    for k in range(48):   # a dark core under the rollers, so no light shows between them
+        t1, t2 = 2 * math.pi * k / 48, 2 * math.pi * (k + 1.2) / 48
+        out.append(poly([P(far_x, yc + 0.97 * r * math.cos(t1), zc + 0.97 * r * math.sin(t1)), P(far_x, yc + 0.97 * r * math.cos(t2), zc + 0.97 * r * math.sin(t2)),
+                         P(near_x, yc + 0.97 * r * math.cos(t2), zc + 0.97 * r * math.sin(t2)), P(near_x, yc + 0.97 * r * math.cos(t1), zc + 0.97 * r * math.sin(t1))], "#0f1013"))
+    n = 14
+    rollers = []
     for i in range(n):
         a1 = 2 * math.pi * i / n
-        a2 = a1 + 2 * math.pi / n * 0.78
-        sk = 0.45
-        q = [P(back_x, yc + r * math.cos(a1 + sk), zc + r * math.sin(a1 + sk)),
-             P(back_x, yc + r * math.cos(a2 + sk), zc + r * math.sin(a2 + sk)),
-             P(face_x, yc + r * math.cos(a2), zc + r * math.sin(a2)),
-             P(face_x, yc + r * math.cos(a1), zc + r * math.sin(a1))]
-        out.append(poly(q, "#17191d", "#0b0c0e", 0.8))
-    # the yellow side plate on the face we see, a little smaller than the rollers
-    plate = [P(face_x - 0.5, yc + 0.80 * r * math.cos(t), zc + 0.80 * r * math.sin(t)) for t in [2 * math.pi * k / 40 for k in range(40)]]
-    out.append(poly(plate, "#f6c21c", "#a77f00", 1.2))
-    # roller ends peeking past the plate's rim
-    for i in range(n):
-        t = 2 * math.pi * (i + 0.4) / n
-        out.append(path([P(face_x - 0.6, yc + 0.80 * r * math.cos(t), zc + 0.80 * r * math.sin(t)),
-                         P(face_x - 0.6, yc + 0.98 * r * math.cos(t + 0.18), zc + 0.98 * r * math.sin(t + 0.18))], "#17191d", 3.2))
-    hub = [P(face_x - 1, yc + 0.34 * r * math.cos(t), zc + 0.34 * r * math.sin(t)) for t in [2 * math.pi * k / 24 for k in range(24)]]
-    out.append(poly(hub, "#e0a800", "#8a6900", 1))
-    cap = [P(face_x - 1.5, yc + 0.13 * r * math.cos(t), zc + 0.13 * r * math.sin(t)) for t in [2 * math.pi * k / 16 for k in range(16)]]
-    out.append(poly(cap, "#2a2d33"))
-    # the yellow motor mount between the wheel and the plate
+        a2 = a1 + 2 * math.pi / n * 0.74
+        steps = 8
+        edge1 = [(far_x + (near_x - far_x) * k / steps, a1 + twist * (1 - k / steps)) for k in range(steps + 1)]
+        edge2 = [(far_x + (near_x - far_x) * k / steps, a2 + twist * (1 - k / steps)) for k in range(steps, -1, -1)]
+        pts = [P(x, yc + r * math.cos(a), zc + r * math.sin(a)) for x, a in edge1 + edge2]
+        am = (a1 + a2) / 2 + twist / 2
+        depth = closeness(xc, yc + r * math.cos(am), zc + r * math.sin(am))
+        rollers.append((depth, poly(pts, "#1c1f24", "#08090b", 0.9)))
+    for _depth, svg in sorted(rollers):
+        out.append(svg)
+    out.append(poly(disc(near_x - 0.5, yc, zc, r * 0.78), "#f6c21c", "#a77f00", 1.2))   # the yellow side plate
+    out.append(poly(disc(near_x - 1, yc, zc, r * 0.34, 24), "#e0a800", "#8a6900", 1))
+    out.append(poly(disc(near_x - 1.5, yc, zc, r * 0.13, 16), "#2a2d33"))
     return "".join(out)
 
 
@@ -103,7 +111,7 @@ def robot(light=False):
     parts = []
     # far side first: the right wheels sit behind the chassis
     for y in (-base / 2, base / 2):
-        parts.append(wheel(track / 2, y, near=False))
+        parts.append(wheel(track / 2, y, -1 if y > 0 else 1))
         parts.append(motor(track / 2, y))
     # lower plate (z 40), with a little thickness
     lower = (-58, 58, -111, 111, 16)
@@ -146,17 +154,17 @@ def robot(light=False):
         parts.append(poly(face, "#cdd2d8", "#8f969e", 1))
         mesh = [P(ex + 6 * math.cos(t), 112.5, 53 + 6 * math.sin(t)) for t in [2 * math.pi * k / 20 for k in range(20)]]
         parts.append(poly(mesh, "#2a2f36"))
-    # a few wires from the shield down to the sonar
+    # a few wires from the shield, over the front edge of the upper deck and out of sight below it
     for i, color in enumerate(("#e33b2e", "#f6c21c", "#f4f6f8", "#2fa866")):
         x = -9 + i * 6
-        a, b, c = P(x, 14, 104), P(x * 1.6, 70, 96), P(x * 0.6, 98, 66)
+        a, b, c = P(x, 16, 102), P(x * 1.4, 50, 96), P(x * 1.5, 59, 84)
         parts.append(f'<path d="M{a[0]:.1f} {a[1]:.1f} Q{b[0]:.1f} {b[1]:.1f} {c[0]:.1f} {c[1]:.1f}" fill="none" stroke="{color}" stroke-width="1.8" stroke-linecap="round"/>')
     if light:
         parts.append(ldr(50, 104, 42))     # right front corner first (behind)
     # near side last: the left wheels and their motors are closest to us
     for y in (-base / 2, base / 2):
         parts.append(motor(-track / 2, y))
-        parts.append(wheel(-track / 2, y, near=True))
+        parts.append(wheel(-track / 2, y, 1 if y > 0 else -1))
     if light:
         parts.append(ldr(-50, 104, 42))
     return "\n".join(parts)
