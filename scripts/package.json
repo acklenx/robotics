@@ -4,7 +4,7 @@
   "description": "robotics.makerlabkids.com: the Maker Lab Kids robotics class site (mecanum robot; the 2WD robot is archived): pages, firmware, tests",
   "private": true,
   "scripts": {
-    "serve": "cd .. && python3 -m http.server 8191 --bind 0.0.0.0",
+    "serve": "node serve.js 8191",
     "test:site": "node site-nav.js --check && node test-site.js",
     "test:workshop": "node test-workshop.js",
     "test:mecanum": "node mecanum-sim/run-all.js",
