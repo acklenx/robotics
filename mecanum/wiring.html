@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#ffffff">
-<title>Robot Wiring 0.1.7 - Maker Lab Kids</title>
+<title>Robot Wiring 0.1.8 - Maker Lab Kids</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -156,7 +156,7 @@
     <ul>
       <li>The LDRs go on <b>A4 (left) and A5 (right)</b>. If a gyro is plugged into A4/A5, unplug its SDA and SCL wires.</li>
       <li><b>Optional third LDR on A3</b>, middle of the back, looking straight back, wired the same way (LDR from +5V to A3, resistor from A3 to Gnd). Unplug the sonar's Trig wire from A3. The robot checks for it at the start of each light mode.</li>
-      <li>With <b>ir.ino</b> (version 0.10.78 or newer) the remote does it all: <b># # 1</b> follows the light, <b># # 2</b> runs from it. Flashing the torch left, right, left, right also starts following.</li>
+      <li>With <b>ir.ino</b> (version 0.10.78 or newer) the remote does it all: <b># # 1</b> follows the light, <b># # 2</b> runs from it. Flashing the flashlight left, right, left, right also starts following.</li>
     </ul>
   </div>
 
@@ -204,13 +204,13 @@
         <li>A resistor (10k to start) from <b>A4 to GND</b>, and another from <b>A5 to GND</b>.</li>
       </ol>
       <p>Wired this way, <b>brighter light gives a higher reading</b> (0 to 1023), which is what the robot expects.</p>
-      <p><b>On the shield</b>, the analog header is <b>three rows</b>, labelled on the board: <b>+5V</b>, <b>Gnd</b> and <b>A0-5</b>. Only the A0-5 row is an input. Each LDR uses all three rows of its column: LDR from +5V to the A pin, and resistor from the A pin to Gnd. A0 is the end nearest the Uno's power pins, so A4 and A5 are the two columns at the corner. On some shields the A0-5 row is bare holes: solder pins or wires there.</p>
+      <p><b>On the shield</b>, the analog header is <b>three rows</b>, labeled on the board: <b>+5V</b>, <b>Gnd</b> and <b>A0-5</b>. Only the A0-5 row is an input. Each LDR uses all three rows of its column: LDR from +5V to the A pin, and resistor from the A pin to Gnd. A0 is the end nearest the Uno's power pins, so A4 and A5 are the two columns at the corner. On some shields the A0-5 row is bare holes: solder pins or wires there.</p>
       <p class="dim">Plugged into just the +5V and Gnd rows, the robot cannot see the LDRs at all. It nods for # # 1 and then never moves.</p>
     </div>
   </div>
 
   <h3>Which LDR, which resistor?</h3>
-  <p>A GL55xx pack has five kinds: 5516, 5528, 5537, 5539 and 5549. The higher the number, the higher the resistance. <b>Use two of the same kind</b>, so left and right behave alike. Then pick the fixed resistor to <b>match the LDR's resistance in the room where the robot will run</b>. That puts the reading in the middle, where a torch moves it the most.</p>
+  <p>A GL55xx pack has five kinds: 5516, 5528, 5537, 5539 and 5549. The higher the number, the higher the resistance. <b>Use two of the same kind</b>, so left and right behave alike. Then pick the fixed resistor to <b>match the LDR's resistance in the room where the robot will run</b>. That puts the reading in the middle, where a flashlight moves it the most.</p>
   <table>
     <tr><th>LDR</th><th>Datasheet, dim (10 lux)</th><th>Lit classroom, roughly</th><th>Resistor</th></tr>
     <tr><td>GL5516</td><td>5k-10k</td><td>about 1k</td><td>1k-2.2k</td></tr>
@@ -219,7 +219,7 @@
     <tr><td>GL5539</td><td>50k-100k</td><td>10k-20k</td><td>22k</td></tr>
     <tr><td>GL5549</td><td>100k-200k</td><td>20k-50k</td><td>47k</td></tr>
   </table>
-  <p>Better than the table: set a multimeter to resistance, hold an LDR where the robot will be, and read it. Pick the resistor closest to that number. Then check with <code>b</code>: in room light both numbers should be roughly 300-700, and a phone torch should push them up by 100 or more.</p>
+  <p>Better than the table: set a multimeter to resistance, hold an LDR where the robot will be, and read it. Pick the resistor closest to that number. Then check with <code>b</code>: in room light both numbers should be roughly 300-700, and a phone flashlight should push them up by 100 or more.</p>
   <p class="dim">The markings are on the bag, not on the LDR. The robot compares each LDR with the room's own light, so an imperfect match still works. Only a reading stuck near 0 or 1023 needs a different resistor. Near 1023 (too bright): use a smaller resistor. Near 0: use a bigger one.</p>
 
   <h3>Where they go on the robot</h3>
@@ -252,23 +252,23 @@
   <h3>With the remote (ir.ino)</h3>
   <ol>
     <li>Flash <a href="../ir/ir.ino" download>ir.ino</a> 0.10.78 or newer. The calibration is kept, because it is stored in the robot's memory.</li>
-    <li><b>Check</b> (optional, with the <a href="ir.html#instructor">Programming page</a> or a USB cable): type <code>b</code>. It answers <code>B,&lt;direction&gt;,&lt;brightest&gt;,&lt;left&gt;,&lt;right&gt;</code> (and <code>,&lt;back&gt;</code> with a back LDR). Cover the left LDR and the third number should drop. Shine a torch on it and the number should jump.</li>
-    <li><b># # 1</b>: <b>moth mode</b>, follow the light. The robot nods, then waits. Shine a phone torch at its nose and walk away: it turns toward the brighter side and comes after you. It stops when the light goes. Nothing stops it short of you (the sonar is off), so keep walking or turn the torch off.</li>
-    <li><b># # 2</b>: <b>cockroach mode</b>, run from the light. Shine the torch at it and it backs away, turning to keep watching the torch.</li>
-    <li><b>With the back LDR</b>: a light behind makes # # 1 back straight toward it and # # 2 run forward away from it. If the torch also lights one front LDR a little, it turns as it goes, swinging its tail toward the light.</li>
+    <li><b>Check</b> (optional, with the <a href="ir.html#instructor">Programming page</a> or a USB cable): type <code>b</code>. It answers <code>B,&lt;direction&gt;,&lt;brightest&gt;,&lt;left&gt;,&lt;right&gt;</code> (and <code>,&lt;back&gt;</code> with a back LDR). Cover the left LDR and the third number should drop. Shine a flashlight on it and the number should jump.</li>
+    <li><b># # 1</b>: <b>moth mode</b>, follow the light. The robot nods, then waits. Shine a phone flashlight at its nose and walk away: it turns toward the brighter side and comes after you. It stops when the light goes. Nothing stops it short of you (the sonar is off), so keep walking or turn the flashlight off.</li>
+    <li><b># # 2</b>: <b>cockroach mode</b>, run from the light. Shine the flashlight at it and it backs away, turning to keep watching the flashlight.</li>
+    <li><b>With the back LDR</b>: a light behind makes # # 1 back straight toward it and # # 2 run forward away from it. If the flashlight also lights one front LDR a little, it turns as it goes, swinging its tail toward the light.</li>
     <li><b>Any key</b> stops it.</li>
-    <li><b>No remote?</b> With the robot sitting idle, flash the torch on the left LDR, then the right, the left, the right, all within 3 seconds (a moment on each). It nods and goes into moth mode, the same as # # 1. Version 0.10.78 or newer.</li>
+    <li><b>No remote?</b> With the robot sitting idle, flash the flashlight on the left LDR, then the right, the left, the right, all within 3 seconds (a moment on each). It nods and goes into moth mode, the same as # # 1. Version 0.10.78 or newer.</li>
   </ol>
-  <p class="dim">The robot measures the room's own light when it starts and keeps learning it while it sees no torch. So start it with the torch off, and two LDRs that read a bit differently do not matter.</p>
+  <p class="dim">The robot measures the room's own light when it starts and keeps learning it while it sees no flashlight. So start it with the flashlight off, and two LDRs that read a bit differently do not matter.</p>
 
   <div class="box">
     <b>If it does not work</b>
     <ul>
       <li><b><code>b</code> says <code>B,0,0,0,0</code></b>: the resistors are pulling the pins to 0 V but the LDRs get no 5V. The LDR's hot leg is probably on the Gnd row; the labels on these shields can sit beside a different row than you expect. Test: a jumper from A4 straight to 5V should read 1023 (and in # # 1 the wheels spin). Then measure which header row really is 5V and move the LDR legs there.</li>
-      <li><b>It never moves</b>: check with <code>b</code>. Both numbers should move when you cover the LDRs or shine the torch on them. If they don't, look for a loose wire or a missing resistor, or a gyro still plugged into A4/A5.</li>
+      <li><b>It never moves</b>: check with <code>b</code>. Both numbers should move when you cover the LDRs or shine the flashlight on them. If they don't, look for a loose wire or a missing resistor, or a gyro still plugged into A4/A5.</li>
       <li><b>It turns away from the light when following</b>: left and right are swapped (A4 is the left one).</li>
-      <li><b>It reacts to the room, not the torch</b>: put the tubes on the LDRs, or use a brighter torch.</li>
-      <li><b>It runs into you</b>: the sonar is off in this build. Turn the torch off to stop it, or press any key.</li>
+      <li><b>It reacts to the room, not the flashlight</b>: put the tubes on the LDRs, or use a brighter flashlight.</li>
+      <li><b>It runs into you</b>: the sonar is off in this build. Turn the flashlight off to stop it, or press any key.</li>
       <li><b>The number goes DOWN in bright light</b>: the LDR and the resistor are swapped (resistor to 5V). Swap them back.</li>
     </ul>
   </div>

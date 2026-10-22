@@ -4,7 +4,7 @@ import os
 import re
 
 PITCH = 44            # px between connector centres
-X1 = 110              # centre of connector 1
+X1 = 110              # center of connector 1
 XS = [X1, X1 + PITCH, X1 + 2 * PITCH]
 HOUSING_TOP = 250
 HOUSING_H = 110
@@ -17,9 +17,9 @@ BANDS = ["#e8c200", "#7b3fb8", "#d42a2a", None, "#b8962e"]   # yellow violet red
 
 def connectors():
     out = []
-    for x, (colour, num, name, _) in zip(XS, WIRES):
+    for x, (color, num, name, _) in zip(XS, WIRES):
         y0 = HOUSING_TOP + HOUSING_H
-        out.append(f'<line x1="{x}" y1="{y0}" x2="{x}" y2="{y0 + 38}" stroke="{colour}" stroke-width="13" stroke-linecap="round"/>')
+        out.append(f'<line x1="{x}" y1="{y0}" x2="{x}" y2="{y0 + 38}" stroke="{color}" stroke-width="13" stroke-linecap="round"/>')
         out.append(f'<rect x="{x - HW / 2}" y="{HOUSING_TOP}" width="{HW}" height="{HOUSING_H}" rx="3" fill="#202326" stroke="#4a5058" stroke-width="1.5"/>')
         out.append(f'<rect x="{x - HW / 2 + 4}" y="{HOUSING_TOP + 4}" width="{HW - 8}" height="10" rx="2" fill="#2e3237"/>')
         out.append(f'<rect x="{x - 5}" y="{HOUSING_TOP + 4}" width="10" height="10" fill="#050505" stroke="#6b737c" stroke-width="1"/>')
@@ -94,7 +94,7 @@ def tape():
     return out, x1
 
 
-SX = 170          # side view: centre of the connectors
+SX = 170          # side view: center of the connectors
 ST = 180          # side view: top of the connectors
 SH = 110
 
@@ -120,8 +120,8 @@ def side_view(state):
         out.append(lead(f"M{SX + 6} {ST + 6} V{ST - 12} Q{SX + 6} {ST - 24} {right + 4} {ST - 14} V{ST + 150}"))
         out.append(head(right + 4, ST + 150))
     # wires
-    for i, (colour, *_rest) in enumerate(WIRES):
-        out.append(f'<line x1="{SX - 8 + i * 8}" y1="{bottom}" x2="{SX - 14 + i * 14}" y2="{bottom + 70}" stroke="{colour}" stroke-width="10" stroke-linecap="round"/>')
+    for i, (color, *_rest) in enumerate(WIRES):
+        out.append(f'<line x1="{SX - 8 + i * 8}" y1="{bottom}" x2="{SX - 14 + i * 14}" y2="{bottom + 70}" stroke="{color}" stroke-width="10" stroke-linecap="round"/>')
     # the resistor's leads: the short one over the top edge to the body's top end, the
     # long one down the front and round the bottom to the body's lower end
     body_top, body_bottom = ST + 14, ST + 110
@@ -156,13 +156,13 @@ def side_view(state):
         "side-folded": "Step 7, side view: the LDR's legs come out of the top, bend over and run down the back of the connectors, with the LDR lying against the back, the opposite side from the taped resistor.",
         "side-taped": "Step 8, side view: a second piece of tape, high up near the end of the connectors, holds the LDR's legs against the back.",
         "side-z": "Step 9, side view: the LDR folded back up over the tape so it sticks out of the top again. Its legs make a Z: up out of the connector, down the back under the tape, and back up outside it.",
-        "side-more-tape": "Step 10, side view: more tape round everything, over the Z fold, with the LDR still sticking out of the top.",
+        "side-more-tape": "Step 10, side view: more tape around everything, over the Z fold, with the LDR still sticking out of the top.",
     }
     return f'<svg viewBox="30 0 320 440" role="img" aria-label="{labels[state]}">\n' + "\n".join(out) + "\n</svg>"
 
 
 def done_view():
-    """Front view, finished: tape round all three connectors, the LDR standing up out
+    """Front view, finished: tape around all three connectors, the LDR standing up out
     of the top (its legs come up from the Z fold behind)."""
     parts = ['<rect y="20" width="360" height="420" rx="10" class="fig-bg" fill="#f4f1ea"/>']
     cx, cy = XS[1], HOUSING_TOP - 120
@@ -183,12 +183,12 @@ def done_view():
     parts.append(text(x1 + 10, HOUSING_TOP + 58, "all round"))
     parts.append(text(cx + 54, cy - 6, "the right"))
     parts.append(text(cx + 54, cy + 12, "sensor (A5)"))
-    label = "Step 11, done: the right light sensor (A5). From the front, tape round all three connectors (1 red 5V, 2 black Gnd, 3 blue A5) and the LDR standing up out of the top."
+    label = "Step 11, done: the right light sensor (A5). From the front, tape around all three connectors (1 red 5V, 2 black Gnd, 3 blue A5) and the LDR standing up out of the top."
     return f'<svg viewBox="0 20 360 420" role="img" aria-label="{label}">\n' + "\n".join(parts) + "\n</svg>"
 
 
-def text(x, y, words, anchor="start", size=14, colour="#222"):
-    return f'<text x="{x}" y="{y}" text-anchor="{anchor}" font-size="{size}" fill="{colour}">{words}</text>'
+def text(x, y, words, anchor="start", size=14, color="#222"):
+    return f'<text x="{x}" y="{y}" text-anchor="{anchor}" font-size="{size}" fill="{color}">{words}</text>'
 
 
 
@@ -231,7 +231,7 @@ SENSOR_NAMES = {3: "back", 4: "left", 5: "right"}
 
 def header_closeup(columns):
     """Close-up of the analog header from above. Each dupont plug stands on its pin
-    with the wire coming straight up at you: a coloured dot on the plug."""
+    with the wire coming straight up at you: a colored dot on the plug."""
     xs = [30 + i * 46 for i in range(6)]          # A0 .. A5
     ys = [92, 138, 184]                           # +5, Gnd, A0-5
     out = ['<rect y="20" width="360" height="250" rx="10" class="fig-bg" fill="#f4f1ea"/>',
@@ -245,9 +245,9 @@ def header_closeup(columns):
     out.append(f'<rect x="{xs[4] + 8}" y="20" width="{360 - xs[4] - 8}" height="{ys[0] - 20 - 21}" fill="#2f86d6" stroke="#174a88" stroke-width="2"/>')
     out.append(f'<text x="{(xs[4] + 368) / 2}" y="50" text-anchor="middle" font-size="13" fill="#fff">motor connector</text>')
     for col in columns:
-        for (colour, *_rest), y in zip(WIRES, ys):
+        for (color, *_rest), y in zip(WIRES, ys):
             out.append(f'<rect x="{xs[col] - 20}" y="{y - 20}" width="40" height="40" rx="3" fill="#202326" stroke="#4a5058" stroke-width="1.5"/>')
-            out.append(f'<circle cx="{xs[col]}" cy="{y}" r="11" fill="{colour}" stroke="#fff" stroke-width="1.5"/>')
+            out.append(f'<circle cx="{xs[col]}" cy="{y}" r="11" fill="{color}" stroke="#fff" stroke-width="1.5"/>')
     for label, y in (("+5", ys[0]), ("Gnd", ys[1]), ("A0-5", ys[2])):
         out.append(f'<text x="{xs[5] + 28}" y="{y + 5}" font-size="13" font-weight="700" fill="#fff">{label}</text>')
     for i, x in enumerate(xs):
@@ -299,8 +299,8 @@ def figure(state):
         parts.append(text(XS[1] - 14, bent_tip - 22, "(bent over)", "end"))
         parts.append(text(XS[2] + 14, straight_tip - 20, "short lead"))
         parts.append(text(XS[2] + 26, 80, "4.7k"))
-        parts.append(text(XS[2] + 26, 98, "yellow violet", size=12, colour="#555"))
-        parts.append(text(XS[2] + 26, 114, "red gold", size=12, colour="#555"))
+        parts.append(text(XS[2] + 26, 98, "yellow violet", size=12, color="#555"))
+        parts.append(text(XS[2] + 26, 114, "red gold", size=12, color="#555"))
     if state in ("plugged", "folded", "taped"):
         parts.append(text(XS[0], HOUSING_TOP - 28, "empty", "middle", 13, "#555"))
         parts.append(text(XS[0], HOUSING_TOP - 12, "for now", "middle", 13, "#555"))
@@ -309,14 +309,14 @@ def figure(state):
         parts.append(text(XS[2] + 28, HOUSING_TOP + 68, "folded"))
         parts.append(text(XS[2] + 28, HOUSING_TOP + 86, "down on 3"))
     if state == "taped":
-        parts.append(text(tape_right + 10, HOUSING_TOP + 52, "tape round"))
+        parts.append(text(tape_right + 10, HOUSING_TOP + 52, "tape around"))
         parts.append(text(tape_right + 10, HOUSING_TOP + 70, "2 and 3"))
     if state == "ldr-ready":
         for x in (XS[0], XS[2]):
             parts.append(f'<line x1="{x}" y1="{ldr_tip + 8}" x2="{x}" y2="{HOUSING_TOP - 8}" stroke="#e65100" stroke-width="2" stroke-dasharray="4 4"/>')
             parts.append(f'<path d="M{x - 6} {HOUSING_TOP - 14} L{x} {HOUSING_TOP - 4} L{x + 6} {HOUSING_TOP - 14}" fill="none" stroke="#e65100" stroke-width="2"/>')
         parts.append(text(XS[1] + 50, 10, "LDR"))
-        parts.append(text(XS[1] + 50, 28, "(GL5537)", size=12, colour="#555"))
+        parts.append(text(XS[1] + 50, 28, "(GL5537)", size=12, color="#555"))
         parts.append(text(XS[0] - 10, ldr_tip - 30, "to 1", "end"))
         parts.append(text(XS[2] + 10, ldr_tip - 30, "to 3"))
     if state == "ldr-in":
@@ -336,7 +336,7 @@ def figure(state):
 html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
   <section class="card">
     <h2>Step by step: the right sensor (A5)</h2>
-    <p>Three 20 cm female-female dupont wires. Your colours will be mixed up; in the pictures
+    <p>Three 20 cm female-female dupont wires. Your colors will be mixed up; in the pictures
     <b>1 is red (5V)</b>, <b>2 is black (Gnd)</b> and <b>3 is blue (A5)</b>.</p>
     <div class="steps">
       <figure>
@@ -385,7 +385,7 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
       </figure>
       <figure>
         {figure("side-more-tape")}
-        <figcaption><b>10.</b> More tape round everything, over the Z fold.</figcaption>
+        <figcaption><b>10.</b> More tape around everything, over the Z fold.</figcaption>
       </figure>
       <figure>
         {figure("done")}

@@ -35,7 +35,7 @@
 
   <section class="card">
     <h2>How the session runs</h2>
-    <ol><li>Show the budget: about 32.2 KB in all. The default build uses about 32.2 KB: it is full.</li><li>Hand out the price list: IMU 1.9 KB, laser 1.3 KB, IR remote 0.8 KB, 20 extra demos 0.75 KB, ADS1115 inputs 0.35 KB, mux 0.34 KB (off by default), sonar 0.3 KB.</li><li>Each group picks a mission: maze runner, line racer, show robot for a party, classroom-safe robot.</li><li>Choose a loadout for the mission. It must fit. Write why each feature is in or out.</li><li>Open the sketch and set the USE_ flags at the top (1 = in, 0 = out). Compile in the Arduino IDE and read 'Sketch uses N bytes'. Did your estimate match?</li><li>Flash it and show the robot doing its mission. The app greys out demos the robot does not have.</li><li>Discuss: the extra demos and everything else do not quite fit together. Which would you drop, and why?</li></ol>
+    <ol><li>Show the budget: about 32.2 KB in all. The default build uses about 32.2 KB: it is full.</li><li>Hand out the price list: IMU 1.9 KB, laser 1.3 KB, IR remote 0.8 KB, 20 extra demos 0.75 KB, ADS1115 inputs 0.35 KB, mux 0.34 KB (off by default), sonar 0.3 KB.</li><li>Each group picks a mission: maze runner, line racer, show robot for a party, classroom-safe robot.</li><li>Choose a loadout for the mission. It must fit. Write why each feature is in or out.</li><li>Open the sketch and set the USE_ flags at the top (1 = in, 0 = out). Compile in the Arduino IDE and read 'Sketch uses N bytes'. Did your estimate match?</li><li>Flash it and show the robot doing its mission. The app grays out demos the robot does not have.</li><li>Discuss: the extra demos and everything else do not quite fit together. Which would you drop, and why?</li></ol>
   </section>
 
   <section class="card">
@@ -47,7 +47,7 @@
     <h2>When it goes wrong</h2>
     <table class="watch">
       <tr><th>What you see</th><th>What it means</th></tr>
-      <tr><td>'Sketch too big' when compiling</td><td>Over budget: turn one more feature off and compile again.</td></tr><tr><td>A feature is missing on the robot</td><td>Its USE_ flag is 0, or the part was not found at start-up (check the console).</td></tr><tr><td>Demos greyed out in the app</td><td>Built without USE_EXTRA_DEMOS. Expected: the robot tells the app which demos it has.</td></tr>
+      <tr><td>'Sketch too big' when compiling</td><td>Over budget: turn one more feature off and compile again.</td></tr><tr><td>A feature is missing on the robot</td><td>Its USE_ flag is 0, or the part was not found at start-up (check the console).</td></tr><tr><td>Demos grayed out in the app</td><td>Built without USE_EXTRA_DEMOS. Expected: the robot tells the app which demos it has.</td></tr>
     </table>
   </section>
 

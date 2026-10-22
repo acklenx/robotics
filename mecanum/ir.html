@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#15181c">
-<title>Programming Guide 0.1.15 - Maker Lab Kids</title>
+<title>Programming Guide 0.1.16 - Maker Lab Kids</title>
 <style>
   :root {
     --bg: #15181c;
@@ -241,7 +241,7 @@
       <small class="cap c-ok">stop / try it</small>
     </div>
     </div>
-    <p class="lead" style="text-align:center">Numbers are how far (centimetres) or how much to turn (degrees), and which slot a program lives in.</p>
+    <p class="lead" style="text-align:center">Numbers are how far (centimeters) or how much to turn (degrees), and which slot a program lives in.</p>
   </div>
 
   <h2>1. Drive</h2>
@@ -297,11 +297,11 @@
 
   <h2>4. The light bot: moth and cockroach</h2>
   <div class="card">
-    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">1</span> <span class="then">moth mode: shine a torch at its nose and walk away. It turns toward the bright side and comes after you.</span></p>
-    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">2</span> <span class="then">cockroach mode: run from the light. Shine the torch at it and it backs away, still watching the torch.</span></p>
-    <p>With a third light sensor on its back, a light <b>behind</b> it works too: # # 1 backs straight toward it, # # 2 runs forward away from it. Aim the torch so a little light also reaches one front sensor and it turns as it goes.</p>
-    <p><b>No remote? Use the torch:</b> flash it on the left sensor, the right, the left, the right, all within 3 seconds. The robot <span class="answer">nods</span> and goes into moth mode, just like # # 1.</p>
-    <p>It <span class="answer">nods</span> when it starts. With no torch it just waits. <b>Any key stops it.</b> Needs the two light sensors. More on the <a href="light.html">Light bot</a> page.</p>
+    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">1</span> <span class="then">moth mode: shine a flashlight at its nose and walk away. It turns toward the bright side and comes after you.</span></p>
+    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">2</span> <span class="then">cockroach mode: run from the light. Shine the flashlight at it and it backs away, still watching the flashlight.</span></p>
+    <p>With a third light sensor on its back, a light <b>behind</b> it works too: # # 1 backs straight toward it, # # 2 runs forward away from it. Aim the flashlight so a little light also reaches one front sensor and it turns as it goes.</p>
+    <p><b>No remote? Use the flashlight:</b> flash it on the left sensor, the right, the left, the right, all within 3 seconds. The robot <span class="answer">nods</span> and goes into moth mode, just like # # 1.</p>
+    <p>It <span class="answer">nods</span> when it starts. With no flashlight it just waits. <b>Any key stops it.</b> Needs the two light sensors. More on the <a href="light.html">Light bot</a> page.</p>
   </div>
 
   <div class="card warn">
@@ -314,7 +314,7 @@
   <div class="card gest">
     <div><b>Wiggle</b> (quick left-right)<br>"I am listening" / "which slot?"</div>
     <div><b>Nod</b> (forward-back)<br>"Got it": step kept, program saved</div>
-    <div><b>Slow head shake</b><br>"No": cancelled, empty slot, program full</div>
+    <div><b>Slow head shake</b><br>"No": canceled, empty slot, program full</div>
     <div><b>Stops dead</b><br>A key was pressed</div>
   </div>
 
@@ -359,17 +359,17 @@
 
     <div class="card">
       <h3 style="margin-top:0">Calibrate from the remote: <span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span></h3>
-      <p class="lead">Three quick steps to get programmed moves in the ballpark. A test only runs when you press <span class="key ok">OK</span>, so put the robot on a mark first; <span class="key star">*</span> runs the current test again whenever you want to re-measure. You type what you measured. The numbers are saved on the robot (the same place the <a href="calibration.html">Calibrate / Tune</a> page saves), on top of the code's numbers. Strafing is left alone. You need a tape measure and a metre of floor.</p>
+      <p class="lead">Three quick steps to get programmed moves in the ballpark. A test only runs when you press <span class="key ok">OK</span>, so put the robot on a mark first; <span class="key star">*</span> runs the current test again whenever you want to re-measure. You type what you measured. The numbers are saved on the robot (the same place the <a href="calibration.html">Calibrate / Tune</a> page saves), on top of the code's numbers. Strafing is left alone. You need a tape measure and a meter of floor.</p>
       <table>
         <tr><th>Step</th><th>What happens</th><th>You press</th></tr>
         <tr><td>Start</td><td><span class="answer">wiggle</span>, then a short forward pulse at the start power</td><td class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span></td></tr>
         <tr><td>1 Start power</td><td>Each press pulses again. Go down until it stops moving, then up until it just moves.</td><td class="seq"><span class="key arrow">&#9660;</span> less, <span class="key arrow">&#9650;</span> more, <span class="key ok">OK</span> keeps it (<span class="answer">nod</span>)</td></tr>
-        <tr><td>2 One metre</td><td>Put it on a mark. <span class="key ok">OK</span> drives forward 1 m. Measure how far it really went.</td><td class="seq"><span class="key ok">OK</span> to drive, then the cm, e.g. <span class="key">9</span><span class="key">4</span>, then <span class="key ok">OK</span></td></tr>
+        <tr><td>2 One meter</td><td>Put it on a mark. <span class="key ok">OK</span> drives forward 1 m. Measure how far it really went.</td><td class="seq"><span class="key ok">OK</span> to drive, then the cm, e.g. <span class="key">9</span><span class="key">4</span>, then <span class="key ok">OK</span></td></tr>
         <tr><td>2 Drift</td><td>Did it end left or right of a straight line?</td><td class="seq"><span class="key arrow">&#9664;</span> or <span class="key arrow">&#9654;</span>, the cm, <span class="key ok">OK</span> (<span class="key ok">OK</span> alone = straight)</td></tr>
         <tr><td>3 Four turns</td><td>Mark where it faces. <span class="key ok">OK</span> turns right 90 four times. Is it facing the way it started?</td><td class="seq"><span class="key ok">OK</span> to turn, then <span class="key arrow">&#9654;</span> degrees past, or <span class="key arrow">&#9664;</span> degrees short, <span class="key ok">OK</span></td></tr>
         <tr><td>Saved</td><td><span class="answer">nod + wiggle</span>: the numbers are on the robot. Run <span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span> again to refine; each round builds on the last.</td><td></td></tr>
       </table>
-      <p class="lead"><span class="key star">*</span> runs the current step's test again (the pulse, the metre, the four turns) and drops any digits typed so far. <span class="key pound">#</span> cancels and puts the saved numbers back. To go back to the code's numbers, send <code>kd;</code> from the command box below.</p>
+      <p class="lead"><span class="key star">*</span> runs the current step's test again (the pulse, the meter, the four turns) and drops any digits typed so far. <span class="key pound">#</span> cancels and puts the saved numbers back. To go back to the code's numbers, send <code>kd;</code> from the command box below.</p>
     </div>
 
     <div class="card">
@@ -424,7 +424,7 @@
 <script>
 "use strict";
 
-var APP_VERSION = "0.1.15";
+var APP_VERSION = "0.1.16";
 var SERIAL_BAUD = 9600;
 var BLE_SERVICE_UUID = 0xFFE0;
 var BLE_NUS_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";

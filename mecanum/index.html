@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex">
 <link rel="icon" href="data:,">
-<title>Mecanum Workshop 0.6.36 - Maker Lab Kids</title>
+<title>Mecanum Workshop 0.6.37 - Maker Lab Kids</title>
 <style>
   :root {
     --bg: #15181c;
@@ -437,7 +437,7 @@
         <button data-drive="w" title="forward">&#9650;<small>w</small></button>
         <button data-drive="e" class="spin" title="spin clockwise">&#8635;<small>e</small></button>
         <button data-drive="a" title="strafe left">&#9664;<small>a</small></button>
-        <button data-drive="x" class="centre" title="stop">STOP<small>x</small></button>
+        <button data-drive="x" class="center" title="stop">STOP<small>x</small></button>
         <button data-drive="d" title="strafe right">&#9654;<small>d</small></button>
         <span></span>
         <button data-drive="s" title="backward">&#9660;<small>s</small></button>
@@ -489,7 +489,7 @@
         <tr><td>i</td><td>IMU status: which one (BNO055 or MPU-6050, found at start-up), on/off, heading, calibration levels or gyro offset</td></tr>
         <tr><td>iw</td><td>watch the IMU heading (I,&lt;degrees&gt;, clockwise positive) 5 times a second, until x</td></tr>
         <tr><td>in / if</td><td>IMU heading hold on / off. On: moves track heading, settle after each move, cr measures its own spin</td></tr>
-        <tr><td>lw bw</td><td>watch the line / light sensors: raw and normalised readings 5 times a second, robot standing still, until x</td></tr>
+        <tr><td>lw bw</td><td>watch the line / light sensors: raw and normalized readings 5 times a second, robot standing still, until x</td></tr>
         <tr><td>ls lc lf</td><td>line sensor: show one reading / calibrate by strafing across the line / follow the line until x (set up in the Sensors tab)</td></tr>
         <tr><td>bs bc bf</td><td>light sensors: show one reading / 5 s calibration (cover each LDR, then shine on each) / seek the light until x (set up in the Sensors tab)</td></tr>
         <tr><td>rs rw</td><td>laser rangefinder (VL53L0X, found at start-up): one reading / watch 5 times a second (with the sonar), until x. Replies <code>R,&lt;mm&gt;</code>, -1 = nothing in range. Forward driving and line following stop 120 mm from a wall</td></tr>
@@ -526,7 +526,7 @@
         <button id="programRunButton">RUN</button>
         <button id="programStopButton" style="background:var(--red-button);border-color:var(--red-button);color:#fff;font-weight:900">STOP</button>
       </div>
-      <div class="key-hint" style="text-align:left;margin-top:8px">Drag blocks from the left and snap them together under each other. RUN sends them to the robot one at a time, in order, and lights up the block it is doing. <b>Heading hold</b> turns the IMU on or off for the moves after it: run the same square both ways and compare where it ends up. Distances are millimetres at 250 mm/s; turns are degrees, right = clockwise.</div>
+      <div class="key-hint" style="text-align:left;margin-top:8px">Drag blocks from the left and snap them together under each other. RUN sends them to the robot one at a time, in order, and lights up the block it is doing. <b>Heading hold</b> turns the IMU on or off for the moves after it: run the same square both ways and compare where it ends up. Distances are millimeters at 250 mm/s; turns are degrees, right = clockwise.</div>
     </div>
 
     <div class="panel">
@@ -557,7 +557,7 @@
       <div class="panel-label">Preprogrammed moves <span class="right" id="demoStatus">idle</span></div>
       <div class="demo-legend">
         Tap a card to run it. Previews are drawn from the same geometry the firmware uses:
-        <i style="background:var(--orange)"></i>path of the robot's centre,
+        <i style="background:var(--orange)"></i>path of the robot's center,
         <i style="background:#4a5563"></i>where the nose points every half second,
         <i style="border:1.5px solid var(--green)"></i>start pose,
         <i style="border:1.5px dashed var(--blue)"></i>end pose (hidden when it comes home).
@@ -698,7 +698,7 @@
         <button id="lightCalibrateButton" style="flex:1">Calibrate (bc)</button>
         <button id="lightFollowButton" style="flex:1;background:var(--green);color:var(--bg);border-color:var(--green)">Seek (bf)</button>
       </div>
-      <div class="key-hint" style="text-align:left;margin-top:8px">Set it up above first. Calibrate gives you 5 seconds: cover each LDR with a thumb, then shine the torch on each. Seek drives toward the light and holds still when it gets there; the settings above change live while it seeks. Calibration is saved on the robot. Bars are the LDRs in table order; the dial points where the light is, nose up.</div>
+      <div class="key-hint" style="text-align:left;margin-top:8px">Set it up above first. Calibrate gives you 5 seconds: cover each LDR with a thumb, then shine the flashlight on each. Seek drives toward the light and holds still when it gets there; the settings above change live while it seeks. Calibration is saved on the robot. Bars are the LDRs in table order; the dial points where the light is, nose up.</div>
     </div>
 
     <div class="panel">
@@ -807,7 +807,7 @@
 
     <details class="panel cal-step cal-only tape-only" data-step="2">
       <summary class="panel-label">Step 2 - Drive straight (tape measure) <span class="right" id="tapeStraightStatus"></span></summary>
-      <div class="cal-text">A straight line on the floor (tape, or a floor board) and about a metre clear. Each run goes 1 m.
+      <div class="cal-text">A straight line on the floor (tape, or a floor board) and about a meter clear. Each run goes 1 m.
       Forward: start with the robot on the line, measure how far the middle of the robot ended up to the side of it
       (right +, left -). Strafe right: start with the robot across the line, measure how far it ended up ahead of
       it (ahead +, behind -). Apply: each wheel gets a trim and the robot uses it at once. Run again to check.</div>
@@ -825,7 +825,7 @@
 
     <details class="panel cal-step cal-only gyro-only" data-step="2">
       <summary class="panel-label">Step 2 - Drive straight (each wheel) <span class="right" id="straightenStatus"></span></summary>
-      <div class="cal-text">About a metre clear in front, behind and to each side. With heading hold off, it drives
+      <div class="cal-text">About a meter clear in front, behind and to each side. With heading hold off, it drives
       forward and back, then strafes right and left, slowly and fast. If one side or end is stronger, the robot
       turns while it should go straight; the gyro measures by how much, and each wheel gets its own trim (where it
       starts and how strong it is). It repeats until it runs straight, up to three rounds of about 30 seconds.</div>
@@ -858,7 +858,7 @@
       To calibrate this robot without an IMU, pick Tape measure above.</div>
       <div class="cal-input-row">
         <label>Wheelbase mm (front axle to rear axle)<input type="number" id="wheelbaseInput" inputmode="decimal" value="150"></label>
-        <label>Track mm (left wheel centre to right wheel centre)<input type="number" id="trackInput" inputmode="decimal" value="130"></label>
+        <label>Track mm (left wheel center to right wheel center)<input type="number" id="trackInput" inputmode="decimal" value="130"></label>
       </div>
       <div class="cal-input-row">
         <label>Calibration run length (CALIBRATION_RUN_MS in the sketch)<input type="number" id="runMsInput" inputmode="numeric" value="2000"></label>
@@ -994,7 +994,7 @@
 <script>
 "use strict";
 
-var APP_VERSION = "0.6.36";
+var APP_VERSION = "0.6.37";
 var FIRMWARE_COMPAT = "0.10.20";
 // The header and title follow these, so they can never show an old number.
 document.getElementById("appVersionLabel").textContent = "v" + APP_VERSION;
@@ -2061,7 +2061,7 @@ var DEMOS = [
     run: function (s) { s.straight(0, 500, 0); s.straight(90, 250, 0); s.straight(-90, 250, 0); s.straight(180, 500, 0); } },
   { key: "u", name: "Turn around", blurb: "Spins 180 degrees in place (IR remote key 2).",
     run: function (s) { s.spin(180); } },
-  { key: "1", name: "Circle strafe", blurb: "Heading held; the centre orbits a point 400 mm ahead, then back the other way.",
+  { key: "1", name: "Circle strafe", blurb: "Heading held; the center orbits a point 400 mm ahead, then back the other way.",
     run: function (s) { s.orbitPolar(0, 400, 360, false, 0); s.orbitPolar(0, 400, -360, false, 0); } },
   { key: "2", name: "Square, 360 per side", blurb: "A full body spin on every side of the square.",
     run: function (s) { s.polygon(4, DEMO_SQUARE_SIDE_MM, 360, 0); } },
@@ -3432,9 +3432,9 @@ var LINE_TUNING = [
   { key: "lv", name: "Speed", min: 50, max: 400, step: 10, unit: " mm/s",
     help: "Forward speed while following. Start slow; speed up once it holds the line." },
   { key: "lg", name: "Slide correction", min: 0, max: 8, step: 0.1, unit: "",
-    help: "mm/s of sideways slide per mm the line is off-centre. Too low: drifts off on curves. Too high: wobbles side to side." },
+    help: "mm/s of sideways slide per mm the line is off-center. Too low: drifts off on curves. Too high: wobbles side to side." },
   { key: "lk", name: "Turn correction", min: 0, max: 0.08, step: 0.002, unit: "",
-    help: "How hard it turns toward the line (rad/s per mm off-centre). This is what follows curves; 0 = never turns, pure crab slide." },
+    help: "How hard it turns toward the line (rad/s per mm off-center). This is what follows curves; 0 = never turns, pure crab slide." },
   { key: "lt", name: "Tape threshold", min: 50, max: 900, step: 10, unit: "",
     help: "How sure a channel must be (0-1000 after calibration) before it counts as seeing tape. Raise it if the floor fools it." },
   { key: "ll", name: "Stop after losing the line", min: 100, max: 3000, step: 50, unit: " ms",
@@ -3450,7 +3450,7 @@ var LIGHT_TUNING = [
   { key: "bt", name: "Sees a light above", min: 50, max: 900, step: 10, unit: "",
     help: "The brightest LDR (0-1000 after calibration) must beat this or it holds still." },
   { key: "ba", name: "Arrived at", min: 300, max: 1001, step: 1, unit: "",
-    help: "Brightest LDR above this = it has reached the torch and stops moving. 1001 = never stops." },
+    help: "Brightest LDR above this = it has reached the flashlight and stops moving. 1001 = never stops." },
   { key: "bl", name: "Stop after losing the light", min: 100, max: 5000, step: 50, unit: " ms",
     help: "Seeking ends if nothing is bright for this long." }
 ];

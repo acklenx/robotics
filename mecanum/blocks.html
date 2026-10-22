@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex">
-<title>Mecanum Blocks 0.1.8 - Maker Lab Kids</title>
+<title>Mecanum Blocks 0.1.9 - Maker Lab Kids</title>
 <style>
 :root {
   --bench: #e8ecef;
@@ -417,8 +417,8 @@ code { font-family: var(--mono-font); font-size: 0.92em; }
         <button type="button" class="wide-screen-button" id="simulatorBiggerButton">Bigger</button>
         <button type="button" id="simulatorFullScreenButton" title="The simulator on the whole screen (Esc leaves)">Full screen</button>
         <label><input type="checkbox" id="simulatorRoomCheckbox"> walls</label>
-        <label><input type="number" id="simulatorRoomWidthInput" min="400" step="100" aria-label="Room width in millimetres"> ×</label>
-        <label><input type="number" id="simulatorRoomDepthInput" min="400" step="100" aria-label="Room depth in millimetres"> mm</label>
+        <label><input type="number" id="simulatorRoomWidthInput" min="400" step="100" aria-label="Room width in millimeters"> ×</label>
+        <label><input type="number" id="simulatorRoomDepthInput" min="400" step="100" aria-label="Room depth in millimeters"> mm</label>
         <button type="button" id="simulatorResetButton">Back to start</button>
       </div>
     </section>
@@ -453,7 +453,7 @@ code { font-family: var(--mono-font); font-size: 0.92em; }
   <div class="dialog-head"><h2>Put programs in the remote's slots</h2><button type="button" data-close-dialog>Close</button></div>
   <div class="dialog-body">
     <p>For a robot running <code>ir.ino</code> (the Remote page). Tabs 1 to 9 are the remote's slots 1 to 9. Slot programs are plain steps:
-      <code>f</code> <code>b</code> <code>l</code> <code>r</code> and the diagonals <code>q</code> <code>e</code> in centimetres, <code>t</code> in degrees, <code>p</code> a pause in seconds,
+      <code>f</code> <code>b</code> <code>l</code> <code>r</code> and the diagonals <code>q</code> <code>e</code> in centimeters, <code>t</code> in degrees, <code>p</code> a pause in seconds,
       <code>n</code> "do it all again" so many times. Loops and subroutines are unrolled into those steps (waits are kept).</p>
     <h3>This tab: <span id="exportProgramName"></span></h3>
     <div class="dialog-row">
@@ -538,7 +538,7 @@ code { font-family: var(--mono-font); font-size: 0.92em; }
 
 /* ============================ CONFIG ============================ */
 
-var EDITOR_VERSION = '0.1.8';
+var EDITOR_VERSION = '0.1.9';
 var EDITOR_COMPATIBILITY_NOTE = 'for mecanum_holonomic 0.10.12+ and ir.ino';
 var BLOCKLY_MEDIA_PATH = 'vendor/blockly/media/';
 var PUBLISHED_PAGE_ADDRESS = 'https://robotics.makerlabkids.com/mecanum/blocks.html';
@@ -2228,7 +2228,7 @@ function defineRobotBlocks() {
       ],
       inputsInline: true, previousStatement: null, nextStatement: null,
       style: 'robot_move_blocks',
-      tooltip: 'Drive in a straight line without turning. Millimetres, at 250 mm/s. The nose keeps pointing the same way.'
+      tooltip: 'Drive in a straight line without turning. Millimeters, at 250 mm/s. The nose keeps pointing the same way.'
     },
     {
       type: 'robot_drive_toward',
@@ -2377,7 +2377,7 @@ function defineRobotBlocks() {
       type: 'robot_light_level',
       message0: 'light level (0-100)',
       output: 'Number', style: 'robot_sensor_blocks',
-      tooltip: 'How bright the brightest LDR reads, 0 (dark) to 100 (torch on it). The robot reports its light sensors with bs.'
+      tooltip: 'How bright the brightest LDR reads, 0 (dark) to 100 (flashlight on it). The robot reports its light sensors with bs.'
     },
     {
       type: 'robot_light_direction',
@@ -2413,7 +2413,7 @@ function defineRobotBlocks() {
       type: 'robot_line_position',
       message0: 'line position (mm)',
       output: 'Number', style: 'robot_sensor_blocks',
-      tooltip: 'Where the tape runs under the array: 0 dead centre, positive to the right, negative to the left (about -35 to 35).'
+      tooltip: 'Where the tape runs under the array: 0 dead center, positive to the right, negative to the left (about -35 to 35).'
     },
     {
       type: 'robot_line_sensor',
@@ -2438,9 +2438,9 @@ function defineRobotBlocks() {
     },
     {
       type: 'dream_colour',
-      message0: 'colour under the robot',
+      message0: 'color under the robot',
       output: 'String', style: 'dream_blocks',
-      tooltip: 'SOMEDAY: a colour sensor looking at the floor, so the robot could turn at a red patch or stop on green. Not on our robots yet.'
+      tooltip: 'SOMEDAY: a color sensor looking at the floor, so the robot could turn at a red patch or stop on green. Not on our robots yet.'
     },
     {
       type: 'dream_bumper',
@@ -2466,7 +2466,7 @@ function defineRobotBlocks() {
       message0: 'camera sees %1',
       args0: [{ type: 'field_dropdown', name: 'WHAT', options: [['a red ball', 'redBall'], ['a face', 'face'], ['a QR code', 'qrCode']] }],
       output: 'Boolean', style: 'dream_blocks',
-      tooltip: 'SOMEDAY: a little camera (Pixy / HuskyLens style) that spots colours, faces and codes. Not on our robots yet.'
+      tooltip: 'SOMEDAY: a little camera (Pixy / HuskyLens style) that spots colors, faces and codes. Not on our robots yet.'
     }
   ]);
 }
@@ -2568,7 +2568,7 @@ function defineRobotBlockGenerators() {
   generator.forBlock['robot_line_sensor'] = generateLineSensor;
   generator.forBlock['robot_follow_line'] = generateFollowLine;
   generator.forBlock['robot_imu'] = generateImu;
-  generator.forBlock['dream_colour'] = generateDream('colour sensor', 'none');
+  generator.forBlock['dream_colour'] = generateDream('color sensor', 'none');
   generator.forBlock['dream_bumper'] = generateDream('bumper', false);
   generator.forBlock['dream_encoder'] = generateDream('wheel encoder', 0);
   generator.forBlock['dream_sound'] = generateDream('microphone', 0);
@@ -3103,7 +3103,7 @@ function buildSlotExport(recording, firstSlotNumber, mayUseFollowingSlots) {
     }
     var centimetres = Math.round(step.distanceMm / 10);
     if (centimetres * 10 !== step.distanceMm) {
-      notes.push('Step ' + stepNumber + ': ' + step.distanceMm + ' mm is rounded to ' + centimetres + ' cm (slots count whole centimetres).');
+      notes.push('Step ' + stepNumber + ': ' + step.distanceMm + ' mm is rounded to ' + centimetres + ' cm (slots count whole centimeters).');
     }
     if (centimetres === 0) {
       notes.push('Step ' + stepNumber + ' (' + step.distanceMm + ' mm) is LEFT OUT: it rounds to 0 cm.');
@@ -4256,7 +4256,7 @@ function readSimulatorSettingsFromPage() {
 function fillHelpDialog() {
   elementById('helpBody').innerHTML =
     '<h3>Build</h3>' +
-    '<p>Drag blocks from the left and snap them under <b>when RUN is pressed</b>. Blocks that are not joined to a start block or a subroutine turn grey and do nothing.</p>' +
+    '<p>Drag blocks from the left and snap them under <b>when RUN is pressed</b>. Blocks that are not joined to a start block or a subroutine turn gray and do nothing.</p>' +
     '<p>Each tab is one program with its own blocks, variables and subroutines. The number on a tab is its place in the row; tabs 1 to 9 are also the remote\'s slots 1 to 9, and they start out holding nine demos (+ New can put them back). Make a subroutine in <b>Subroutines</b>, give it a name, then use its call block as often as you like. To reuse one in another tab, select it, copy (Ctrl+C), switch tabs and paste (Ctrl+V).</p>' +
     '<h3>Try it</h3>' +
     '<p><b>Simulator</b> runs the program on a pretend robot, with pretend walls for the laser and sonar. <b>Robot</b> sends each block to the real robot as it runs and lights up the block it is doing. STOP always stops both.</p>' +

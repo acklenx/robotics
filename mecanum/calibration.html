@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#15181c">
-<title>Robot Calibration 0.1.32 - Maker Lab Kids</title>
+<title>Robot Calibration 0.1.33 - Maker Lab Kids</title>
 <style>
   :root {
     --bg: #15181c;
@@ -237,7 +237,7 @@
   <details class="step" data-step="slow">
     <summary><span class="num">3</span><span class="step-title">Slowest speed</span><span class="step-state"></span></summary>
     <div class="step-body">
-      <p class="say">You need about <b>2 metres</b> clear in front, and a tape measure. Put a mark on the floor at the robot's <b>back edge</b>.</p>
+      <p class="say">You need about <b>2 meters</b> clear in front, and a tape measure. Put a mark on the floor at the robot's <b>back edge</b>.</p>
       <p class="say">Tap <b>Run 2 seconds</b>. Measure from the mark to the back edge, in mm. Put the robot back on the mark, tap <b>Run 4 seconds</b>, measure again.</p>
       <div class="row">
         <button class="big" id="run2Button">Run 2 seconds</button>
@@ -271,7 +271,7 @@
   <details class="step" data-step="curve">
     <summary><span class="num">4</span><span class="step-title">Faster speeds</span><span class="step-state"></span></summary>
     <div class="step-body">
-      <p class="say">You need about <b>2 metres</b> clear in front. Mark the floor at the robot's <b>back edge</b>. For each power, tap <b>1 second</b>, measure, put the robot back on the mark, tap <b>2 seconds</b>, measure.</p>
+      <p class="say">You need about <b>2 meters</b> clear in front. Mark the floor at the robot's <b>back edge</b>. For each power, tap <b>1 second</b>, measure, put the robot back on the mark, tap <b>2 seconds</b>, measure.</p>
       <div id="curveRows"></div>
       <button class="big blue" id="curveWorkButton">Work it out</button>
       <div class="working" id="curveWorking"></div>
@@ -289,9 +289,9 @@
     <summary><span class="num">5</span><span class="step-title">Start and stop</span><span class="step-state"></span></summary>
     <div class="step-body">
       <p class="say">Do step 4 first: this one only holds still once moves run at a steady power.</p>
-      <p class="say">Mark the floor at the robot's <b>back edge</b>. Tap <b>Drive 1 metre</b>: the robot drives the way a program does. Measure from the mark to the back edge, in mm.</p>
+      <p class="say">Mark the floor at the robot's <b>back edge</b>. Tap <b>Drive 1 meter</b>: the robot drives the way a program does. Measure from the mark to the back edge, in mm.</p>
       <div class="row">
-        <button class="big" id="coastDriveButton">Drive 1 metre</button>
+        <button class="big" id="coastDriveButton">Drive 1 meter</button>
         <label class="field">It went (mm)<input type="number" id="coastInput" inputmode="decimal" placeholder="e.g. 930"></label>
       </div>
       <div class="result" id="coastRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
@@ -307,8 +307,8 @@
       <div class="result" id="coastResult" hidden></div>
       <details class="more"><summary>What, why and how</summary><div class="more-text">
         <h4>What</h4><p>How many milliseconds early (or late) a move cuts its motors so that it lands on the target, allowing for the motors taking a moment to get going and the robot rolling on after they stop.</p>
-        <h4>Why</h4><p>Those two add the same few centimetres to every move, long or short. Step 3 measured pure speed; this makes the ends right too.</p>
-        <h4>How</h4><p>This is a real move (m0,1000,0: 1 metre at the program speed, with the robot's own timing). Went 930 for 1000? It is 70 mm short: at the slowest speed (step 3), which a move ends on, that is 70 / 249 = 0.28 s, so the number goes down by 281 ms (negative means the motors run late). Work it out shows the line for the code (SPIN_COAST_MS, both sketches). After flashing, drive again: within 2 cm of 1000 is VERIFIED.</p>
+        <h4>Why</h4><p>Those two add the same few centimeters to every move, long or short. Step 3 measured pure speed; this makes the ends right too.</p>
+        <h4>How</h4><p>This is a real move (m0,1000,0: 1 meter at the program speed, with the robot's own timing). Went 930 for 1000? It is 70 mm short: at the slowest speed (step 3), which a move ends on, that is 70 / 249 = 0.28 s, so the number goes down by 281 ms (negative means the motors run late). Work it out shows the line for the code (SPIN_COAST_MS, both sketches). After flashing, drive again: within 2 cm of 1000 is VERIFIED.</p>
       </div></details>
     </div>
   </details>
@@ -347,9 +347,9 @@
   <details class="step" data-step="strafe">
     <summary><span class="num">7</span><span class="step-title">Strafing</span><span class="step-state"></span></summary>
     <div class="step-body">
-      <p class="say">You need about <b>1.5 metres</b> clear to the robot's <b>right</b>. Mark the floor at the robot's <b>right edge</b>. Tap <b>Slide right 1 metre</b>. Measure from the mark to the right edge, in mm (straight sideways, even if it also crept forward or back).</p>
+      <p class="say">You need about <b>1.5 meters</b> clear to the robot's <b>right</b>. Mark the floor at the robot's <b>right edge</b>. Tap <b>Slide right 1 meter</b>. Measure from the mark to the right edge, in mm (straight sideways, even if it also crept forward or back).</p>
       <div class="row">
-        <button class="big" id="strafeButton">Slide right 1 metre</button>
+        <button class="big" id="strafeButton">Slide right 1 meter</button>
         <label class="field">It went sideways (mm)<input type="number" id="strafeInput" inputmode="decimal" placeholder="e.g. 850"></label>
       </div>
       <div class="result" id="strafeRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
@@ -366,7 +366,7 @@
       <details class="more"><summary>What, why and how</summary><div class="more-text">
         <h4>What</h4><p>How far the robot really slides sideways for the slide it is asked: the strafe factor. The rollers slip sideways, so the wheels have to travel a lot further than the robot moves.</p>
         <h4>Why</h4><p>Every sideways move in a program uses this number, and so does every diagonal.</p>
-        <h4>How</h4><p>A real 1 metre slide to the right (m90,1000,0, the program's move). Went 850? The factor goes down by 850 / 1000, so the wheels travel further next time. Work it out shows the line for the code (STRAFE_EFFICIENCY, both sketches). After flashing, slide again: within 3 cm of 1000 is VERIFIED. The robot may creep forward or back or twist a little while sliding; that is a later step, not this number.</p>
+        <h4>How</h4><p>A real 1 meter slide to the right (m90,1000,0, the program's move). Went 850? The factor goes down by 850 / 1000, so the wheels travel further next time. Work it out shows the line for the code (STRAFE_EFFICIENCY, both sketches). After flashing, slide again: within 3 cm of 1000 is VERIFIED. The robot may creep forward or back or twist a little while sliding; that is a later step, not this number.</p>
       </div></details>
     </div>
   </details>
@@ -375,10 +375,10 @@
   <details class="step" data-step="straight">
     <summary><span class="num">8</span><span class="step-title">Drive straight</span><span class="step-state"></span></summary>
     <div class="step-body">
-      <p class="say">Put a strip of tape on the floor, about 1.2 metres long. Put the robot <b>on the tape, facing along it</b>, its middle over the tape. Tap <b>Drive 1 metre</b>.</p>
+      <p class="say">Put a strip of tape on the floor, about 1.2 meters long. Put the robot <b>on the tape, facing along it</b>, its middle over the tape. Tap <b>Drive 1 meter</b>.</p>
       <p class="say">Where is the middle of the robot now? Write how far it is from the tape, in mm. <b>Right is +, left is -.</b></p>
       <div class="row">
-        <button class="big" id="straightButton">Drive 1 metre</button>
+        <button class="big" id="straightButton">Drive 1 meter</button>
         <label class="field">Off the tape (mm, right +)<input type="number" id="straightInput" inputmode="decimal" placeholder="e.g. 45"></label>
       </div>
       <button class="big blue" id="straightWorkButton">Work it out</button>
@@ -387,8 +387,8 @@
       <details class="more"><summary>What, why and how</summary><div class="more-text">
         <h4>What</h4><p>How much stronger one side of the robot is than the other. Each wheel gets a gain: 1.00 is normal, 0.97 is a bit less power.</p>
         <h4>Why</h4><p>If the left wheels are stronger the robot curves to the right, and the longer it drives the further off it gets.</p>
-        <h4>How</h4><p>A real 1 metre drive. Ended 45 mm to the right? The left side is stronger: a steady curve that far over 1 metre means the sides differ by a few per cent (worked out from the spin factor and the wheelbase), so the left wheels get a little less power and the right wheels a little more. Work it out shows the line for the code (WHEEL_GAIN, both sketches). After flashing, drive again: within 2 cm of the tape is VERIFIED. Still off? Work it out again: each round gets closer.</p>
-        <p>A twist in the very first moment (the wheels breaking away unevenly) also shows up here. It is small at this speed; if the robot ends up off the tape by the same amount whether it drives 20 cm or 1 metre, say so.</p>
+        <h4>How</h4><p>A real 1 meter drive. Ended 45 mm to the right? The left side is stronger: a steady curve that far over 1 meter means the sides differ by a few per cent (worked out from the spin factor and the wheelbase), so the left wheels get a little less power and the right wheels a little more. Work it out shows the line for the code (WHEEL_GAIN, both sketches). After flashing, drive again: within 2 cm of the tape is VERIFIED. Still off? Work it out again: each round gets closer.</p>
+        <p>A twist in the very first moment (the wheels breaking away unevenly) also shows up here. It is small at this speed; if the robot ends up off the tape by the same amount whether it drives 20 cm or 1 meter, say so.</p>
       </div></details>
     </div>
   </details>
@@ -397,10 +397,10 @@
   <details class="step" data-step="sidestraight">
     <summary><span class="num">9</span><span class="step-title">Slide straight</span><span class="step-state"></span></summary>
     <div class="step-body">
-      <p class="say">Put a strip of tape on the floor going <b>across</b> the robot, under its middle, about 1.2 metres long to the right. Tap <b>Slide right 1 metre</b>.</p>
+      <p class="say">Put a strip of tape on the floor going <b>across</b> the robot, under its middle, about 1.2 meters long to the right. Tap <b>Slide right 1 meter</b>.</p>
       <p class="say">Now two things. Which way does the nose point: how many <b>degrees it twisted</b>, <b>+ if it turned to the right</b> (clockwise), - to the left. And where is the middle of the robot: how far from the tape, in mm, <b>ahead +, behind -</b>.</p>
       <div class="row">
-        <button class="big" id="sideButton">Slide right 1 metre</button>
+        <button class="big" id="sideButton">Slide right 1 meter</button>
         <label class="field">Twist (degrees, right +)<input type="number" id="twistInput" inputmode="decimal" placeholder="e.g. 45"></label>
         <label class="field">Off the tape (mm, ahead +)<input type="number" id="sideInput" inputmode="decimal" placeholder="e.g. -40"></label>
       </div>
@@ -427,13 +427,13 @@
   <details class="step" data-step="creep">
     <summary><span class="num">10</span><span class="step-title">Slide creep</span><span class="step-state"></span></summary>
     <div class="step-body">
-      <p class="say">Tape across the robot under its middle, with room to slide 1 metre both ways. Tap <b>Slide right 1 metre</b>: how far is the middle from the tape? <b>Ahead +, behind -.</b> Put it back over the tape and do <b>Slide left 1 metre</b>.</p>
+      <p class="say">Tape across the robot under its middle, with room to slide 1 meter both ways. Tap <b>Slide right 1 meter</b>: how far is the middle from the tape? <b>Ahead +, behind -.</b> Put it back over the tape and do <b>Slide left 1 meter</b>.</p>
       <div class="row">
-        <button class="big" id="creepRightButton">Slide right 1 metre</button>
+        <button class="big" id="creepRightButton">Slide right 1 meter</button>
         <label class="field">Right slide: off the tape (mm, ahead +)<input type="number" id="creepRightInput" inputmode="decimal" placeholder="e.g. 260"></label>
       </div>
       <div class="row">
-        <button class="big" id="creepLeftButton">Slide left 1 metre</button>
+        <button class="big" id="creepLeftButton">Slide left 1 meter</button>
         <label class="field">Left slide: off the tape (mm, ahead +)<input type="number" id="creepLeftInput" inputmode="decimal" placeholder="e.g. 240"></label>
       </div>
       <div class="result" id="creepRecommend" hidden style="background:#1d2a3a;border:2px solid var(--blue)">
@@ -470,7 +470,7 @@
 // (K,cal,<deadband>,<start power>,... K,end).
 // ---------------------------------------------------------------------------
 
-var APP_VERSION = "0.1.32";
+var APP_VERSION = "0.1.33";
 var SERIAL_BAUD = 9600;
 var BLE_SERVICE_UUID = 0xFFE0;
 var BLE_NUS_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -1132,7 +1132,7 @@ function runCoast() {
   var working = document.getElementById("coastWorking");
   applyNext("coast").then(function () {
     noteRun("coast");
-    working.textContent = "Driving 1 metre...";
+    working.textContent = "Driving 1 meter...";
     return ask("m0," + COAST_MM + ",0;", /^move: (done|ABORTED)/, 30000);
   }).then(function (line) {
     working.textContent = /ABORTED/.test(line) ? "Stopped. Drive it again." : "Measure from the mark to the back edge and write it in the box.";
@@ -1161,14 +1161,14 @@ function workOutCoast() {
   box.hidden = false;
   if (Math.abs(short) <= COAST_TOLERANCE_MM) {
     box.className = "result done";
-    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s start and stop (' + robot.coastMs + " ms) is right</div><div>1 metre went " + Math.round(went) + " mm.</div>";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s start and stop (' + robot.coastMs + " ms) is right</div><div>1 meter went " + Math.round(went) + " mm.</div>";
     document.querySelector('.step[data-step="coast"] .step-state').textContent = "DONE \u2713";
     return;
   }
   var newMs = Math.round(robot.coastMs - short / robot.slowSpeed * 1000);   // the move ends at the slowest speed
   box.className = "result done";
   box.innerHTML = '<div class="headline">Start and stop found</div><div class="bignum">' + newMs + " ms</div>" +
-    "<div>1 metre went " + Math.round(went) + " mm: " + Math.abs(short) + " mm " + (short > 0 ? "short" : "long") + ". Put this in the code (both sketches), or send it to Claude:</div>" +
+    "<div>1 meter went " + Math.round(went) + " mm: " + Math.abs(short) + " mm " + (short > 0 ? "short" : "long") + ". Put this in the code (both sketches), or send it to Claude:</div>" +
     '<div class="code">const long SPIN_COAST_MS = ' + newMs + ";</div><div>The code has " + robot.coastMs + " ms now.</div>";
 }
 
@@ -1262,7 +1262,7 @@ function runStrafe() {
   var working = document.getElementById("strafeWorking");
   applyNext("strafe").then(function () {
     noteRun("strafe");
-    working.textContent = "Sliding right 1 metre...";
+    working.textContent = "Sliding right 1 meter...";
     return ask("m90," + STRAFE_MM + ",0;", /^move: (done|ABORTED)/, 30000);
   }).then(function (line) {
     working.textContent = /ABORTED/.test(line) ? "Stopped. Slide it again." : "Measure from the mark to the right edge and write it in the box.";
@@ -1290,14 +1290,14 @@ function workOutStrafe() {
   box.hidden = false;
   if (Math.abs(went - STRAFE_MM) <= STRAFE_TOLERANCE_MM) {
     box.className = "result done";
-    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s strafe factor (' + robot.strafeEff.toFixed(3) + ") is right</div><div>1 metre sideways went " + Math.round(went) + " mm.</div>";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s strafe factor (' + robot.strafeEff.toFixed(3) + ") is right</div><div>1 meter sideways went " + Math.round(went) + " mm.</div>";
     document.querySelector('.step[data-step="strafe"] .step-state').textContent = "DONE \u2713";
     return;
   }
   var newEff = robot.strafeEff * went / STRAFE_MM;
   box.className = "result done";
   box.innerHTML = '<div class="headline">Strafe factor found</div><div class="bignum">' + newEff.toFixed(3) + "</div>" +
-    "<div>1 metre sideways went " + Math.round(went) + " mm. Put this in the code (both sketches), or send it to Claude:</div>" +
+    "<div>1 meter sideways went " + Math.round(went) + " mm. Put this in the code (both sketches), or send it to Claude:</div>" +
     '<div class="code">const float STRAFE_EFFICIENCY = ' + newEff.toFixed(3) + ";</div><div>The code has " + robot.strafeEff.toFixed(3) + " now.</div>";
 }
 
@@ -1323,7 +1323,7 @@ function runStraight() {
   straightRunning = true;
   render();
   var working = document.getElementById("straightWorking");
-  working.textContent = "Driving 1 metre...";
+  working.textContent = "Driving 1 meter...";
   ask("m0," + STRAIGHT_MM + ",0;", /^move: (done|ABORTED)/, 30000).then(function (line) {
     working.textContent = /ABORTED/.test(line) ? "Stopped. Drive it again." : "Measure how far the middle of the robot is from the tape (right +, left -).";
   }).catch(function (error) {
@@ -1343,14 +1343,14 @@ function workOutStraight() {
     return;
   }
   if (Math.abs(off) > 400) {
-    working.textContent = "More than 40 cm off over 1 metre is not a balance problem. Did a wheel stop, or did it twist at the start? Drive again.";
+    working.textContent = "More than 40 cm off over 1 meter is not a balance problem. Did a wheel stop, or did it twist at the start? Drive again.";
     return;
   }
   working.textContent = "";
   box.hidden = false;
   if (Math.abs(off) <= STRAIGHT_TOLERANCE_MM) {
     box.className = "result done";
-    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s wheel gains are right</div><div>1 metre ended ' + off + " mm off the tape.</div>";
+    box.innerHTML = '<div class="headline">VERIFIED \u2713 The code\'s wheel gains are right</div><div>1 meter ended ' + off + " mm off the tape.</div>";
     document.querySelector('.step[data-step="straight"] .step-state').textContent = "DONE \u2713";
     return;
   }
@@ -1361,7 +1361,7 @@ function workOutStraight() {
   var mean = (gains[0] + gains[1] + gains[2] + gains[3]) / 4;
   gains = gains.map(function (g) { return Math.max(0.6, Math.min(1.6, g / mean)); });
   box.className = "result done";
-  box.innerHTML = '<div class="headline">Wheel gains found</div><div>1 metre ended ' + Math.abs(off) + " mm to the " + (off > 0 ? "right: the left side is " : "left: the right side is ") +
+  box.innerHTML = '<div class="headline">Wheel gains found</div><div>1 meter ended ' + Math.abs(off) + " mm to the " + (off > 0 ? "right: the left side is " : "left: the right side is ") +
     (Math.abs(a) * 200).toFixed(1) + " % stronger. Put this in the code (both sketches), or send it to Claude:</div>" +
     '<div class="code">constexpr float WHEEL_GAIN[4] = { ' + gains.map(function (g) { return g.toFixed(3); }).join(", ") + " };   // FL FR RL RR</div>" +
     "<div>The code has { " + robot.gains.map(function (g) { return g.toFixed(3); }).join(", ") + " } now.</div>";
@@ -1391,7 +1391,7 @@ function runSide() {
   var working = document.getElementById("sideWorking");
   applyNext("side").then(function () {
     noteRun("side");
-    working.textContent = "Sliding right 1 metre...";
+    working.textContent = "Sliding right 1 meter...";
     return ask("m90," + SIDE_MM + ",0;", /^move: (done|ABORTED)/, 30000);
   }).then(function (line) {
     working.textContent = /ABORTED/.test(line) ? "Stopped. Slide it again." : "Write the twist (degrees, right +) and how far the middle is from the tape (ahead +, behind -).";
@@ -1463,7 +1463,7 @@ function runCreep(right) {
   var working = document.getElementById("creepWorking");
   applyNext("creep").then(function () {
     noteRun("creep");
-    working.textContent = "Sliding " + (right ? "right" : "left") + " 1 metre...";
+    working.textContent = "Sliding " + (right ? "right" : "left") + " 1 meter...";
     return ask("m" + (right ? 90 : -90) + "," + CREEP_MM + ",0;", /^move: (done|ABORTED)/, 30000);
   }).then(function (line) {
     working.textContent = /ABORTED/.test(line) ? "Stopped. Slide it again." : "Write how far the middle is from the tape (ahead +, behind -) in the " + (right ? "right" : "left") + " slide's box.";
@@ -1484,7 +1484,7 @@ function workOutCreep() {
     return;
   }
   if (Math.abs(cR) > 500 || Math.abs(cL) > 500) {
-    working.textContent = "More than half a metre off over a 1 metre slide is not a balance problem. Did a wheel stop? Slide again.";
+    working.textContent = "More than half a meter off over a 1 meter slide is not a balance problem. Did a wheel stop? Slide again.";
     return;
   }
   if (robot.diagBias === null) {
@@ -1568,7 +1568,7 @@ var RECOMMEND = {
   creep: { fields: ["creepRightInput", "creepLeftInput"], targets: [{ i: 21, key: "diagBias", label: "diagonal share", unit: "", digits: 3 }, { i: 22, key: "fwdRollBias", label: "rolling-forward share", unit: "", digits: 3 }],
     compute: function (cR, cL) {
       if (cR === null || isNaN(cR) || cL === null || isNaN(cL)) { return null; }
-      if (Math.abs(cR) > 500 || Math.abs(cL) > 500) { return { problem: "More than half a metre off is not a balance problem." }; }
+      if (Math.abs(cR) > 500 || Math.abs(cL) > 500) { return { problem: "More than half a meter off is not a balance problem." }; }
       if (robot.diagBias === null) { return { problem: "Needs calibration.ino or mecanum_holonomic.ino 0.10.56 or newer." }; }
       var f = (cR + cL) / 2 / CREEP_MM * robot.strafeEff, g = (cR - cL) / 2 / CREEP_MM * robot.strafeEff;
       return { values: [Math.max(-0.5, Math.min(0.5, robot.diagBias + g)), Math.max(-0.5, Math.min(0.5, robot.fwdRollBias + f))],
