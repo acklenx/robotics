@@ -1,5 +1,6 @@
 # Draws the light sensor build steps (resistor, LDR, Z fold, board) for the Light bot page and puts them
 # between the <!-- ldr-steps --> markers in mecanum/light.html.
+import os
 import re
 
 PITCH = 44            # px between connector centres
@@ -413,7 +414,7 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
   </section>
 <!-- /ldr-steps -->'''
 
-page = "/workspace/robots-site/mecanum/light.html"
+page = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "mecanum", "light.html")
 s = open(page).read()
 if "<!-- ldr-steps" in s:
     s = re.sub(r"<!-- ldr-steps[\s\S]*?<!-- /ldr-steps -->", lambda m: html, s)
