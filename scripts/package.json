@@ -9,7 +9,8 @@
     "test:workshop": "node test-workshop.js",
     "test:mecanum": "node mecanum-sim/run-all.js",
     "check:shared": "node check-mecanum-shared.js",
-    "check:blocks": "node check-mecanum-blocks.js"
+    "check:blocks": "node check-mecanum-blocks.js",
+    "check:contrast": "node check-contrast.js"
   },
   "devDependencies": {
     "jsdom": "^28.1.0",

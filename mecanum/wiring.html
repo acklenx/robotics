@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
+<title>Robot Wiring 0.1.0 - Maker Lab Kids</title>
+<style>
+  :root {
+    --ink: #1c1f24;
+    --dim: #5b6670;
+    --orange: #e65100;
+    --blue: #0b6fb3;
+    --green: #1f8a4c;
+    --red: #c62828;
+    --purple: #5b47c9;
+    --paper: #fff;
+    --panel: #f4f6f8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #e9ecef; }
+  body { color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; line-height: 1.4; }
+  .sheet { background: var(--paper); max-width: 8.5in; margin: 16px auto; padding: 0.45in 0.5in; box-shadow: 0 2px 14px rgba(0,0,0,0.15); }
+  .top { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; flex-wrap: wrap; }
+  .top img { height: 72px; width: auto; }
+  .top h1 { font-size: 22px; margin: 0; line-height: 1.1; }
+  .top .sub { color: var(--dim); font-size: 13px; }
+  .top .back { margin-left: auto; font-size: 12px; }
+  h2 { font-size: 17px; margin: 18px 0 6px; color: #b34000; }
+  a, a:visited { color: var(--blue); }
+  h3 { font-size: 14.5px; margin: 12px 0 4px; }
+  p { margin: 4px 0 6px; }
+  .dim { color: var(--dim); }
+  .box { background: var(--panel); border-radius: 10px; padding: 10px 14px; margin: 8px 0; break-inside: avoid; }
+  .box.warn { background: #fff4e5; border-left: 4px solid var(--orange); }
+  svg { display: block; max-width: 100%; height: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 6px 0; }
+  th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid #dde2e6; vertical-align: top; }
+  th { background: var(--panel); }
+  code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; background: #eef1f4; padding: 0 4px; border-radius: 4px; }
+  ol, ul { margin: 4px 0 6px; padding-left: 22px; }
+  li { margin: 2px 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) {
+    .sheet { margin: 0; padding: 16px; box-shadow: none; }
+    .two { grid-template-columns: 1fr; }
+  }
+  @media print {
+    html, body { background: #fff; }
+    .sheet { margin: 0; padding: 0; box-shadow: none; max-width: none; }
+    .back { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="top">
+    <img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
+    <div><h1>Wiring the mecanum robot</h1><div class="sub">Every wire on the 4WD robot, and how to add two light sensors (LDRs).</div></div>
+    <a class="back" href="../index.html">Robot home &rarr;</a>
+  </div>
+
+  <h2>The whole robot</h2>
+  <p>The Uno sits at the bottom and the L293D motor shield plugs on top of it. Everything else plugs into the shield.
+  The shield uses pins 3 4 5 6 7 8 11 12 for the motors. The free pins are <b>2, 13, A0-A5</b>, plus the two servo headers (pins 9 and 10).</p>
+
+  <svg viewBox="0 0 720 470" role="img" aria-label="Top view of the robot: the shield in the middle, four motors at the corners, Bluetooth, sonar, IR receiver, gyro and battery around it">
+    <!-- chassis -->
+    <rect x="150" y="40" width="420" height="390" rx="18" fill="#f4f6f8" stroke="#9aa4ae" stroke-width="2"/>
+    <text x="360" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#5b6670">FRONT (nose)</text>
+    <path d="M345 18 L360 6 L375 18" fill="none" stroke="#5b6670" stroke-width="2"/>
+    <!-- wheels -->
+    <g font-size="12" font-weight="700" text-anchor="middle">
+      <rect x="112" y="60" width="38" height="90" rx="6" fill="#2d3142"/>
+      <rect x="570" y="60" width="38" height="90" rx="6" fill="#2d3142"/>
+      <rect x="112" y="320" width="38" height="90" rx="6" fill="#2d3142"/>
+      <rect x="570" y="320" width="38" height="90" rx="6" fill="#2d3142"/>
+      <text x="75" y="100" fill="#1c1f24">Front</text><text x="75" y="115" fill="#1c1f24">left</text><text x="75" y="132" fill="#e65100">M4</text>
+      <text x="645" y="100" fill="#1c1f24">Front</text><text x="645" y="115" fill="#1c1f24">right</text><text x="645" y="132" fill="#e65100">M3</text>
+      <text x="75" y="360" fill="#1c1f24">Rear</text><text x="75" y="375" fill="#1c1f24">left</text><text x="75" y="392" fill="#e65100">M1</text>
+      <text x="645" y="360" fill="#1c1f24">Rear</text><text x="645" y="375" fill="#1c1f24">right</text><text x="645" y="392" fill="#e65100">M2</text>
+    </g>
+    <!-- motor wires -->
+    <g stroke="#e65100" stroke-width="3" fill="none">
+      <path d="M150 105 H240 V180"/>
+      <path d="M570 105 H480 V180"/>
+      <path d="M150 365 H240 V300"/>
+      <path d="M570 365 H480 V300"/>
+    </g>
+    <!-- shield -->
+    <rect x="230" y="170" width="260" height="140" rx="8" fill="#2f6b3f" stroke="#1d4428" stroke-width="2"/>
+    <text x="360" y="195" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">L293D motor shield</text>
+    <text x="360" y="211" text-anchor="middle" font-size="11" fill="#d7eadb">on top of the Uno</text>
+    <g font-size="11" font-weight="700" fill="#fff">
+      <text x="240" y="236">M4</text><text x="462" y="236">M3</text>
+      <text x="240" y="296">M1</text><text x="462" y="296">M2</text>
+    </g>
+    <!-- header strip -->
+    <rect x="270" y="244" width="180" height="40" rx="4" fill="#1d4428"/>
+    <g font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle">
+      <text x="285" y="268">A0</text><text x="315" y="268">A1</text><text x="345" y="268">A2</text><text x="375" y="268">A3</text><text x="405" y="268">A4</text><text x="435" y="268">A5</text>
+    </g>
+    <text x="360" y="300" text-anchor="middle" font-size="10" fill="#d7eadb">analog header + 5V + GND</text>
+    <!-- bluetooth -->
+    <rect x="165" y="420" width="100" height="36" rx="6" fill="#0b6fb3"/>
+    <text x="215" y="436" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Bluetooth</text>
+    <text x="215" y="450" text-anchor="middle" font-size="10" fill="#fff">HC-06</text>
+    <path d="M285 284 V400 H215 V420" stroke="#0b6fb3" stroke-width="2.5" fill="none"/>
+    <path d="M315 284 V408 H240 V420" stroke="#0b6fb3" stroke-width="2.5" fill="none" stroke-dasharray="5 3"/>
+    <!-- sonar -->
+    <rect x="300" y="44" width="120" height="40" rx="6" fill="#5b47c9"/>
+    <text x="360" y="61" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Sonar HC-SR04</text>
+    <text x="360" y="76" text-anchor="middle" font-size="10" fill="#fff">or 2 LDRs (below)</text>
+    <path d="M345 244 V150 H345 V84" stroke="#5b47c9" stroke-width="2.5" fill="none"/>
+    <path d="M375 244 V150 H375 V84" stroke="#5b47c9" stroke-width="2.5" fill="none" stroke-dasharray="5 3"/>
+    <!-- gyro -->
+    <rect x="455" y="420" width="100" height="36" rx="6" fill="#1f8a4c"/>
+    <text x="505" y="436" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Gyro (optional)</text>
+    <text x="505" y="450" text-anchor="middle" font-size="10" fill="#fff">MPU-6050</text>
+    <path d="M405 284 V400 H490 V420" stroke="#1f8a4c" stroke-width="2.5" fill="none"/>
+    <path d="M435 284 V392 H520 V420" stroke="#1f8a4c" stroke-width="2.5" fill="none" stroke-dasharray="5 3"/>
+    <!-- IR -->
+    <rect x="600" y="200" width="100" height="44" rx="6" fill="#c62828"/>
+    <text x="650" y="218" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">IR receiver</text>
+    <text x="650" y="234" text-anchor="middle" font-size="10" fill="#fff">D2 or D10</text>
+    <path d="M490 222 H600" stroke="#c62828" stroke-width="2.5" fill="none"/>
+    <!-- battery -->
+    <rect x="20" y="200" width="100" height="44" rx="6" fill="#ffd23f" stroke="#c9a300"/>
+    <text x="70" y="218" text-anchor="middle" font-size="11" font-weight="700" fill="#1c1f24">Battery</text>
+    <text x="70" y="234" text-anchor="middle" font-size="10" fill="#1c1f24">to EXT_PWR</text>
+    <path d="M120 222 H230" stroke="#c9a300" stroke-width="3" fill="none"/>
+  </svg>
+
+  <table>
+    <tr><th>Part</th><th>Its pins</th><th>Goes to</th></tr>
+    <tr><td><b>Motors</b></td><td>2 wires each</td><td>Front left <b>M4</b>, front right <b>M3</b>, rear left <b>M1</b>, rear right <b>M2</b>. If a wheel spins backward, swap that motor's two wires (or fix it in the app).</td></tr>
+    <tr><td><b>Battery</b></td><td>+ and -</td><td>The shield's EXT_PWR screw terminal (+ to +).</td></tr>
+    <tr><td><b>Bluetooth</b> (HC-06)</td><td>VCC GND TXD RXD</td><td>VCC to 5V, GND to GND, <b>TXD to A0</b>, <b>RXD to A1</b>.</td></tr>
+    <tr><td><b>Sonar</b> (HC-SR04)</td><td>VCC Trig Echo GND</td><td>VCC to 5V, GND to GND, <b>Echo to A2</b>, <b>Trig to A3</b>. Only ir.ino uses it. <b>Unplug it to use the LDRs.</b></td></tr>
+    <tr><td><b>IR receiver</b></td><td>OUT GND VCC (check the labels)</td><td>VCC to 5V, GND to GND, OUT to <b>D2</b> for mecanum_holonomic.ino, or <b>D10</b> (the SER1 servo header) for ir.ino.</td></tr>
+    <tr><td><b>Gyro</b> (MPU-6050, optional)</td><td>VCC GND SCL SDA</td><td>VCC to 5V, GND to GND, <b>SDA to A4</b>, <b>SCL to A5</b>. Found by itself at power-on.</td></tr>
+  </table>
+
+  <h2>Two light sensors (LDRs): follow the light, or run from it</h2>
+
+  <div class="box warn">
+    <b>Before you start:</b>
+    <ul>
+      <li>Light seeking runs on <b>mecanum_holonomic.ino</b>, not ir.ino. Flash mecanum_holonomic.ino. The motion calibration is kept, because it lives in the robot's memory.</li>
+      <li>The LDRs use <b>A2 and A3</b>, which is where the sonar plugs in. <b>Unplug the sonar's Echo and Trig wires</b>. If they stay plugged in, the sonar fights the LDR readings.</li>
+      <li>On mecanum_holonomic.ino the IR remote must be on <b>D2</b>. If your robot's receiver is on D10 for ir.ino, move its OUT wire to D2.</li>
+    </ul>
+  </div>
+
+  <h3>The circuit (one per LDR)</h3>
+  <p>An LDR is a resistor that changes with light: high resistance in the dark, low in bright light. On its own the Uno cannot read a resistance. So each LDR gets a partner resistor, making a <b>voltage divider</b>, and the Uno reads the voltage in the middle. LDRs and resistors have no polarity, so either leg can go either way.</p>
+
+  <div class="two">
+    <svg viewBox="0 0 330 250" role="img" aria-label="Schematic: 5V to LDR to A2 to 10k resistor to ground, and the same for A3">
+      <g font-size="12" font-weight="700" fill="#1c1f24">
+        <text x="20" y="22">5V</text>
+        <text x="20" y="240">GND</text>
+      </g>
+      <line x1="50" y1="18" x2="310" y2="18" stroke="#c62828" stroke-width="3"/>
+      <line x1="50" y1="236" x2="310" y2="236" stroke="#1c1f24" stroke-width="3"/>
+      <g id="ldrcol">
+        <line x1="110" y1="18" x2="110" y2="45" stroke="#1c1f24" stroke-width="2"/>
+        <rect x="96" y="45" width="28" height="55" rx="3" fill="#fff" stroke="#1c1f24" stroke-width="2"/>
+        <circle cx="110" cy="72" r="20" fill="none" stroke="#1c1f24" stroke-width="1.5"/>
+        <path d="M70 48 L90 60 M84 54 L90 60 L83 61" stroke="#e65100" stroke-width="2" fill="none"/>
+        <path d="M66 62 L86 74 M80 68 L86 74 L79 75" stroke="#e65100" stroke-width="2" fill="none"/>
+        <line x1="110" y1="100" x2="110" y2="150" stroke="#1c1f24" stroke-width="2"/>
+        <circle cx="110" cy="128" r="4" fill="#0b6fb3"/>
+        <rect x="96" y="150" width="28" height="55" rx="3" fill="#fff" stroke="#1c1f24" stroke-width="2"/>
+        <line x1="110" y1="205" x2="110" y2="236" stroke="#1c1f24" stroke-width="2"/>
+      </g>
+      <use href="#ldrcol" x="140"/>
+      <line x1="110" y1="128" x2="140" y2="128" stroke="#0b6fb3" stroke-width="2"/>
+      <line x1="250" y1="128" x2="280" y2="128" stroke="#0b6fb3" stroke-width="2"/>
+      <g font-size="12" font-weight="700">
+        <text x="134" y="76" fill="#1c1f24">LDR</text>
+        <text x="128" y="182" fill="#1c1f24">10k</text>
+        <text x="143" y="133" fill="#0b6fb3">A2</text>
+        <text x="274" y="76" fill="#1c1f24">LDR</text>
+        <text x="268" y="182" fill="#1c1f24">10k</text>
+        <text x="283" y="133" fill="#0b6fb3">A3</text>
+      </g>
+      <text x="40" y="128" font-size="11" fill="#5b6670" text-anchor="middle">LEFT</text>
+      <text x="40" y="142" font-size="11" fill="#5b6670" text-anchor="middle">-45</text>
+      <text x="225" y="248" font-size="11" fill="#5b6670" text-anchor="middle">RIGHT +45</text>
+    </svg>
+    <div>
+      <ol>
+        <li>One leg of each LDR to <b>5V</b>.</li>
+        <li>The other leg of the <b>left</b> LDR to <b>A2</b>. The other leg of the <b>right</b> LDR to <b>A3</b>.</li>
+        <li>A resistor (10k to start) from <b>A2 to GND</b>, and another from <b>A3 to GND</b>.</li>
+      </ol>
+      <p>Wired this way, <b>brighter light gives a higher reading</b> (0 to 1023). That is the app's default setting.</p>
+      <p class="dim">Easiest build: on each signal wire, twist or solder the LDR leg and the resistor leg together at the pin. The resistor's other leg goes to a GND pin, and the LDR's other leg goes to a 5V pin. Most L293D shields have 5V and GND pins next to A0-A5 (check the labels on the board).</p>
+    </div>
+  </div>
+
+  <h3>Which LDR, which resistor?</h3>
+  <p>Your pack has LDRs of different values. <b>Use two of the same kind</b>, so left and right behave alike. Then pick the fixed resistor to <b>match the LDR's resistance in the room's light</b>. That puts the reading in the middle, where it moves the most.</p>
+  <ol>
+    <li>Set a multimeter to resistance and measure one LDR in normal room light. Then cover it with your thumb and measure again, then shine a phone torch on it.</li>
+    <li>Pick the fixed resistor closest to the <b>room-light</b> number: 4.7k, 10k, 22k or 47k.</li>
+  </ol>
+  <table>
+    <tr><th>LDR marking (common packs)</th><th>Room light, roughly</th><th>Resistor to use</th></tr>
+    <tr><td>5516 / 5506</td><td>2k-10k</td><td>4.7k</td></tr>
+    <tr><td>5528</td><td>8k-20k</td><td><b>10k</b> (best first choice)</td></tr>
+    <tr><td>5537 / 5539</td><td>20k-90k</td><td>22k-47k</td></tr>
+    <tr><td>5549</td><td>45k-140k</td><td>47k-100k</td></tr>
+  </table>
+  <p class="dim">The markings are usually on the bag, not on the LDR. With no meter, try 10k. If the raw number barely moves between covered and torch-lit, try the next resistor size.</p>
+
+  <h3>Where they go on the robot</h3>
+  <div class="two">
+    <svg viewBox="0 -35 300 265" role="img" aria-label="Top view: one LDR at each front corner, the left one angled 45 degrees left, the right one 45 degrees right">
+      <rect x="80" y="40" width="140" height="170" rx="14" fill="#f4f6f8" stroke="#9aa4ae" stroke-width="2"/>
+      <text x="150" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#5b6670">FRONT</text>
+      <g transform="translate(92 52) rotate(-45)">
+        <rect x="-7" y="-26" width="14" height="26" fill="#2d3142"/>
+        <circle cx="0" cy="-28" r="6" fill="#ffd23f" stroke="#c9a300"/>
+      </g>
+      <g transform="translate(208 52) rotate(45)">
+        <rect x="-7" y="-26" width="14" height="26" fill="#2d3142"/>
+        <circle cx="0" cy="-28" r="6" fill="#ffd23f" stroke="#c9a300"/>
+      </g>
+      <path d="M92 52 L32 -8" stroke="#e65100" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <path d="M208 52 L268 -8" stroke="#e65100" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="30" y="70" font-size="12" font-weight="700" fill="#1c1f24">A2</text>
+      <text x="30" y="85" font-size="11" fill="#5b6670">-45</text>
+      <text x="250" y="70" font-size="12" font-weight="700" fill="#1c1f24">A3</text>
+      <text x="250" y="85" font-size="11" fill="#5b6670">+45</text>
+      <text x="150" y="130" text-anchor="middle" font-size="11" fill="#5b6670">robot, from above</text>
+    </svg>
+    <div>
+      <p>Put one LDR at each <b>front corner</b>, pointing out at 45 degrees: the left one on A2, the right one on A3.</p>
+      <p><b>Give each one a tube</b>: a short piece of straw, or black tape rolled around it. Then each LDR only sees light from its own side, and the robot steers much better. Without tubes, both see the whole room and read almost the same.</p>
+    </div>
+  </div>
+
+  <h3>Set it up (no reflashing)</h3>
+  <ol>
+    <li>Open the <a href="./">Mecanum Workshop app</a> and connect. On the <b>Sensors</b> tab, under <b>Light seeker - wiring</b>, tap the preset <b>2 front corners on A2 A3</b>. Leave "In brighter light the reading goes" on <b>UP</b>.</li>
+    <li>Tap <b>Save to robot</b> (or type <code>kbn=2;</code> then <code>kw;</code> in the console).</li>
+    <li><b>Check</b>: tap Watch (<code>bw</code>). Cover the left LDR and its number should drop. Shine a torch on it and the number should jump. Then do the right one. Stop with <code>x</code>.</li>
+    <li><b>Calibrate</b> (<code>bc</code>). You have 5 seconds: cover each LDR with a thumb, then shine the torch on each. This is saved on the robot.</li>
+    <li><b>Follow the light</b>: tap <b>Seek</b> on the Sensors tab or <b>Seek light</b> on the Drive tab (<code>bf</code>), or press <b>#</b> on the remote. Walk in front of it with a phone torch. Stop with STOP, <code>x</code>, or any remote key.</li>
+  </ol>
+
+  <div class="box">
+    <b>Run from the light (a scaredy-bot):</b> set "In brighter light the reading goes" to <b>DOWN</b> (<code>kbh=0;</code>), even though the wiring is unchanged. The robot now thinks dark is bright. So Seek light drives it toward the darkest side, turning its nose and running away from the torch. Set it back to <b>UP</b> (<code>kbh=1;</code>) to follow the light again. You do not need to calibrate again.
+  </div>
+
+  <div class="box">
+    <b>If it does not work</b>
+    <ul>
+      <li><b>"light: none in the wired layout"</b>: the number of LDRs is still 0. Pick the preset again, or type <code>kbn=2;</code>.</li>
+      <li><b>A number stuck near 0 or 1023</b>: a loose wire, a missing resistor, or the sonar still plugged into A2/A3.</li>
+      <li><b>It turns away from the light when it should follow</b>: the left and right LDRs are swapped (A2 is the left one), or the setting is on DOWN.</li>
+      <li><b>It does not move</b>: the light is too weak. Get the torch closer, or lower the "seen" threshold (<code>kbt=200;</code>).</li>
+      <li><b>It stops right at the torch</b>: that is "arrived", which is on purpose (<code>kba</code>, 950).</li>
+    </ul>
+  </div>
+
+  <p class="dim">For the firmware details, see the light-seeker notes in <a href="README.md">mecanum/README.md</a> and the CONFIG section of mecanum_holonomic.ino. You can also use 4 LDRs (A2-A5) so the robot slides toward the light from any side. That needs the gyro moved off A4/A5.</p>
+</div>
+</body>
+</html>
