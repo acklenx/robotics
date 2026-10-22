@@ -25,7 +25,7 @@
 #include <Arduino.h>
 #include <avr/eeprom.h>
 
-#define FIRMWARE_VERSION "0.10.79"   // same line as mecanum_holonomic (bump both together)
+#define FIRMWARE_VERSION "0.10.80"   // same line as mecanum_holonomic (bump both together)
 #define SKETCH_NAME "calibration"
 
 // ===========================================================================

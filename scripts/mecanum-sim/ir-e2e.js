@@ -74,8 +74,8 @@ const script = [
   mark(),                            // 8 the sonar stops a running program
   press('***'), 'wait 800', press('*U99***'), 'wait 1200', press('O'), 'wait 300', 'sonar 100', 'wait 600', 'pwm',
   'sonar -1', 'wait 200', press('#'), 'wait 800',   // (still in program mode: # leaves it)
-  mark(),                            // 9 a lone * is forgotten after 3 s; # stops driving
-  press('*'), 'wait 3200', press('5'), 'wait 200',
+  mark(),                            // 9 a lone * is forgotten after 5 s; # stops driving
+  press('*'), 'wait 5200', press('5'), 'wait 200',
   press('U', 300), press('#'), 'wait 100', 'pwm',
   mark(),                            // 10 calibration from the remote: # # #, start power, 1 m, drift, four turns
   press('###'), 'wait 1200',
@@ -113,9 +113,9 @@ const script = [
   'send x\\n', 'wait 200', 'pwm', 'adc 4 2000', 'adc 5 2000',
   mark(),                            // 18 not a flash start: left left (same side), then three hits and too slow
   'wait 1500', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300',
-  'wait 3500', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'wait 3500', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'wait 300', 'pwm',
-  mark(),                            // 19 the flash start: left right left right in 3 s follows, like # # 1
-  'wait 3500', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300',
+  'wait 5500', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'wait 5500', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'wait 300', 'pwm',
+  mark(),                            // 19 the flash start: left right left right in 5 s follows, like # # 1
+  'wait 5500', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300',
   'wait 300', 'adc 5 3500', 'wait 500', 'pwm', press('O'), 'wait 300', 'adc 5 2000',
   mark(),
   '',
@@ -189,7 +189,7 @@ check(/program: cancelled/.test(s), '# afterwards leaves program mode');
 // 9 timeouts and #
 s = sections[9];
 p = pwms(s);
-check(!/run: slot 5/.test(s), 'a * forgotten after 3 s: 5 alone does not run slot 5');
+check(!/run: slot 5/.test(s), 'a * forgotten after 5 s: 5 alone does not run slot 5');
 check(/drive: forward/.test(s) && /drive: stop/.test(s) && p.length && !moving(p[0]), '# stops driving');
 
 // 10 calibration
@@ -259,7 +259,7 @@ check(/light: flash 3/.test(s) && !/light: flash 4/.test(s) && !/light: follow/.
 // 19 the flash start
 s = sections[19];
 p = pwms(s);
-check(/light: flash 4/.test(s) && /light: follow/.test(s) && /gesture: nod/.test(s), 'left right left right within 3 s: nod, following');
+check(/light: flash 4/.test(s) && /light: follow/.test(s) && /gesture: nod/.test(s), 'left right left right within 5 s: nod, following');
 check(/light: sees it/.test(s) && p.length && moving(p[0]) && /light: stop/.test(s), 'then it follows the torch and OK stops it: ' + p[0]);
 
 // The back LDR on A3 (USE_LIGHT_BACK 1): a light behind

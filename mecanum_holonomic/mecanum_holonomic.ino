@@ -136,7 +136,7 @@
 
 #include <Arduino.h>
 
-#define FIRMWARE_VERSION "0.10.79"   // banner and K,fw (bump the build number on every change)
+#define FIRMWARE_VERSION "0.10.80"   // banner and K,fw (bump the build number on every change)
 
 // The robot. Calibration is its own program, ../calibration/calibration.ino:
 // it measures the motion numbers and saves them in EEPROM for this one to

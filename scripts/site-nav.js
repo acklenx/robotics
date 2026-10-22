@@ -29,13 +29,23 @@ const SET_ASIDE = [
   ["/archive/", "Archive"]
 ];
 
-// page -> { active: nav href, setAside: subnav href, tool: narrow screens get a Back link only, noFoot }
+// A section's own pages, shown as a subnav under the bar on each of them.
+const SECTIONS = {
+  light: { title: "Light bot", pages: [
+    ["/mecanum/light", "How to use the Light Bot"],
+    ["/mecanum/light-build", "How to build a light sensor"]
+  ] }
+};
+
+// page -> { active: nav href, setAside: subnav href, section + here: a section subnav,
+//           tool: narrow screens get a Back link only, noFoot }
 const PAGES = {
   "index.html": { active: "/" },
   "mecanum/remote-guide.html": { active: "/mecanum/remote-guide" },
   "mecanum/ir.html": { active: "/mecanum/ir" },
   "mecanum/challenges.html": { active: "/mecanum/challenges" },
-  "mecanum/light.html": { active: "/mecanum/light" },
+  "mecanum/light.html": { active: "/mecanum/light", section: "light", here: "/mecanum/light" },
+  "mecanum/light-build.html": { active: "/mecanum/light", section: "light", here: "/mecanum/light-build" },
   "mecanum/wiring.html": { active: "/mecanum/wiring" },
   "mecanum/blocks.html": { active: "/mecanum/blocks", noFoot: true },
   "mecanum/index.html": { setAside: "/mecanum/" },
@@ -60,6 +70,11 @@ function navFor(page) {
     NAV.map(function (item) { return link(item[0], item[1], page.active); }).join("") +
     (page.tool ? '<a class="mlk-nav-back" href="/archive/" onclick="if (document.referrer.indexOf(location.origin) === 0) { history.back(); return false; }">&larr; Back</a>' : "") +
     "</nav>\n";
+  if (page.section) {
+    const section = SECTIONS[page.section];
+    html += '<nav class="mlk-subnav" aria-label="' + section.title + ' pages"><span>' + section.title + ':</span>' +
+      section.pages.map(function (item) { return link(item[0], item[1], page.here); }).join("") + "</nav>\n";
+  }
   if (page.setAside) {
     html += '<nav class="mlk-subnav" aria-label="Set aside for now"><span>Set aside for now:</span>' +
       SET_ASIDE.map(function (item) { return link(item[0], item[1], page.setAside); }).join("") + "</nav>\n";

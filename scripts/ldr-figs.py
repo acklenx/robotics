@@ -1,5 +1,6 @@
-# Draws the light sensor build steps (resistor, LDR, Z fold, board) for the Light bot page and puts them
-# between the <!-- ldr-steps --> markers in mecanum/light.html.
+# Draws the light sensor build steps (resistor, LDR, Z fold, board, robot) and puts them
+# between the <!-- ldr-steps --> markers in mecanum/light-build.html.
+# Run: python3 scripts/ldr-figs.py
 import os
 import re
 
@@ -9,7 +10,7 @@ XS = [X1, X1 + PITCH, X1 + 2 * PITCH]
 HOUSING_TOP = 250
 HOUSING_H = 110
 HW = 38               # housing width
-WIRES = [("#d42a2a", "1", "5V", "red"), ("#161616", "2", "Gnd", "black"), ("#1f6fd1", "3", "A5", "blue")]
+WIRES = [("#d42a2a", "1", "+5V", "red"), ("#161616", "2", "Gnd", "black"), ("#1f6fd1", "3", "A5", "blue")]
 LEAD = "#9aa3ad"
 BODY = "#e9d3a6"
 BANDS = ["#e8c200", "#7b3fb8", "#d42a2a", None, "#b8962e"]   # yellow violet red, gap, gold = 4.7k
@@ -109,8 +110,8 @@ def side_view(state):
     tape_band = lambda x, y, w, h: f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="3" fill="#cfd8e3" fill-opacity="0.72" stroke="#8b9aab" stroke-width="1.5"/>'
     head = lambda x, y: f'<rect x="{x}" y="{y}" width="26" height="88" rx="8" fill="#f1e9d6" stroke="#b9a47a" stroke-width="2"/>'
     folded_back = state in ("side-z", "side-more-tape")
-    tape2 = (ST + 4, 40)                 # the LDR tape: high, near the top end of the connector
-    fold_y = tape2[0] + tape2[1] + 14    # the bottom of the Z, just under that tape
+    tape_end = ST + 46                   # the LDR tape: up the front, over the end, down the back to here
+    fold_y = tape_end + 14               # the bottom of the Z, just under that tape
     ldr_out = right + 28                 # the folded-back legs, outside the tape
     # the LDR: legs up out of the connector, over the top, down the back
     if folded_back:
@@ -130,12 +131,13 @@ def side_view(state):
     out.append(f'<rect x="{left}" y="{ST}" width="{HW}" height="{SH}" rx="3" fill="#202326" stroke="#4a5058" stroke-width="1.5"/>')
     out.append(f'<rect x="{left - 20}" y="{body_top}" width="20" height="96" rx="8" fill="{BODY}" stroke="#b89a62" stroke-width="1.5"/>')
     out.append(tape_band(left - 22, ST + 30, HW + 26, 64))                      # step 4: round 2 and 3
-    if state != "side-folded":
-        out.append(tape_band(left - 26, tape2[0], HW + 26 + 12, tape2[1]))     # step 8: over the LDR's legs
+    if state != "side-folded":   # step 8: one piece over the end, holding the LDR's legs down the back
+        out.append(f'<path d="M{left - 12} {tape_end} V{ST - 22} Q{left - 12} {ST - 40} {left + 6} {ST - 40} H{right - 6} '
+                   f'Q{right + 12} {ST - 40} {right + 12} {ST - 22} V{tape_end}" fill="none" stroke="#b8c5d3" stroke-opacity="0.85" stroke-width="22"/>')
     if folded_back:
         out.append(lead(f"M{ldr_out} {fold_y} V{ST - 50}"))                     # the folded-back legs lie over the tape
     if state == "side-more-tape":
-        out.append(tape_band(left - 30, ST - 2, HW + 26 + 12 + 30, 100))       # step 10: round everything, Z fold too
+        out.append(tape_band(left - 30, ST - 6, HW + 26 + 12 + 30, 104))       # step 10: around everything, the Z fold and the end tape too
     out.append(text(left - 26, ST + 140, "front:", "end", 13, "#555"))
     out.append(text(left - 26, ST + 156, "resistor", "end", 13, "#555"))
     out.append(text(SX - 110, 62, "side view", "start", 13, "#555"))
@@ -143,8 +145,8 @@ def side_view(state):
         out.append(text(right + 40, ST + 190, "LDR folded"))
         out.append(text(right + 40, ST + 208, "onto the back"))
     if state == "side-taped":
-        out.append(text(right + 18, ST + 22, "tape over"))
-        out.append(text(right + 18, ST + 40, "its legs"))
+        out.append(text(right + 32, ST - 30, "tape over"))
+        out.append(text(right + 32, ST - 12, "the end"))
     if state == "side-z":
         out.append(text(ldr_out + 22, ST - 110, "LDR back up,"))
         out.append(text(ldr_out + 22, ST - 92, "out of the top"))
@@ -154,9 +156,9 @@ def side_view(state):
         out.append(text(ldr_out + 22, ST + 58, "over the Z"))
     labels = {
         "side-folded": "Step 7, side view: the LDR's legs come out of the top, bend over and run down the back of the connectors, with the LDR lying against the back, the opposite side from the taped resistor.",
-        "side-taped": "Step 8, side view: a second piece of tape, high up near the end of the connectors, holds the LDR's legs against the back.",
+        "side-taped": "Step 8, side view: a piece of tape runs up the front, over the end of the connectors and down the back, holding the LDR's legs against the back.",
         "side-z": "Step 9, side view: the LDR folded back up over the tape so it sticks out of the top again. Its legs make a Z: up out of the connector, down the back under the tape, and back up outside it.",
-        "side-more-tape": "Step 10, side view: more tape around everything, over the Z fold, with the LDR still sticking out of the top.",
+        "side-more-tape": "Step 10, side view: more tape around everything, over the Z fold and the tape over the end, with the LDR still sticking out of the top.",
     }
     return f'<svg viewBox="30 0 320 440" role="img" aria-label="{labels[state]}">\n' + "\n".join(out) + "\n</svg>"
 
@@ -214,14 +216,14 @@ def board_overview():
     out.append(f'<rect x="{a5x - 14}" y="80" width="54" height="{top - 8 - 80}" rx="3" fill="#2f86d6" stroke="#174a88"/>')   # right motor connector
     out.append(f'<text x="{a5x + 12}" y="140" text-anchor="middle" font-size="11" fill="#fff">motors</text>')
     out.append(f'<rect x="{a5x - 7}" y="{top - 7}" width="14" height="{2 * pitch + 14}" rx="3" fill="none" stroke="#e65100" stroke-width="3"/>')
-    out.append(f'<text x="{a5x + 12}" y="{top + 4}" font-size="10" fill="#fff">+5</text>')
+    out.append(f'<text x="{a5x + 12}" y="{top + 4}" font-size="10" fill="#fff">+5V</text>')
     out.append(f'<text x="{a5x + 12}" y="{top + pitch + 4}" font-size="10" fill="#fff">Gnd</text>')
     out.append(f'<text x="{a5x + 12}" y="{top + 2 * pitch + 4}" font-size="10" fill="#fff">A0-5</text>')
     out.append(f'<path d="M230 288 Q{a5x} 290 {a5x} {top + 2 * pitch + 12}" fill="none" stroke="#e65100" stroke-width="2.5"/>')
     out.append(f'<path d="M{a5x - 6} {top + 2 * pitch + 22} L{a5x} {top + 2 * pitch + 11} L{a5x + 6} {top + 2 * pitch + 22}" fill="none" stroke="#e65100" stroke-width="2.5"/>')
     out.append('<text x="224" y="292" text-anchor="end" font-size="14" fill="#222">the A5 column</text>')
-    label = ("Step 12: the motor shield from above. The yellow analog header is at the bottom right, tucked under the right motor connector: "
-             "three rows, +5 on top, Gnd in the middle and A0-5 along the board's edge, with A0 on the left and A5 on the right. "
+    label = ("Step 11: the motor shield from above. The analog header is at the bottom right, tucked under the right motor connector: "
+             "three rows, +5V on top, Gnd in the middle and A0-5 along the board's edge, with A0 on the left and A5 on the right. "
              "The A5 column, the one furthest right, is circled.")
     return f'<svg viewBox="0 0 360 300" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
 
@@ -229,7 +231,7 @@ def board_overview():
 SENSOR_NAMES = {3: "back", 4: "left", 5: "right"}
 
 
-def header_closeup(columns):
+def header_closeup(columns, hints=()):
     """Close-up of the analog header from above. Each dupont plug stands on its pin
     with the wire coming straight up at you: a colored dot on the plug."""
     xs = [30 + i * 46 for i in range(6)]          # A0 .. A5
@@ -248,21 +250,78 @@ def header_closeup(columns):
         for (color, *_rest), y in zip(WIRES, ys):
             out.append(f'<rect x="{xs[col] - 20}" y="{y - 20}" width="40" height="40" rx="3" fill="#202326" stroke="#4a5058" stroke-width="1.5"/>')
             out.append(f'<circle cx="{xs[col]}" cy="{y}" r="11" fill="{color}" stroke="#fff" stroke-width="1.5"/>')
-    for label, y in (("+5", ys[0]), ("Gnd", ys[1]), ("A0-5", ys[2])):
+    for label, y in (("+5V", ys[0]), ("Gnd", ys[1]), ("A0-5", ys[2])):
         out.append(f'<text x="{xs[5] + 28}" y="{y + 5}" font-size="13" font-weight="700" fill="#fff">{label}</text>')
     for i, x in enumerate(xs):
         used = i in columns
         out.append(f'<text x="{x}" y="246" text-anchor="middle" font-size="14" font-weight="{700 if used else 400}" fill="{"#c24400" if used else "#555"}">A{i}</text>')
-        if used:
+        if used or i in hints:
             out.append(f'<text x="{x}" y="263" text-anchor="middle" font-size="12" fill="#555">{SENSOR_NAMES[i]}</text>')
     if columns == [5]:
-        label = ("Step 13: close-up of the yellow analog header from above, columns A0 to A5 from left to right, rows +5 on top, Gnd in the middle, "
-                 "A0-5 at the board's edge, with the motor connector right above the A5 column. The right sensor's three plugs sit on the A5 column: "
-                 "red on +5, black on Gnd, blue on A5.")
+        label = ("Step 12: close-up of the analog header from above, columns A0 to A5 from left to right, rows +5V on top, Gnd in the middle, "
+                 "A0-5 at the board's edge, with the motor connector right above the A5 column. The three wire ends sit on the A5 column: "
+                 "+5V on +5V, Gnd on Gnd, A5 on A5.")
     else:
-        label = ("Step 14: the same header with all three sensors plugged in: the right sensor on A5, the left sensor on A4 and the back sensor on A3, "
-                 "each with red on +5, black on Gnd and blue on the A row.")
+        label = ("Step 14: the same header with both sensors plugged in: the right sensor on the A5 column and the left sensor on A4, "
+                 "each with +5V on top, Gnd in the middle and the signal at the edge. A3 is marked back.")
     return f'<svg viewBox="0 20 360 250" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
+
+
+
+def robot_view():
+    """Side view of the robot's front right corner: the sensor taped on the front, the
+    LDR pointing down at a spot on the floor 1 inch in front of the wheel; a small top
+    view shows which corner gets which sensor."""
+    out = ['<rect y="20" width="360" height="300" rx="10" class="fig-bg" fill="#f4f1ea"/>']
+    floor = 290
+    wx, wr = 120, 46                      # wheel center x, radius
+    wy = floor - wr
+    wheel_front = wx + wr
+    inch = 40                             # px per inch at this scale (the wheel is about 2.4 in)
+    spot = wheel_front + inch
+    out.append(f'<line x1="20" y1="{floor}" x2="340" y2="{floor}" stroke="#8a8f96" stroke-width="2"/>')
+    out.append(f'<circle cx="{wx}" cy="{wy}" r="{wr}" fill="#f2c200" stroke="#9a7a00" stroke-width="2"/>')
+    out.append(f'<circle cx="{wx}" cy="{wy}" r="{wr - 12}" fill="#3a3d42"/>')
+    for i in range(8):
+        out.append(f'<line x1="{wx - wr + 6 + i * 11}" y1="{wy - 30}" x2="{wx - wr + 14 + i * 11}" y2="{wy + 30}" stroke="#55595f" stroke-width="3"/>')
+    # chassis plate and the shield's wires going back
+    plate_y = wy - wr - 8
+    out.append(f'<rect x="40" y="{plate_y}" width="{wheel_front + 12 - 40}" height="10" rx="2" fill="#1d1f23"/>')
+    # the sensor taped on the front edge, LDR end forward, the LDR bent down at the spot
+    bx = wheel_front - 34
+    out.append(f'<line x1="{bx}" y1="{plate_y - 7}" x2="60" y2="{plate_y - 40}" stroke="#555" stroke-width="7" stroke-linecap="round"/>')
+    out.append(f'<rect x="{bx}" y="{plate_y - 14}" width="44" height="14" rx="2" fill="#202326"/>')
+    out.append(f'<rect x="{bx + 6}" y="{plate_y - 18}" width="30" height="30" rx="3" fill="#cfd8e3" fill-opacity="0.8" stroke="#8b9aab"/>')
+    lx, ly = bx + 58, plate_y - 2
+    out.append(f'<path d="M{bx + 44} {plate_y - 7} Q{lx - 4} {plate_y - 7} {lx} {ly}" fill="none" stroke="{LEAD}" stroke-width="4"/>')
+    # the LDR head, tilted to look down at the spot
+    out.append(f'<g transform="rotate(62 {lx} {ly + 10})"><rect x="{lx - 13}" y="{ly}" width="26" height="22" rx="7" fill="#f1e9d6" stroke="#b9a47a" stroke-width="2"/></g>')
+    out.append(f'<line x1="{lx + 4}" y1="{ly + 18}" x2="{spot}" y2="{floor - 4}" stroke="#e65100" stroke-width="2" stroke-dasharray="5 4"/>')
+    out.append(f'<path d="M{spot - 7} {floor - 7} L{spot + 7} {floor + 7} M{spot + 7} {floor - 7} L{spot - 7} {floor + 7}" stroke="#e65100" stroke-width="3"/>')
+    # 1 inch from the front of the wheel
+    out.append(f'<line x1="{wheel_front}" y1="{floor + 2}" x2="{wheel_front}" y2="{floor + 16}" stroke="#222" stroke-width="1.5"/>')
+    out.append(f'<line x1="{spot}" y1="{floor + 2}" x2="{spot}" y2="{floor + 16}" stroke="#222" stroke-width="1.5"/>')
+    out.append(f'<line x1="{wheel_front}" y1="{floor + 10}" x2="{spot}" y2="{floor + 10}" stroke="#222" stroke-width="1.5"/>')
+    out.append(text((wheel_front + spot) / 2, floor + 28, "1 inch", "middle", 13))
+    out.append(text(spot + 12, floor - 26, "point it", size=13))
+    out.append(text(spot + 12, floor - 10, "at this spot", size=13))
+    out.append(text(40, 44, "side view, front to the right", size=12, color="#555"))
+    # top view: which corner
+    tx, ty, tw, th = 250, 50, 70, 96
+    out.append(text(tx + tw / 2, ty - 8, "from above", "middle", 12, "#555"))
+    out.append(f'<rect x="{tx}" y="{ty + 14}" width="{tw}" height="{th - 14}" rx="6" fill="#1d1f23"/>')
+    for cx, cy in ((tx - 6, ty + 30), (tx + tw - 6, ty + 30), (tx - 6, ty + th - 22), (tx + tw - 6, ty + th - 22)):
+        out.append(f'<rect x="{cx}" y="{cy - 14}" width="12" height="28" rx="3" fill="#f2c200"/>')
+    out.append(f'<path d="M{tx + tw / 2 - 8} {ty + 40} L{tx + tw / 2} {ty + 26} L{tx + tw / 2 + 8} {ty + 40}" fill="none" stroke="#fff" stroke-width="2.5"/>')
+    out.append(text(tx + tw / 2, ty + 58, "front", "middle", 11, "#fff"))
+    out.append(f'<circle cx="{tx + tw - 8}" cy="{ty + 16}" r="7" fill="#e65100"/>')
+    out.append(f'<circle cx="{tx + 8}" cy="{ty + 16}" r="7" fill="none" stroke="#e65100" stroke-width="2"/>')
+    out.append(text(tx + tw + 4, ty + 4, "A5", size=12))
+    out.append(text(tx - 4, ty + 4, "A4", "end", 12))
+    label = ("Step 13: side view of the robot's front right corner. The sensor is taped to the front of the robot with the LDR bent down, "
+             "pointing at a spot on the floor 1 inch in front of the wheel. A small view from above shows the A5 sensor on the front right corner "
+             "and the A4 sensor's place on the front left.")
+    return f'<svg viewBox="0 20 360 300" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
 
 
 def figure(state):
@@ -275,7 +334,9 @@ def figure(state):
     if state == "header":
         return header_closeup([5])
     if state == "header-all":
-        return header_closeup([3, 4, 5])
+        return header_closeup([4, 5], hints=(3,))
+    if state == "robot":
+        return robot_view()
     y0 = {"folded": 190, "taped": 190, "ldr-ready": -40, "ldr-in": 40}.get(state, 0)      # folded and taped: just the connectors
     parts = [f'<rect y="{y0}" width="360" height="{440 - y0}" rx="10" class="fig-bg" fill="#f4f1ea"/>']
     if state in ("ready", "plugged"):
@@ -299,8 +360,6 @@ def figure(state):
         parts.append(text(XS[1] - 14, bent_tip - 22, "(bent over)", "end"))
         parts.append(text(XS[2] + 14, straight_tip - 20, "short lead"))
         parts.append(text(XS[2] + 26, 80, "4.7k"))
-        parts.append(text(XS[2] + 26, 98, "yellow violet", size=12, color="#555"))
-        parts.append(text(XS[2] + 26, 114, "red gold", size=12, color="#555"))
     if state in ("plugged", "folded", "taped"):
         parts.append(text(XS[0], HOUSING_TOP - 28, "empty", "middle", 13, "#555"))
         parts.append(text(XS[0], HOUSING_TOP - 12, "for now", "middle", 13, "#555"))
@@ -323,21 +382,21 @@ def figure(state):
         parts.append(text(XS[2] + 26, 110, "standing well"))
         parts.append(text(XS[2] + 26, 128, "clear of the plastic"))
     labels = {
-        "ready": "Step 1: a 4.7k resistor with one lead bent back so both leads point down, above three dupont connectors: 1 red 5V, 2 black Gnd, 3 blue A5. The long bent lead lines up with connector 2, the short straight lead with connector 3.",
-        "plugged": "Step 2: the long bent lead in connector 2 (Gnd, black), the short straight lead in connector 3 (A5, blue). Connector 1 (5V, red) is still empty.",
+        "ready": "Step 1: a 4.7k resistor with one lead bent back so both leads point down, above three dupont connectors: 1 +5V, 2 Gnd, 3 A5. The long bent lead lines up with connector 2, the short straight lead with connector 3.",
+        "plugged": "Step 2: the long bent lead in connector 2 (Gnd), the short straight lead in connector 3 (A5). Connector 1 (+5V) is still empty.",
         "folded": "Step 3: the resistor folded down flat on the plastic of connector 3, covering the 3. The bent lead runs down the front of connector 2.",
         "taped": "Step 4: tape wrapped round connectors 2 and 3, holding the resistor against them.",
-        "ldr-ready": "Step 5: the LDR above the connectors, its two legs spread to line up with connector 1 (5V, red) and connector 3 (A5, blue), either side of the taped connector 2.",
+        "ldr-ready": "Step 5: the LDR above the connectors, its two legs spread to line up with connector 1 (+5V) and connector 3 (A5), either side of the taped connector 2.",
         "ldr-in": "Step 6: the LDR's legs pushed into connectors 1 and 3, with the LDR still standing well clear of the connectors.",
     }
     return f'<svg viewBox="0 {y0} 360 {440 - y0}" role="img" aria-label="{labels[state]}">\n' + "\n".join(parts) + "\n</svg>"
 
 
 html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
-  <section class="card">
+  <section class="card build-steps">
     <h2>Step by step: the right sensor (A5)</h2>
-    <p>Three 20 cm female-female dupont wires. Your colors will be mixed up; in the pictures
-    <b>1 is red (5V)</b>, <b>2 is black (Gnd)</b> and <b>3 is blue (A5)</b>.</p>
+    <p>Three 20 cm female-female dupont wires. Any colors will do: what matters is where each
+    one goes. In the pictures, wire <b>1 is +5V</b>, wire <b>2 is Gnd</b> and wire <b>3 is A5</b>.</p>
     <div class="steps">
       <figure>
         {figure("ready")}
@@ -361,7 +420,7 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
       </figure>
       <figure>
         {figure("ldr-ready")}
-        <figcaption><b>5.</b> Spread the LDR's legs a little and line them up with <b>1</b> (5V)
+        <figcaption><b>5.</b> Spread the LDR's legs a little and line them up with <b>1</b> (+5V)
         and <b>3</b> (A5), either side of the taped Gnd connector.</figcaption>
       </figure>
       <figure>
@@ -372,11 +431,14 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
       <figure>
         {figure("side-folded")}
         <figcaption><b>7.</b> Fold the LDR down onto the <b>back</b> of the connectors, the
-        opposite side from the resistor.</figcaption>
+        opposite side from the resistor. <b>Keep its two legs apart</b>, spaced like in step 6:
+        they must not touch, or even get close.</figcaption>
       </figure>
       <figure>
         {figure("side-taped")}
-        <figcaption><b>8.</b> Tape over the LDR's legs, high up near the end of the connectors, so the bend uses up only a little of the legs.</figcaption>
+        <figcaption><b>8.</b> Run a piece of tape up the front, over the end of the connectors
+        and down the back, over the LDR's legs. Keep it high, so the bend uses up only a little
+        of the legs.</figcaption>
       </figure>
       <figure>
         {figure("side-z")}
@@ -385,46 +447,38 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
       </figure>
       <figure>
         {figure("side-more-tape")}
-        <figcaption><b>10.</b> More tape around everything, over the Z fold.</figcaption>
-      </figure>
-      <figure>
-        {figure("done")}
-        <figcaption><b>11.</b> Done: the right light sensor (A5), ready to plug into the robot.</figcaption>
+        <figcaption><b>10.</b> More tape around everything, over the Z fold and the tape over the
+        end.</figcaption>
       </figure>
       <figure>
         {figure("board")}
-        <figcaption><b>12.</b> Find the yellow analog header at the bottom right of the motor
-        shield. Its rows are <b>+5</b> on top, <b>Gnd</b> in the middle and <b>A0-5</b> along the
-        edge. A0 is on the left, <b>A5 on the right</b>.</figcaption>
+        <figcaption><b>11.</b> Find the analog header at the bottom right of the motor shield.
+        Its rows are <b>+5V</b> on top, <b>Gnd</b> in the middle and <b>A0-5</b> along the edge.
+        A0 is on the left, <b>A5 on the right</b>.</figcaption>
       </figure>
       <figure>
         {figure("header")}
-        <figcaption><b>13.</b> Push the other ends of the three wires onto the <b>A5 column</b>,
-        tight against the motor connector: red on <b>+5</b>, black on <b>Gnd</b>, blue on
-        <b>A5</b>.</figcaption>
+        <figcaption><b>12.</b> Push the ends of the three wires onto the <b>A5 column</b>, tight
+        against the motor connector: <b>+5V</b> on top, <b>Gnd</b> in the middle, <b>A5</b> at the
+        edge.</figcaption>
+      </figure>
+      <figure>
+        {figure("robot")}
+        <figcaption><b>13.</b> Tape the sensor to the front of the robot: A5 on the right, A4 on
+        the left. Point the LDR down at a spot on the floor <b>1 inch in front of the
+        wheel</b>.</figcaption>
       </figure>
       <figure>
         {figure("header-all")}
-        <figcaption><b>14.</b> Build the <b>left</b> sensor and the <b>back</b> sensor the same
-        way (steps 1 to 11). The left one goes on <b>A4</b>, the back one on <b>A3</b>: red on top,
-        black in the middle, blue at the edge.</figcaption>
+        <figcaption><b>14.</b> Repeat steps 1 to 13 for the <b>left</b> sensor, and plug it into
+        <b>A4</b>.</figcaption>
       </figure>
     </div>
-    <p>The back sensor is optional: the robot works with just the left and right ones.</p>
   </section>
 <!-- /ldr-steps -->'''
 
-page = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "mecanum", "light.html")
+page = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "mecanum", "light-build.html")
 s = open(page).read()
-if "<!-- ldr-steps" in s:
-    s = re.sub(r"<!-- ldr-steps[\s\S]*?<!-- /ldr-steps -->", lambda m: html, s)
-else:
-    anchor = '  <section class="card">\n    <h2>If it does not work</h2>'
-    assert anchor in s
-    s = s.replace(anchor, html + "\n\n" + anchor)
-if "@media print { .steps .fig-bg" not in s and ".steps {" in s:
-    s = s.replace("  .steps figcaption { margin-top: 8px; font-size: 14px; }\n", "  .steps figcaption { margin-top: 8px; font-size: 14px; }\n  @media print { .steps .fig-bg { fill: #fff; } }\n", 1)
-if ".steps {" not in s:
-    s = s.replace("</style>", "  .steps { display: flex; flex-wrap: wrap; gap: 16px; }\n  .steps figure { margin: 0; flex: 1 1 260px; max-width: 360px; }\n  .steps svg { width: 100%; height: auto; display: block; }\n  .steps figcaption { margin-top: 8px; font-size: 14px; }\n  @media print { .steps .fig-bg { fill: #fff; } }\n</style>", 1)
+s = re.sub(r"<!-- ldr-steps[\s\S]*?<!-- /ldr-steps -->", lambda m: html, s)
 open(page, "w").write(s)
 print("ok")

@@ -39,7 +39,7 @@
 //                     With USE_LIGHT_BACK 1 a third LDR on A3 looks behind: a light there makes it
 //                     back straight at it (follow) or run forward (run away), steering by
 //                     whatever spill the front LDRs catch
-//   torch flashed on the left LDR, right, left, right within 3 s: follow the light, like # # 1
+//   flashlight flashed on the left LDR, right, left, right within 5 s: follow the light, like # # 1
 //   # # #             calibrate (three steps; a test runs when you press OK, * runs it
 //                     again, OK confirms a number, # cancels and puts the saved numbers back):
 //     1 start power   a short forward pulse; DOWN = a bit less, UP = a bit more, OK keeps it
@@ -72,7 +72,7 @@
 #include <Arduino.h>
 #include <avr/eeprom.h>
 
-#define FIRMWARE_VERSION "0.10.79"   // same line as mecanum_holonomic (bump both together)
+#define FIRMWARE_VERSION "0.10.80"   // same line as mecanum_holonomic (bump both together)
 #define SKETCH_NAME "ir"
 
 // A program step (the IR sketch's own): which way, and how far / how many degrees
@@ -138,7 +138,7 @@ const float TRACK_MM          = 130.0;  // left wheel centre to right wheel cent
 // hardware PWM is lost; nothing here uses it.)
 const byte IR_RECEIVER_PIN = 10;
 const unsigned long IR_RELEASE_MS = 250;        // the remote repeats every 108 ms while held
-const unsigned long IR_STAR_TIMEOUT_MS = 3000;  // a lone * is forgotten after this
+const unsigned long IR_STAR_TIMEOUT_MS = 5000;  // a lone * (or # #) is forgotten after this; 3 s was too short for kids
 
 // ===========================================================================
 // CONFIG - HC-SR04 sonar (A3 trig / A2 echo as shipped): a stop, nothing more
@@ -183,7 +183,7 @@ const unsigned long LIGHT_TICK_MS = 20;
 const bool LIGHT_FLASH_START = true;
 const int LIGHT_FLASH_MIN = 120;                // a hit: this much over the room's light
 const unsigned int LIGHT_FLASH_HOLD_MS = 60;    // ... for at least this long
-const unsigned long LIGHT_FLASH_WINDOW_MS = 3000;
+const unsigned long LIGHT_FLASH_WINDOW_MS = 5000;
 
 // ===========================================================================
 // CONFIG - programs and gestures
