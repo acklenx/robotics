@@ -1,4 +1,4 @@
-// ir.ino   (v0.10.77 - the mecanum robot driven and programmed from the kit's IR remote;
+// ir.ino   (v0.10.78 - the mecanum robot driven and programmed from the kit's IR remote;
 //           L293D shield, Bluetooth on A0/A1 as shipped, HC-SR04 sonar on A2/A3 as shipped,
 //           IR receiver on IR_RECEIVER_PIN)
 //
@@ -36,6 +36,7 @@
 //   # # 1             follow the light: two LDRs (A4 left, A5 right) steer it toward a torch
 //   # # 2             run from the light: it backs away from a torch, nose turned to watch it
 //                     (either one: any key stops it; with no light it waits)
+//   torch flashed on the left LDR, right, left, right within 3 s: follow the light, like # # 1
 //   # # #             calibrate (three steps; a test runs when you press OK, * runs it
 //                     again, OK confirms a number, # cancels and puts the saved numbers back):
 //     1 start power   a short forward pulse; DOWN = a bit less, UP = a bit more, OK keeps it
@@ -67,7 +68,7 @@
 #include <Arduino.h>
 #include <avr/eeprom.h>
 
-#define FIRMWARE_VERSION "0.10.77"   // same line as mecanum_holonomic (bump both together)
+#define FIRMWARE_VERSION "0.10.78"   // same line as mecanum_holonomic (bump both together)
 #define SKETCH_NAME "ir"
 
 // A program step (the IR sketch's own): which way, and how far / how many degrees
@@ -163,6 +164,14 @@ const unsigned int LIGHT_LOST_MS = 300;         // under half of that for this l
 const float LIGHT_SPEED_MM_PER_SEC = 400.0;     // straight at it (or away)
 const float LIGHT_SPIN_RAD_PER_SEC = 2.5;       // turning when the light is all on one side
 const unsigned long LIGHT_TICK_MS = 20;
+// Flash start: with the robot idle, a torch flashed on the left LDR, the right,
+// the left, the right (or starting on the right), all within the window, starts
+// following, the same as # # 1. Each hit must be strong, on one LDR only, and
+// held a moment, so a robot with no LDRs (floating pins) does not start by itself.
+const bool LIGHT_FLASH_START = true;
+const int LIGHT_FLASH_MIN = 120;                // a hit: this much over the room's light
+const unsigned int LIGHT_FLASH_HOLD_MS = 60;    // ... for at least this long
+const unsigned long LIGHT_FLASH_WINDOW_MS = 3000;
 
 // ===========================================================================
 // CONFIG - programs and gestures
@@ -1471,14 +1480,22 @@ void handleKeyCalibrating(char key) {
 }
 
 // ===========================================================================
-// LIGHT - follow a torch (# # 1) or run from it (# # 2)
+// LIGHT - follow a torch (# # 1, or flash it left right left right) or run from it (# # 2)
 // ===========================================================================
 byte lightMode = 0;                // 0 off, 1 follow, 2 run away
 float lightLevel[2];               // smoothed reading, left and right
 float lightRoom[2];                // the room's light without the torch
 bool lightSeen = false;
+bool lightWatching = false;        // the readings are being kept up to date
 unsigned long lightTickAt = 0;
 unsigned long lightLastSeenAt = 0;
+// The flash start: alternate hits on the two LDRs
+bool flashLit[2] = { false, false };       // bright last tick
+bool flashCounted[2] = { false, false };   // this flash already counted
+unsigned long flashLitSince[2];
+byte flashHits = 0;
+byte flashLastSide = 0;
+unsigned long flashFirstAt = 0;
 
 int lightRead(byte side) {
   int raw = analogRead(side ? LIGHT_RIGHT_PIN : LIGHT_LEFT_PIN);
@@ -1492,18 +1509,37 @@ void printLightReading() {
   out.println(lightRead(1));
 }
 
+void lightReset() {
+  for (byte side = 0; side < 2; side++) lightLevel[side] = lightRoom[side] = lightRead(side);
+}
+
+// Smooth the readings and learn the room while no torch is seen; extra[] is
+// how far each LDR is over the room's light.
+void lightSample(float extra[2]) {
+  for (byte side = 0; side < 2; side++) {
+    lightLevel[side] += (lightRead(side) - lightLevel[side]) * 0.25;
+    if (lightLevel[side] < lightRoom[side]) lightRoom[side] = lightLevel[side];
+    else if (!lightSeen) lightRoom[side] += (lightLevel[side] - lightRoom[side]) / 32;
+    extra[side] = max(lightLevel[side] - lightRoom[side], 0.0f);
+  }
+}
+
 void lightStop() {
   if (!lightMode) return;
   lightMode = 0;
+  lightSeen = false;
   movingForward = false;
   stopAllWheels();
   out.println(F("light: stop"));
 }
 
-void lightStart(byte mode) {
+// fromFlash: started by the torch itself, so keep the room's light already
+// learned (a fresh look now would count the torch as the room).
+void lightStart(byte mode, bool fromFlash) {
   stopDriving(false);
   gestureNod();
-  for (byte side = 0; side < 2; side++) lightLevel[side] = lightRoom[side] = lightRead(side);
+  if (!fromFlash || !lightWatching) lightReset();
+  lightWatching = true;
   lightMode = mode;
   lightSeen = false;
   lightTickAt = millis();
@@ -1515,17 +1551,53 @@ void lightStart(byte mode) {
   out.println(F(")"));
 }
 
-// Every LIGHT_TICK_MS while a light mode is on: smooth the readings, learn the
-// room while no torch is seen, and steer toward (or back away from) the torch.
-void lightTick() {
-  if (!lightMode || millis() - lightTickAt < LIGHT_TICK_MS) return;
-  lightTickAt = millis();
-  float extra[2];
+// While nothing else is going on: a torch flashed on the left LDR, the right,
+// the left, the right (or right first), each hit strong and on one side
+// only, all within LIGHT_FLASH_WINDOW_MS, starts following.
+void flashWatch(const float extra[2]) {
   for (byte side = 0; side < 2; side++) {
-    lightLevel[side] += (lightRead(side) - lightLevel[side]) * 0.25;
-    if (lightLevel[side] < lightRoom[side]) lightRoom[side] = lightLevel[side];
-    else if (!lightSeen) lightRoom[side] += (lightLevel[side] - lightRoom[side]) / 32;
-    extra[side] = max(lightLevel[side] - lightRoom[side], 0.0f);
+    bool bright = extra[side] > LIGHT_FLASH_MIN && extra[side] > extra[1 - side] + LIGHT_SEEN;
+    if (bright && !flashLit[side]) flashLitSince[side] = millis();
+    flashLit[side] = bright;
+    if (extra[side] < LIGHT_FLASH_MIN / 2) flashCounted[side] = false;   // dark again: ready for the next flash
+    if (!bright || flashCounted[side] || millis() - flashLitSince[side] < LIGHT_FLASH_HOLD_MS) continue;
+    flashCounted[side] = true;     // one hit per flash
+    if (flashHits && side != flashLastSide && millis() - flashFirstAt < LIGHT_FLASH_WINDOW_MS) {
+      flashHits++;
+    } else {
+      flashHits = 1;
+      flashFirstAt = millis();
+    }
+    flashLastSide = side;
+    out.print(F("light: flash "));
+    out.println(flashHits);
+    if (flashHits >= 4) {
+      flashHits = 0;
+      lightStart(1, true);
+      return;
+    }
+  }
+}
+
+// Every LIGHT_TICK_MS: in a light mode, steer toward (or back away from) the
+// torch; otherwise, while the robot is idle, watch for the flash start.
+void lightTick() {
+  if (millis() - lightTickAt < LIGHT_TICK_MS) return;
+  bool idle = remoteMode == IDLE && !irDriving && !vectorActive;
+  if (!lightMode && !(LIGHT_FLASH_START && idle)) {
+    lightWatching = false;
+    return;
+  }
+  lightTickAt = millis();
+  if (!lightWatching) {
+    lightReset();
+    lightWatching = true;
+  }
+  float extra[2];
+  lightSample(extra);
+  if (!lightMode) {
+    flashWatch(extra);
+    return;
   }
   float brightest = max(extra[0], extra[1]);
   if (brightest > LIGHT_SEEN) lightLastSeenAt = millis();
@@ -1562,7 +1634,7 @@ void handleKeyIdle(char key) {
   stars = 0;
   if (pounds == 2 && (key == '1' || key == '2')) {
     pounds = 0;
-    lightStart(key - '0');
+    lightStart(key - '0', false);
     return;
   }
   if (key == '#') {

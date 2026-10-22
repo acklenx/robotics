@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#ffffff">
-<title>Robot Wiring 0.1.1 - Maker Lab Kids</title>
+<title>Robot Wiring 0.1.2 - Maker Lab Kids</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -151,7 +151,7 @@
     <ul>
       <li>The LDRs go on <b>A4 (left) and A5 (right)</b>. If a gyro is plugged into A4/A5, unplug its SDA and SCL wires.</li>
       <li>The sonar stays on A2/A3. On ir.ino it still stops the robot 25 cm short of whoever holds the torch.</li>
-      <li>With <b>ir.ino</b> (version 0.10.77 or newer) the remote does it all: <b># # 1</b> follows the light, <b># # 2</b> runs from it.</li>
+      <li>With <b>ir.ino</b> (version 0.10.78 or newer) the remote does it all: <b># # 1</b> follows the light, <b># # 2</b> runs from it. Flashing the torch left, right, left, right also starts following.</li>
     </ul>
   </div>
 
@@ -199,7 +199,8 @@
         <li>A resistor (10k to start) from <b>A4 to GND</b>, and another from <b>A5 to GND</b>.</li>
       </ol>
       <p>Wired this way, <b>brighter light gives a higher reading</b> (0 to 1023), which is what the robot expects.</p>
-      <p class="dim">Easiest build: on each signal wire, twist or solder the LDR leg and the resistor leg together at the pin. The resistor's other leg goes to a GND pin, and the LDR's other leg goes to a 5V pin. Most L293D shields have 5V and GND pins next to A0-A5 (check the labels on the board).</p>
+      <p><b>On the shield</b>, the analog header is <b>three rows</b>, labelled on the board: <b>+5V</b>, <b>Gnd</b> and <b>A0-5</b>. Only the A0-5 row is an input. Each LDR uses all three rows of its column: LDR from +5V to the A pin, and resistor from the A pin to Gnd. A0 is the end nearest the Uno's power pins, so A4 and A5 are the two columns at the corner. On some shields the A0-5 row is bare holes: solder pins or wires there.</p>
+      <p class="dim">Plugged into just the +5V and Gnd rows, the robot cannot see the LDRs at all. It nods for # # 1 and then never moves.</p>
     </div>
   </div>
 
@@ -245,11 +246,12 @@
 
   <h3>With the remote (ir.ino)</h3>
   <ol>
-    <li>Flash <a href="../ir/ir.ino" download>ir.ino</a> 0.10.77 or newer. The calibration is kept, because it is stored in the robot's memory.</li>
+    <li>Flash <a href="../ir/ir.ino" download>ir.ino</a> 0.10.78 or newer. The calibration is kept, because it is stored in the robot's memory.</li>
     <li><b>Check</b> (optional, with the <a href="ir.html#instructor">Remote page</a> or a USB cable): type <code>b</code>. It answers <code>B,&lt;left&gt;,&lt;right&gt;</code>. Cover the left LDR and the first number should drop. Shine a torch on it and the number should jump.</li>
     <li><b># # 1</b>: <b>follow the light</b>. The robot nods, then waits. Shine a phone torch at its nose and walk away: it turns toward the brighter side and comes after you. It stops 25 cm short of you (the sonar), and stops when the light goes.</li>
     <li><b># # 2</b>: <b>run from the light</b>. Shine the torch at it and it backs away, turning to keep watching the torch.</li>
     <li><b>Any key</b> stops it.</li>
+    <li><b>No remote?</b> With the robot sitting idle, flash the torch on the left LDR, then the right, the left, the right, all within 3 seconds (a moment on each). It nods and follows, the same as # # 1. Version 0.10.78 or newer.</li>
   </ol>
   <p class="dim">The robot measures the room's own light when it starts and keeps learning it while it sees no torch. So start it with the torch off, and two LDRs that read a bit differently do not matter.</p>
 

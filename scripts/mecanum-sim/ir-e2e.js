@@ -102,6 +102,12 @@ const script = [
   mark(),                            // 17 run from the light (# # 2); x stops it
   press('##2'), 'wait 800', 'adc 4 3500', 'adc 5 3500', 'wait 500', 'pwm', 'dirs',
   'send x\\n', 'wait 200', 'pwm', 'adc 4 2000', 'adc 5 2000',
+  mark(),                            // 18 not a flash start: left left (same side), then three hits and too slow
+  'wait 1500', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300',
+  'wait 3500', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'wait 3500', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'wait 300', 'pwm',
+  mark(),                            // 19 the flash start: left right left right in 3 s follows, like # # 1
+  'wait 3500', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300', 'adc 4 3500', 'wait 200', 'adc 4 2000', 'wait 300', 'adc 5 3500', 'wait 200', 'adc 5 2000', 'wait 300',
+  'wait 300', 'adc 5 3500', 'wait 500', 'pwm', press('O'), 'wait 300', 'adc 5 2000',
   mark(),
   '',
 ].join('\n');
@@ -235,6 +241,17 @@ s = sections[17];
 p = pwms(s);
 check(/light: run away/.test(s) && p.length >= 2 && moving(p[0]) && dirs(s)[0] === '[dirs - - - -]', '# # 2 with a torch ahead: it backs away, every wheel backward: ' + p[0] + ' ' + dirs(s)[0]);
 check(/light: stop/.test(s) && !moving(p[1]), 'x stops it');
+
+// 18 not a flash start
+s = sections[18];
+p = pwms(s);
+check(/light: flash 3/.test(s) && !/light: flash 4/.test(s) && !/light: follow/.test(s) && p.length && !moving(p[0]), 'the same LDR twice, or three hits then a slow fourth: no start: ' + (s.match(/light: flash \d/g) || []).join(' '));
+
+// 19 the flash start
+s = sections[19];
+p = pwms(s);
+check(/light: flash 4/.test(s) && /light: follow/.test(s) && /gesture: nod/.test(s), 'left right left right within 3 s: nod, following');
+check(/light: sees it/.test(s) && p.length && moving(p[0]) && /light: stop/.test(s), 'then it follows the torch and OK stops it: ' + p[0]);
 
 console.log(failures.length ? '\n' + failures.length + ' FAILED (see ' + path.join(build, 'output.txt') + ')' : '\nall passed');
 process.exit(failures.length ? 1 : 0);

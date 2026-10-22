@@ -1,4 +1,4 @@
-// mecanum_holonomic.ino   (v0.10.77 - L293D shield, Bluetooth on A0/A1 as shipped, IMU,
+// mecanum_holonomic.ino   (v0.10.78 - L293D shield, Bluetooth on A0/A1 as shipped, IMU,
 //                          ADS1115 inputs and VL53L0X laser found on I2C at boot, IR
 //                          remote on D2, HC-SR04 sonar on A2/A3, line follower and light seeker set up at
 //                          runtime, saved in EEPROM)
@@ -136,7 +136,7 @@
 
 #include <Arduino.h>
 
-#define FIRMWARE_VERSION "0.10.77"   // banner and K,fw (bump the build number on every change)
+#define FIRMWARE_VERSION "0.10.78"   // banner and K,fw (bump the build number on every change)
 
 // The robot. Calibration is its own program, ../calibration/calibration.ino:
 // it measures the motion numbers and saves them in EEPROM for this one to
