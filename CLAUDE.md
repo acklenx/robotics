@@ -5,6 +5,12 @@ that used to live under /abot/ on makerlabkids.com. The site root here is what
 /abot/ was there, so `mecanum/ir.html` is https://robotics.makerlabkids.com/mecanum/ir.html.
 Links to the main site are absolute (https://makerlabkids.com/...).
 
+This repository is the source (since 2026-10-21): edit and commit here. The main
+repo's `_redirects` sends makerlabkids.com/abot/* here; there is no staging step any more.
+Large local-only files (the assembly video, the kit PDFs, mecanum/lafvin/) sit in this
+folder but are gitignored. `mecanum/wiring.html` is the wiring page (robot + LDRs):
+keep it in step with the pin plan in the sketches.
+
 Static site, no build. Cloudflare Pages deploys main from the GitHub repository
 acklenx/robotics to https://robotics.makerlabkids.com. `_headers` sets a
 Content-Security-Policy without unsafe-eval: never add eval or new Function to a page.
@@ -108,3 +114,4 @@ The sandbox auto-allows simple single commands and prompts for compound shell pr
 
 - No co-author bylines in commits
 - No file over 20 MB in git: `git config core.hooksPath .githooks` once per clone
+- Push: `sh /workspace/temp/push-robotics.sh` (reads the token from /workspace/.env; never print it)

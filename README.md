@@ -35,9 +35,10 @@ since before the move: "fetch is not defined" inside Blockly. Not yet fixed.)
 
 Enable the 20 MB guard once per clone: `git config core.hooksPath .githooks`.
 
-This repository is staged from the main site's `abot/` folder by
-`scripts/stage-robots-site.js` in the makerlabkids repository until the move
-is final; after that it is edited here directly.
+This repository is the source: edit and commit here. (Until 2026-10-21 these
+pages lived under /abot/ in the makerlabkids repository, which now redirects
+/abot/* to this site.) Wiring for the robot and its light sensors:
+`mecanum/wiring.html`.
 
 ---
 
