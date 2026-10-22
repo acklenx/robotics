@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#15181c">
-<title>Programming Guide 0.1.17 - Maker Lab Kids</title>
+<title>Programming Guide 0.1.18 - Maker Lab Kids</title>
 <style>
   :root {
     --bg: #15181c;
@@ -414,6 +414,7 @@
       <table>
         <tr><td>Nothing happens on any key</td><td>Is ir.ino on the robot (connect: the status says <b>ir</b>)? Is the receiver's OUT on the pin the robot names at boot? Try the keys from this page: if those work, it is the receiver or the remote's battery.</td></tr>
         <tr><td>Some keys are missed</td><td>Point straight at the eye; sunlight and some LED lights blind receivers. Press keys one at a time and wait for the nod.</td></tr>
+        <tr><td>Holding a key only nudges it (one press works, holding does not)</td><td>A weak battery in the remote: it has enough for one press but fades while you hold a key. Change the remote's battery, or try another remote. (Test with a remote you know is good: a second weak one fooled us.)</td></tr>
         <tr><td>It will not go forward</td><td>Something is within 25 cm of the sonar, or the sonar is unplugged and reads 0. Check with <b>Sonar reading</b>.</td></tr>
         <tr><td>Distances or turns are off</td><td>It drives on the calibration numbers: <a href="calibration.html">Calibrate / Tune</a>, then try the square again.</td></tr>
         <tr><td>Too wobbly when it nods / wiggles</td><td><code>GESTURE_PWM_OVER_START</code> and <code>GESTURE_TWITCH_MS</code> in the sketch.</td></tr>
@@ -425,7 +426,7 @@
 <script>
 "use strict";
 
-var APP_VERSION = "0.1.17";
+var APP_VERSION = "0.1.18";
 var SERIAL_BAUD = 9600;
 var BLE_SERVICE_UUID = 0xFFE0;
 var BLE_NUS_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
