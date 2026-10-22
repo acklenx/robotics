@@ -324,28 +324,50 @@ def robot_view():
     return f'<svg viewBox="0 20 360 300" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
 
 
+def bot_top(cx, cy, angle):
+    """Our little mecanum bot from above, front up before rotating by angle degrees:
+    four yellow mecanum wheels, the black chassis, the blue motor shield, and the two
+    light sensors on the front corners."""
+    g = []
+    for wx, wy in ((-50, -36), (50, -36), (-50, 38), (50, 38)):
+        g.append(f'<rect x="{wx - 12}" y="{wy - 23}" width="24" height="46" rx="7" fill="#f2c200" stroke="#9a7a00" stroke-width="1.5"/>')
+        slope = 1 if (wx < 0) == (wy < 0) else -1          # the X pattern of mecanum rollers
+        for i in range(5):
+            yy = wy - 18 + i * 9
+            g.append(f'<line x1="{wx - 8}" y1="{yy - 3 * slope}" x2="{wx + 8}" y2="{yy + 3 * slope}" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round"/>')
+    g.append('<rect x="-38" y="-64" width="76" height="128" rx="12" fill="#1d1f23"/>')
+    g.append('<rect x="-28" y="-30" width="56" height="64" rx="4" fill="#1f5fae" stroke="#174a88"/>')   # the motor shield
+    for x in (-20, -6, 8):
+        g.append(f'<rect x="{x}" y="-20" width="11" height="24" rx="1.5" fill="#222"/>')
+    g.append('<rect x="8" y="22" width="16" height="8" rx="1" fill="#f2d33c"/>')                        # analog header
+    g.append('<path d="M-8 -46 L0 -56 L8 -46" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>')
+    for x in (-30, 30):                                                                                # the light sensors
+        g.append(f'<circle cx="{x}" cy="-62" r="8" fill="#f1e9d6" stroke="#b9a47a" stroke-width="2"/>')
+        g.append(f'<path d="M{x - 4} -65 L{x + 4} -63 L{x - 4} -61 L{x + 4} -59" fill="none" stroke="#c0541a" stroke-width="1.5"/>')
+    return f'<g transform="translate({cx} {cy}) rotate({angle})">' + "".join(g) + "</g>"
+
+
 def chase_view():
-    """Step 15: a flashlight shining at the robot's two front sensors (screen), and a QR
-    code to How to use the Light Bot (print)."""
+    """Step 15: a flashlight makes a small spot ahead and to the left of the robot, and
+    the robot turns toward it (screen); print shows a QR code instead."""
     out = ['<rect y="20" width="360" height="300" rx="10" class="fig-bg" fill="#f4f1ea"/>']
-    # the robot from above, front to the left, its two sensors on the front corners
-    rx, ry, rw, rh = 210, 110, 110, 130
-    for cy in (ry + 22, ry + rh - 22):
-        out.append(f'<rect x="{rx + 8}" y="{cy - 30}" width="26" height="12" rx="3" fill="#f2c200"/>')
-        out.append(f'<rect x="{rx + rw - 34}" y="{cy - 30}" width="26" height="12" rx="3" fill="#f2c200"/>')
-    out.append(f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" rx="10" fill="#1d1f23"/>')
-    out.append(f'<path d="M{rx + 30} {ry + rh / 2 - 10} L{rx + 16} {ry + rh / 2} L{rx + 30} {ry + rh / 2 + 10}" fill="none" stroke="#fff" stroke-width="3"/>')
-    for sy in (ry + 10, ry + rh - 10):
-        out.append(f'<circle cx="{rx + 6}" cy="{sy}" r="8" fill="#f1e9d6" stroke="#b9a47a" stroke-width="2"/>')
-    # the flashlight and its beam
-    out.append(f'<path d="M92 {ry + rh / 2 - 22} L{rx - 2} {ry - 6} L{rx - 2} {ry + rh + 6} L92 {ry + rh / 2 + 22} Z" fill="#ffd84d" fill-opacity="0.55"/>')
-    out.append(f'<rect x="20" y="{ry + rh / 2 - 13}" width="56" height="26" rx="5" fill="#3b4049"/>')
-    out.append(f'<path d="M76 {ry + rh / 2 - 13} L92 {ry + rh / 2 - 22} L92 {ry + rh / 2 + 22} L76 {ry + rh / 2 + 13} Z" fill="#555b66"/>')
-    out.append(f'<rect x="30" y="{ry + rh / 2 - 17}" width="10" height="5" rx="2" fill="#e65100"/>')
-    out.append(text(rx + rw / 2, ry + rh + 34, "the robot, from above", "middle", 12, "#555"))
-    out.append(text(48, ry + rh / 2 + 40, "flashlight", "middle", 12, "#555"))
-    label = "Step 15: a flashlight shining at the front of the robot, seen from above, lighting both of its light sensors."
-    return f'<svg class="screen-only" viewBox="0 20 360 300" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
+    spot = (136, 92)
+    # the flashlight, bottom left, and its narrow beam to a small spot
+    fx, fy = 46, 276
+    out.append(f'<path d="M{fx + 26} {fy - 30} L{spot[0] - 9} {spot[1] + 4} L{spot[0] + 9} {spot[1] + 10} L{fx + 40} {fy - 18} Z" fill="#ffd84d" fill-opacity="0.45"/>')
+    out.append(f'<ellipse cx="{spot[0]}" cy="{spot[1]}" rx="17" ry="12" fill="#ffd84d" fill-opacity="0.7"/>')
+    out.append(f'<ellipse cx="{spot[0]}" cy="{spot[1]}" rx="8" ry="6" fill="#fff6c4"/>')
+    out.append(f'<g transform="translate({fx} {fy}) rotate(-50)"><rect x="-26" y="-11" width="40" height="22" rx="5" fill="#3b4049"/>'
+               f'<path d="M14 -11 L26 -16 L26 16 L14 11 Z" fill="#555b66"/><rect x="-18" y="-15" width="9" height="5" rx="2" fill="#e65100"/></g>')
+    # the robot, part way through turning left toward the spot
+    out.append(bot_top(232, 178, -28))
+    out.append('<path d="M296 112 A 92 92 0 0 0 196 82" fill="none" stroke="#e65100" stroke-width="3" stroke-linecap="round"/>')
+    out.append('<path d="M206 74 L194 82 L206 92" fill="none" stroke="#e65100" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>')
+    out.append(text(250, 50, "turns toward the light", "middle", 13))
+    out.append(text(spot[0], spot[1] - 22, "light spot", "middle", 12, "#555"))
+    label = ("Step 15: our mecanum robot seen from above, with yellow wheels, a blue motor shield and a light sensor on each front corner. "
+             "A flashlight makes a small spot of light on the floor ahead and to the left, and the robot turns toward it.")
+    return f'<svg viewBox="0 20 360 300" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
 
 
 def use_page_qr():
@@ -370,7 +392,7 @@ def figure(state):
     if state == "robot":
         return robot_view()
     if state == "chase":
-        return chase_view() + use_page_qr()
+        return chase_view()
     y0 = {"folded": 190, "taped": 190, "ldr-ready": -40, "ldr-in": 40}.get(state, 0)      # folded and taped: just the connectors
     parts = [f'<rect y="{y0}" width="360" height="{440 - y0}" rx="10" class="fig-bg" fill="#f4f1ea"/>']
     if state in ("ready", "plugged"):
@@ -526,6 +548,7 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
         {figure("chase")}
         <figcaption>Get a flashlight and try it out: <a href="/mecanum/light">How to use the
         Light Bot</a>.</figcaption>
+        {use_page_qr()}
       </figure>
     </div>
   </section>
