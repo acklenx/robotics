@@ -3,6 +3,7 @@
 # Run: python3 scripts/ldr-figs.py
 import os
 import re
+import subprocess
 
 PITCH = 44            # px between connector centres
 X1 = 110              # center of connector 1
@@ -323,6 +324,38 @@ def robot_view():
     return f'<svg viewBox="0 20 360 300" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
 
 
+def chase_view():
+    """Step 15: a flashlight shining at the robot's two front sensors (screen), and a QR
+    code to How to use the Light Bot (print)."""
+    out = ['<rect y="20" width="360" height="300" rx="10" class="fig-bg" fill="#f4f1ea"/>']
+    # the robot from above, front to the left, its two sensors on the front corners
+    rx, ry, rw, rh = 210, 110, 110, 130
+    for cy in (ry + 22, ry + rh - 22):
+        out.append(f'<rect x="{rx + 8}" y="{cy - 30}" width="26" height="12" rx="3" fill="#f2c200"/>')
+        out.append(f'<rect x="{rx + rw - 34}" y="{cy - 30}" width="26" height="12" rx="3" fill="#f2c200"/>')
+    out.append(f'<rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" rx="10" fill="#1d1f23"/>')
+    out.append(f'<path d="M{rx + 30} {ry + rh / 2 - 10} L{rx + 16} {ry + rh / 2} L{rx + 30} {ry + rh / 2 + 10}" fill="none" stroke="#fff" stroke-width="3"/>')
+    for sy in (ry + 10, ry + rh - 10):
+        out.append(f'<circle cx="{rx + 6}" cy="{sy}" r="8" fill="#f1e9d6" stroke="#b9a47a" stroke-width="2"/>')
+    # the flashlight and its beam
+    out.append(f'<path d="M92 {ry + rh / 2 - 22} L{rx - 2} {ry - 6} L{rx - 2} {ry + rh + 6} L92 {ry + rh / 2 + 22} Z" fill="#ffd84d" fill-opacity="0.55"/>')
+    out.append(f'<rect x="20" y="{ry + rh / 2 - 13}" width="56" height="26" rx="5" fill="#3b4049"/>')
+    out.append(f'<path d="M76 {ry + rh / 2 - 13} L92 {ry + rh / 2 - 22} L92 {ry + rh / 2 + 22} L76 {ry + rh / 2 + 13} Z" fill="#555b66"/>')
+    out.append(f'<rect x="30" y="{ry + rh / 2 - 17}" width="10" height="5" rx="2" fill="#e65100"/>')
+    out.append(text(rx + rw / 2, ry + rh + 34, "the robot, from above", "middle", 12, "#555"))
+    out.append(text(48, ry + rh / 2 + 40, "flashlight", "middle", 12, "#555"))
+    label = "Step 15: a flashlight shining at the front of the robot, seen from above, lighting both of its light sensors."
+    return f'<svg class="screen-only" viewBox="0 20 360 300" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
+
+
+def use_page_qr():
+    """The QR code to How to use the Light Bot, made by scripts/qr-svg.js."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    svg = subprocess.run(["node", os.path.join(here, "qr-svg.js"), "https://robotics.makerlabkids.com/mecanum/light"],
+                         capture_output=True, text=True, check=True).stdout
+    return '<div class="print-only step-qr">' + svg + '</div>'
+
+
 def figure(state):
     if state.startswith("side"):
         return side_view(state)
@@ -336,6 +369,8 @@ def figure(state):
         return header_closeup([4, 5], hints=(3,))
     if state == "robot":
         return robot_view()
+    if state == "chase":
+        return chase_view() + use_page_qr()
     y0 = {"folded": 190, "taped": 190, "ldr-ready": -40, "ldr-in": 40}.get(state, 0)      # folded and taped: just the connectors
     parts = [f'<rect y="{y0}" width="360" height="{440 - y0}" rx="10" class="fig-bg" fill="#f4f1ea"/>']
     if state in ("ready", "plugged"):
@@ -485,6 +520,12 @@ html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
         {figure("header-all")}
         <figcaption>Repeat steps 1 to 13 for the <b>left</b> sensor, and plug it into
         <b>A4</b>.</figcaption>
+      </figure>
+      <figure>
+        <h3 class="step-title">15. Chase the light</h3>
+        {figure("chase")}
+        <figcaption>Get a flashlight and try it out: <a href="/mecanum/light">How to use the
+        Light Bot</a>.</figcaption>
       </figure>
     </div>
   </section>
