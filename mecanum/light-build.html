@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to Build a Light Sensor 0.1.2 - Maker Lab Kids</title>
+<title>How to Build a Light Sensor 0.1.3 - Maker Lab Kids</title>
 <meta name="description" content="How to build a light sensor for the light bot: an LDR voltage divider circuit on three dupont wires, step by step, and where it plugs into the robot.">
 <link rel="stylesheet" href="../css/site.css">
 <style>
@@ -17,7 +17,7 @@
   table.pins tr:last-child td { border-bottom: none; }
   .build-steps h2 { margin-top: 28px; }
   /* one box per step; grid-auto-rows: 1fr makes every box the same size */
-  .steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); grid-auto-rows: 1fr; gap: 14px; }
+  .steps { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); grid-auto-rows: 1fr; gap: 14px; }
   .steps figure { margin: 0; padding: 10px; border: 1px solid var(--panel-edge); border-radius: 10px; background: var(--panel);
                   display: flex; flex-direction: column; }
   .steps svg { width: 100%; height: auto; display: block; }
@@ -30,6 +30,11 @@
     .steps figcaption { font-size: 12px; }
     .steps .step-title { font-size: 13px; margin-bottom: 4px; color: #000; }
     .steps .fig-bg { fill: #fff; }
+  }
+  /* print only: a footer at the bottom of every printed page */
+  @page {
+    margin: 0.5in 0.5in 0.7in;
+    @bottom-center { content: "Maker Lab Kids \00B7  robotics.makerlabkids.com"; font: 10px system-ui, sans-serif; color: #555; }
   }
 </style>
 <link rel="stylesheet" href="/css/nav.css">
