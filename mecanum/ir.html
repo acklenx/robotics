@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#15181c">
-<title>Remote Robot 0.1.13 - Maker Lab Kids</title>
+<title>Remote Robot 0.1.14 - Maker Lab Kids</title>
 <style>
   :root {
     --bg: #15181c;
@@ -248,7 +248,7 @@
     <span class="key arrow">&#9660;</span> back, <span class="key arrow">&#9664;</span> <span class="key arrow">&#9654;</span> slide sideways (mecanum wheels!).</p>
     <p><b>Hold <span class="key">1</span> or <span class="key">3</span></b> to turn left or right on the spot.</p>
     <p><span class="key">0</span>, <span class="key ok">OK</span> or <span class="key pound">#</span> stop it.</p>
-    <p>If something is closer than <b>25 cm</b> in front, the robot will not drive forward (the sonar sees it). Back up, slide or turn instead.</p>
+    <p>With the sonar switched on: if something is closer than <b>25 cm</b> in front, the robot will not drive forward. Back up, slide or turn instead.</p>
   </div>
 
   <h2>2. Make a program</h2>
@@ -297,7 +297,8 @@
   <h2>4. Follow the light (or run from it)</h2>
   <div class="card">
     <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">1</span> <span class="then">follow the light: shine a torch at its nose and walk away. It turns toward the bright side and comes after you.</span></p>
-    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">2</span> <span class="then">run from the light: shine the torch at it and it backs away, still watching the torch.</span></p>
+    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">2</span> <span class="then">cockroach mode: run from the light. Shine the torch at it and it backs away, still watching the torch.</span></p>
+    <p>With a third light sensor on its back, a light <b>behind</b> it works too: # # 1 backs straight toward it, # # 2 runs forward away from it. Aim the torch so a little light also reaches one front sensor and it turns as it goes.</p>
     <p><b>No remote? Use the torch:</b> flash it on the left sensor, the right, the left, the right, all within 3 seconds. The robot <span class="answer">nods</span> and follows, just like # # 1.</p>
     <p>It <span class="answer">nods</span> when it starts. With no torch it just waits. <b>Any key stops it.</b> Needs the two light sensors (<a href="wiring.html">wiring</a>).</p>
   </div>
@@ -313,7 +314,7 @@
     <div><b>Wiggle</b> (quick left-right)<br>"I am listening" / "which slot?"</div>
     <div><b>Nod</b> (forward-back)<br>"Got it": step kept, program saved</div>
     <div><b>Slow head shake</b><br>"No": cancelled, empty slot, program full</div>
-    <div><b>Stops dead</b><br>Something is in front of it (sonar), or a key was pressed</div>
+    <div><b>Stops dead</b><br>A key was pressed, or (sonar on) something is in front of it</div>
   </div>
 
   <h2>Try this: a square</h2>
@@ -350,8 +351,8 @@
       <h3 style="margin-top:0">Set up a robot</h3>
       <p>Flash <a href="../ir/ir.ino" download><b>ir.ino</b></a> (Arduino IDE, Uno). It drives on the same motion numbers as mecanum_holonomic.ino, including a set saved by the <a href="calibration.html">Calibrate / Tune</a> page.</p>
       <p><b>IR receiver</b> (3 pins: OUT, VCC, GND): OUT to <b>D10</b>, the signal pin of the shield's <b>SER1</b> servo header, 5 V and GND beside it. No soldering. Any other pin works too: change <code>IR_RECEIVER_PIN</code> at the top of the sketch (the robot says which pin it uses when it boots).</p>
-      <p><b>Light sensors</b> (for # # 1 / # # 2): two LDRs, each with a fixed resistor: 5V - LDR - pin - resistor - GND. Left front corner to <b>A4</b>, right front corner to <b>A5</b>, each looking 45 degrees out. Unplug a gyro from A4/A5 first if there is one. Diagram and how to pick the resistor: <a href="wiring.html">Wiring</a>. Check them with <code>b</code>: cover one and its number drops.</p>
-      <p><b>Sonar</b> (HC-SR04) stays where the kit puts it: trig A3, echo A2. Under 25 cm ahead = stop. <code>SONAR_STOP_MM</code> sets the distance; <code>SONAR_STOPS_EVERYTHING</code> makes it stop every move, not only forward ones.</p>
+      <p><b>Light sensors</b> (for # # 1 / # # 2): two LDRs, each with a fixed resistor: 5V - LDR - pin - resistor - GND. Left front corner to <b>A4</b>, right front corner to <b>A5</b>, each looking 45 degrees out. Unplug a gyro from A4/A5 first if there is one. Diagram and how to pick the resistor: <a href="wiring.html">Wiring</a>. Check them with <code>b</code>: cover one and its number drops. <b>Optional back LDR</b> on <b>A3</b>, middle of the back, looking straight back, wired the same way: the robot finds it by itself at the start of each light mode (<code>light: back sensor found</code>).</p>
+      <p><b>Sonar</b> (HC-SR04): <b>off</b> as shipped since 0.10.79, because A3 (its Trig) is the back LDR's pin; the robot says <code>no sonar</code> when it boots. To bring it back, set <code>USE_LIGHT_BACK</code> to 0 at the top of the sketch and plug it in where the kit puts it: trig A3, echo A2. Then under 25 cm ahead = stop; <code>SONAR_STOP_MM</code> sets the distance, <code>SONAR_STOPS_EVERYTHING</code> makes it stop every move.</p>
       <p>The remote is the kit's 17-key one (arrows, OK, 0-9, * #). Another remote prints <code>ir: key 0x.. not mapped</code> in the console below; its codes go in <code>IR_KEYS</code>.</p>
     </div>
 
@@ -395,9 +396,9 @@
           <tr><td><code>p?;</code></td><td>list the slots: <code>P,3,f50,t90</code> (f b l r in cm, t in degrees, t-90 = left)</td></tr>
           <tr><td><code>p3;</code></td><td>run slot 3</td></tr>
           <tr><td><code>p3=f50 t90 n4;</code></td><td>store a program in slot 3 from the phone: f b l r cm, q e diagonals cm, t degrees (t-90 left), p pause s, n do it all again times (<code>p3=;</code> empties it). The <a href="blocks.html">Blocks editor</a> builds these lines from block programs and can send all nine slots at once.</td></tr>
-          <tr><td><code>u</code></td><td>one sonar reading, <code>U,&lt;mm&gt;</code> (-1 = nothing within 4 m)</td></tr>
+          <tr><td><code>u</code></td><td>one sonar reading, <code>U,&lt;mm&gt;</code> (-1 = nothing within 4 m, or the sonar is off)</td></tr>
           <tr><td><code>v40,0,0;</code></td><td>keep driving forward / right / clockwise at -100..100 % (the Blocks page's keep-driving blocks and the Sticks page); stops unless repeated within half a second; the sonar zeroes the forward part near a wall</td></tr>
-          <tr><td><code>b</code></td><td>one light reading, <code>B,&lt;left&gt;,&lt;right&gt;</code> (0-1023, brighter = higher)</td></tr>
+          <tr><td><code>b</code></td><td>one light reading, <code>B,&lt;direction&gt;,&lt;brightest&gt;,&lt;left&gt;,&lt;right&gt;[,&lt;back&gt;]</code> (readings 0-1000, brighter = higher; direction in degrees from the nose). The same layout as mecanum_holonomic, so the Blocks page's light blocks work here too.</td></tr>
           <tr><td><code>x</code></td><td>stop (also ends follow / run from the light)</td></tr>
           <tr><td><code>m0,500,0;</code>  <code>k?;</code></td><td>a move and the motion numbers, as in calibration.ino</td></tr>
         </table>
@@ -674,8 +675,8 @@ function handleRobotLine(line) {
     robot.state = line;
   } else if ((match = /^P,(\d)(.*)$/.exec(line))) {
     robot.slots[match[1]] = match[2].replace(/^,/, "");
-  } else if ((match = /^B,(\d+),(\d+)/.exec(line))) {
-    robot.state = "Light: left " + match[1] + ", right " + match[2] + " (cover one: it should drop)";
+  } else if ((match = /^B,-?\d+,\d+,(\d+),(\d+)(?:,(\d+))?/.exec(line))) {
+    robot.state = "Light: left " + match[1] + ", right " + match[2] + (match[3] ? ", back " + match[3] : "") + " (cover one: it should drop)";
   } else if ((match = /^U,(-?\d+)/.exec(line))) {
     robot.state = match[1] < 0 ? "Sonar: nothing within 4 m" : "Sonar: " + match[1] + " mm" + (match[1] < 250 ? " - too close, it will not go forward" : "");
   }

@@ -1,4 +1,4 @@
-// calibration.ino   (v0.10.78 - calibration for the mecanum robot, by hand: L293D shield,
+// calibration.ino   (v0.10.79 - calibration for the mecanum robot, by hand: L293D shield,
 //                    Bluetooth on A0/A1 as shipped)
 //
 // One number at a time: run a test, measure, and the number goes into the
@@ -25,7 +25,7 @@
 #include <Arduino.h>
 #include <avr/eeprom.h>
 
-#define FIRMWARE_VERSION "0.10.78"   // same line as mecanum_holonomic (bump both together)
+#define FIRMWARE_VERSION "0.10.79"   // same line as mecanum_holonomic (bump both together)
 #define SKETCH_NAME "calibration"
 
 // ===========================================================================

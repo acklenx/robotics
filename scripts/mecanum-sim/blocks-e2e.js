@@ -18,7 +18,9 @@ const arduinoCli = path.join(os.homedir(), '.local', 'bin', 'arduino-cli');
 function compileSketch(name, sourceDirectory) {
   const copy = path.join(build, name);
   fs.mkdirSync(copy, { recursive: true });
-  fs.copyFileSync(path.join(sourceDirectory, name + '.ino'), path.join(copy, name + '.ino'));
+  // ir.ino with the sonar on (USE_LIGHT_BACK 0), so the sonar block has something to read
+  const text = fs.readFileSync(path.join(sourceDirectory, name + '.ino'), 'utf8').replace(/#define USE_LIGHT_BACK \d/, '#define USE_LIGHT_BACK 0');
+  fs.writeFileSync(path.join(copy, name + '.ino'), text);
   execSync(`"${arduinoCli}" compile --fqbn arduino:avr:uno --output-dir "${path.join(build, 'out-' + name)}" "${copy}"`, { stdio: 'ignore' });
   return path.join(build, 'out-' + name, name + '.ino.elf');
 }
@@ -183,7 +185,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   check(/program: slot 1 = 8 steps/.test(listing) && /P,1,f50,t90,f50,t90,f50,t90,f50,t90/.test(listing) && /P,8,f40,t90,f40,t90,f40,t90,f40,t90,f40,t-90,f40,t-90,f40,t-90,f40,t-90/.test(listing) && /P,9,t-30,t60,t-30,l15,r30,l15,f15,b15,t360/.test(listing),
     'Send all nine slots: ir.ino stored and lists them back exactly');
   r = await backendCall("backend.readLight('level', 0)");
-  check(r.error && /No reply starting with "B,"/.test(r.error), 'light on ir.ino: a clear fault (ir.ino has no bs)');
+  check(!r.error && typeof r.value === 'number', 'light on ir.ino: bs answers in the same B, layout (light level ' + JSON.stringify(r) + ')');
   pwmBefore = (simLog.match(/\[pwm/g) || []).length;
   await page.evaluate(async () => {
     window.testBackend = createRobotBackend(createRunControl());

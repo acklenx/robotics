@@ -10,14 +10,23 @@ const path = require('path');
 const root = path.resolve(__dirname, '..', '..');
 const build = path.join(root, 'temp', 'mecanum-sim', 'ir-e2e');
 const simBinary = path.join(build, 'uno-sim');
-const sketchCopy = path.join(build, 'ir');
-const elf = path.join(build, 'out', 'ir.ino.elf');
+const elf = path.join(build, 'ir-sonar.elf');
+
+// The sketch with USE_LIGHT_BACK set (0: the sonar on A2/A3; 1: a back LDR on A3)
+function buildSketch(lightBack, folder) {
+  const copy = path.join(build, folder, 'ir');
+  fs.mkdirSync(copy, { recursive: true });
+  const text = fs.readFileSync(path.join(root, 'ir', 'ir.ino'), 'utf8').replace(/#define USE_LIGHT_BACK \d/, '#define USE_LIGHT_BACK ' + lightBack);
+  fs.writeFileSync(path.join(copy, 'ir.ino'), text);
+  const out = path.join(build, folder, 'out');
+  execSync(`"${path.join(os.homedir(), '.local', 'bin', 'arduino-cli')}" compile --fqbn arduino:avr:uno --output-dir "${out}" "${copy}"`, { stdio: 'ignore' });
+  return path.join(out, 'ir.ino.elf');
+}
 
 function buildEverything() {
-  fs.mkdirSync(sketchCopy, { recursive: true });
+  fs.mkdirSync(build, { recursive: true });
   execSync(`gcc -O2 -o "${simBinary}" "${path.join(__dirname, 'uno-sim.c')}" -lsimavr -lelf -lm`, { stdio: 'inherit' });
-  fs.copyFileSync(path.join(root, 'ir', 'ir.ino'), path.join(sketchCopy, 'ir.ino'));
-  execSync(`"${path.join(os.homedir(), '.local', 'bin', 'arduino-cli')}" compile --fqbn arduino:avr:uno --output-dir "${path.join(build, 'out')}" "${sketchCopy}"`, { stdio: 'ignore' });
+  fs.copyFileSync(buildSketch(0, 'sonar'), elf);
 }
 
 const failures = [];
@@ -225,7 +234,7 @@ check(/run: program 0 \(circle, 1 m across, facing in\)/.test(s) && /step 1: cir
 s = sections[16];
 p = pwms(s);
 const nums = (line) => (line || '').replace(/[^-\d ]/g, ' ').trim().split(/\s+/).map(Number);
-check(/^B,(\d+),\1$/m.test(s), 'b reads both LDRs (the same 2 V on each)');
+check(/^B,0,(\d+),\1,\1$/m.test(s), 'b reads both LDRs (the same 2 V on each: straight ahead, brightest = each)');
 check(/light: follow \(left \d+, right \d+\)/.test(s) && /gesture: nod/.test(s), '# # 1 starts following with a nod and says the room light');
 check(p.length >= 5 && !moving(p[0]), 'no torch: it waits, motors off: ' + p[0]);
 const dirs = (text) => (text.match(/\[dirs [^\]]*\]/g) || []);   // [dirs FL FR RL RR]
@@ -252,6 +261,30 @@ s = sections[19];
 p = pwms(s);
 check(/light: flash 4/.test(s) && /light: follow/.test(s) && /gesture: nod/.test(s), 'left right left right within 3 s: nod, following');
 check(/light: sees it/.test(s) && p.length && moving(p[0]) && /light: stop/.test(s), 'then it follows the torch and OK stops it: ' + p[0]);
+
+// The back LDR on A3 (USE_LIGHT_BACK 1): a light behind
+const backScript = [
+  'irpin B 2', 'wait 2600',
+  'adc 3 2000', 'adc 4 2000', 'adc 5 2000', 'wait 100', 'send b\\n', 'wait 200',
+  press('##1'), 'wait 800', 'adc 3 3500', 'wait 500', 'pwm', 'dirs',
+  'adc 4 2900', 'wait 500', 'pwm', 'dirs', press('O'), 'wait 300', 'adc 3 2000', 'adc 4 2000', 'wait 300',
+  press('##2'), 'wait 800', 'adc 3 3500', 'wait 500', 'pwm', 'dirs', 'send x\\n', 'wait 300', 'adc 3 2000',
+  'adc 3 5000', 'wait 100', press('##1'), 'wait 800', 'send x\\n', 'wait 300',
+  '',
+].join('\n');
+const backResult = spawnSync(simBinary, [buildSketch(1, 'back')], { input: backScript, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+const back = backResult.stdout || '';
+fs.writeFileSync(path.join(build, 'output-back.txt'), back + (backResult.stderr || ''));
+p = pwms(back);
+const bd = back.match(/\[dirs [^\]]*\]/g) || [];
+check(/no sonar: back light sensor on A3/.test(back) && /^B,0,(\d+),\1,\1,\1$/m.test(back) && /light: back sensor found/.test(back), 'USE_LIGHT_BACK 1: boots without the sonar, finds the back LDR, b reads three');
+check(p.length >= 3 && bd[0] === '[dirs - - - -]', '# # 1, light behind: it backs straight toward it: ' + p[0] + ' ' + bd[0]);
+{
+  const [b1, b2, b3, b4] = nums(p[1]);   // M1 RL, M2 RR, M3 FR, M4 FL
+  check(/^\[dirs [-0] - [-0] -\]$/.test(bd[1] || '') && b4 < b3 && b1 < b2, 'spill on the front-left LDR: still backing, tail swinging toward it (clockwise): ' + p[1] + ' ' + bd[1]);
+}
+check(bd[2] === '[dirs + + + +]', '# # 2, light behind: it runs forward, away from it: ' + p[2] + ' ' + bd[2]);
+check(/light: no back sensor/.test(back), 'an empty A3 (reads the top with the pull-up on): no back sensor');
 
 console.log(failures.length ? '\n' + failures.length + ' FAILED (see ' + path.join(build, 'output.txt') + ')' : '\nall passed');
 process.exit(failures.length ? 1 : 0);

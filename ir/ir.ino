@@ -1,4 +1,4 @@
-// ir.ino   (v0.10.78 - the mecanum robot driven and programmed from the kit's IR remote;
+// ir.ino   (v0.10.79 - the mecanum robot driven and programmed from the kit's IR remote;
 //           L293D shield, Bluetooth on A0/A1 as shipped, HC-SR04 sonar on A2/A3 as shipped,
 //           IR receiver on IR_RECEIVER_PIN)
 //
@@ -36,6 +36,9 @@
 //   # # 1             follow the light: two LDRs (A4 left, A5 right) steer it toward a torch
 //   # # 2             run from the light: it backs away from a torch, nose turned to watch it
 //                     (either one: any key stops it; with no light it waits)
+//                     With USE_LIGHT_BACK 1 a third LDR on A3 looks behind: a light there makes it
+//                     back straight at it (follow) or run forward (run away), steering by
+//                     whatever spill the front LDRs catch
 //   torch flashed on the left LDR, right, left, right within 3 s: follow the light, like # # 1
 //   # # #             calibrate (three steps; a test runs when you press OK, * runs it
 //                     again, OK confirms a number, # cancels and puts the saved numbers back):
@@ -52,7 +55,8 @@
 //                  p<s> pause n<times> repeat, e.g. p3=f50 t90 n4;
 //                  p<n>=;  empties the slot
 //   u              one sonar reading (U,<mm>, -1 = nothing within ~4 m)
-//   b              one light reading: B,<left>,<right> (0..1023, brighter = higher)
+//   b              one light reading: B,<direction>,<brightest>,<left>,<right>[,<back>]
+//                  (0..1000, brighter = higher; the Blocks page's bs reads it too)
 //   v<f>,<r>,<s>;  keep driving forward / right / clockwise at -100..100 % of full
 //                  speed (the Blocks page's keep-driving and the two-stick controller);
 //                  stops unless repeated within VECTOR_TIMEOUT_MS. No reply. The sonar
@@ -68,7 +72,7 @@
 #include <Arduino.h>
 #include <avr/eeprom.h>
 
-#define FIRMWARE_VERSION "0.10.78"   // same line as mecanum_holonomic (bump both together)
+#define FIRMWARE_VERSION "0.10.79"   // same line as mecanum_holonomic (bump both together)
 #define SKETCH_NAME "ir"
 
 // A program step (the IR sketch's own): which way, and how far / how many degrees
@@ -139,7 +143,12 @@ const unsigned long IR_STAR_TIMEOUT_MS = 3000;  // a lone * is forgotten after t
 // ===========================================================================
 // CONFIG - HC-SR04 sonar (A3 trig / A2 echo as shipped): a stop, nothing more
 // ===========================================================================
-#define USE_SONAR 1
+// USE_LIGHT_BACK 1: a third LDR may sit on A3 looking straight back (see CONFIG -
+// light sensors); each light mode checks whether one is there. A3 is the
+// sonar's Trig, so the sonar is off and nothing stops the robot short of a
+// wall. USE_LIGHT_BACK 0 brings the sonar back (and no back LDR).
+#define USE_LIGHT_BACK 1
+#define USE_SONAR (!USE_LIGHT_BACK)
 const byte SONAR_ECHO_PIN = A2;
 const byte SONAR_TRIG_PIN = A3;
 const int SONAR_STOP_MM = 250;                  // anything nearer ahead stops the robot
@@ -158,6 +167,9 @@ const unsigned long SONAR_TIMEOUT_US = 25000;   // round trip, ~4.3 m (the u rea
 // that while it sees no torch), so two LDRs that read a bit differently are fine.
 const byte LIGHT_LEFT_PIN = A4;                 // front left corner, looking 45 degrees left
 const byte LIGHT_RIGHT_PIN = A5;                // front right corner, looking 45 degrees right
+const byte LIGHT_BACK_PIN = A3;                 // with USE_LIGHT_BACK 1: middle of the back, looking straight back
+const float LIGHT_BACK_SPIN_SHARE = 1.0;        // backing toward (or running from) a light behind: how hard the
+                                                // front LDRs' spill steers the tail at it (0 = straight back)
 const bool LIGHT_BRIGHT_READS_HIGH = true;
 const int LIGHT_SEEN = 40;                      // this much over the room's light = a torch
 const unsigned int LIGHT_LOST_MS = 300;         // under half of that for this long = lost it
@@ -1482,11 +1494,13 @@ void handleKeyCalibrating(char key) {
 // ===========================================================================
 // LIGHT - follow a torch (# # 1, or flash it left right left right) or run from it (# # 2)
 // ===========================================================================
+#define LIGHT_SENSORS (USE_LIGHT_BACK ? 3 : 2)   // 0 left, 1 right, 2 back
 byte lightMode = 0;                // 0 off, 1 follow, 2 run away
-float lightLevel[2];               // smoothed reading, left and right
-float lightRoom[2];                // the room's light without the torch
+float lightLevel[LIGHT_SENSORS];   // smoothed reading
+float lightRoom[LIGHT_SENSORS];    // the room's light without the torch
 bool lightSeen = false;
 bool lightWatching = false;        // the readings are being kept up to date
+bool lightBackFound = false;       // a back LDR answered on LIGHT_BACK_PIN
 unsigned long lightTickAt = 0;
 unsigned long lightLastSeenAt = 0;
 // The flash start: alternate hits on the two LDRs
@@ -1498,30 +1512,72 @@ byte flashLastSide = 0;
 unsigned long flashFirstAt = 0;
 
 int lightRead(byte side) {
-  int raw = analogRead(side ? LIGHT_RIGHT_PIN : LIGHT_LEFT_PIN);
+  int raw = analogRead(side == 2 ? LIGHT_BACK_PIN : side ? LIGHT_RIGHT_PIN : LIGHT_LEFT_PIN);
   return LIGHT_BRIGHT_READS_HIGH ? raw : 1023 - raw;
 }
 
+// B,<direction>,<brightest>,<left>,<right>[,<back>]: the same layout as
+// mecanum_holonomic's bs answer (so the Blocks page reads it too). Readings
+// 0..1000, brighter = higher; direction in degrees clockwise from the nose.
 void printLightReading() {
+#if USE_LIGHT_BACK
+  lightFindBack();
+#endif
+  byte count = 2;
+  int v[3] = { 0, 0, 0 };
+#if USE_LIGHT_BACK
+  if (lightBackFound) count = 3;
+#endif
+  int brightest = 0;
+  for (byte side = 0; side < count; side++) {
+    v[side] = (long)lightRead(side) * 1000 / 1023;
+    brightest = max(brightest, v[side]);
+  }
+  float x = (v[0] + v[1]) * 0.7071 - v[2], y = (v[1] - v[0]) * 0.7071;
   out.print(F("B,"));
-  out.print(lightRead(0));
+  out.print((int)(atan2(y, x) * 180.0 / PI));
   out.print(',');
-  out.println(lightRead(1));
+  out.print(brightest);
+  for (byte side = 0; side < count; side++) {
+    out.print(',');
+    out.print(v[side]);
+  }
+  out.println();
+}
+
+// Is a back LDR wired? With the pin's own pull-up on, a divider (LDR and
+// resistor) still reads its light; an empty pin reads the top.
+void lightFindBack() {
+#if USE_LIGHT_BACK
+  pinMode(LIGHT_BACK_PIN, INPUT_PULLUP);
+  delay(2);
+  analogRead(LIGHT_BACK_PIN);
+  bool found = analogRead(LIGHT_BACK_PIN) < 1015;
+  pinMode(LIGHT_BACK_PIN, INPUT);
+  if (found != lightBackFound) {
+    lightBackFound = found;
+    out.println(found ? F("light: back sensor found") : F("light: no back sensor"));
+  }
+#endif
 }
 
 void lightReset() {
-  for (byte side = 0; side < 2; side++) lightLevel[side] = lightRoom[side] = lightRead(side);
+  lightFindBack();
+  for (byte side = 0; side < LIGHT_SENSORS; side++) lightLevel[side] = lightRoom[side] = lightRead(side);
 }
 
 // Smooth the readings and learn the room while no torch is seen; extra[] is
 // how far each LDR is over the room's light.
-void lightSample(float extra[2]) {
-  for (byte side = 0; side < 2; side++) {
+void lightSample(float extra[LIGHT_SENSORS]) {
+  for (byte side = 0; side < LIGHT_SENSORS; side++) {
     lightLevel[side] += (lightRead(side) - lightLevel[side]) * 0.25;
     if (lightLevel[side] < lightRoom[side]) lightRoom[side] = lightLevel[side];
     else if (!lightSeen) lightRoom[side] += (lightLevel[side] - lightRoom[side]) / 32;
     extra[side] = max(lightLevel[side] - lightRoom[side], 0.0f);
   }
+#if USE_LIGHT_BACK
+  if (!lightBackFound) extra[2] = 0;
+#endif
 }
 
 void lightStop() {
@@ -1554,7 +1610,7 @@ void lightStart(byte mode, bool fromFlash) {
 // While nothing else is going on: a torch flashed on the left LDR, the right,
 // the left, the right (or right first), each hit strong and on one side
 // only, all within LIGHT_FLASH_WINDOW_MS, starts following.
-void flashWatch(const float extra[2]) {
+void flashWatch(const float extra[LIGHT_SENSORS]) {
   for (byte side = 0; side < 2; side++) {
     bool bright = extra[side] > LIGHT_FLASH_MIN && extra[side] > extra[1 - side] + LIGHT_SEEN;
     if (bright && !flashLit[side]) flashLitSince[side] = millis();
@@ -1593,13 +1649,17 @@ void lightTick() {
     lightReset();
     lightWatching = true;
   }
-  float extra[2];
+  float extra[LIGHT_SENSORS];
   lightSample(extra);
   if (!lightMode) {
     flashWatch(extra);
     return;
   }
   float brightest = max(extra[0], extra[1]);
+#if USE_LIGHT_BACK
+  bool behind = extra[2] > brightest;
+  brightest = max(brightest, extra[2]);
+#endif
   if (brightest > LIGHT_SEEN) lightLastSeenAt = millis();
   bool seen = brightest > LIGHT_SEEN || (lightSeen && brightest > LIGHT_SEEN / 2 && millis() - lightLastSeenAt < LIGHT_LOST_MS);
   if (seen != lightSeen) {
@@ -1610,6 +1670,19 @@ void lightTick() {
     stopAllWheels();
     return;
   }
+#if USE_LIGHT_BACK
+  if (behind) {
+    // Behind: tail toward it (follow) or nose away (run away). The front LDRs
+    // only catch spill; more on the left means the light is behind-left, and
+    // turning clockwise swings the tail toward it.
+    float front = extra[0] + extra[1];
+    float spill = front > 1 ? (extra[0] - extra[1]) / front * front / (front + extra[2]) : 0;
+    float speed = LIGHT_SPEED_MM_PER_SEC * (1 - 0.6 * fabs(spill));
+    movingForward = lightMode == 2;
+    driveBody(lightMode == 1 ? -speed : speed, 0, spill * LIGHT_BACK_SPIN_SHARE * LIGHT_SPIN_RAD_PER_SEC);
+    return;
+  }
+#endif
   // -1 = all on the left, +1 = all on the right
   float side = (extra[1] - extra[0]) / (extra[0] + extra[1]);
   float speed = LIGHT_SPEED_MM_PER_SEC * (1 - 0.6 * fabs(side));
@@ -1924,9 +1997,13 @@ void setup() {
   out.println(F(SKETCH_NAME " v" FIRMWARE_VERSION));
   out.print(F("ir: receiver on pin "));
   out.print(IR_RECEIVER_PIN);
+#if USE_SONAR
   out.print(F(", sonar stop at "));
   out.print(SONAR_STOP_MM);
   out.println(F(" mm"));
+#else
+  out.println(F(", no sonar: back light sensor on A3"));
+#endif
   printRobotName(F("ir: name "));
   loadMotion();
   printHelp();
