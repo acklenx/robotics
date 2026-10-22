@@ -108,6 +108,7 @@ a plain INPUT (the receiver drives its line).
 
 ## Writing Style
 
+- **American English.** Flashlight (never torch), color, center, meter, gray, behavior, canceled, labeled, -ize. Third-party API names stay as they are (Blockly's `colour:`).
 - **Never use emdashes anywhere** - not in HTML content, commit messages, comments, or any text. Use a regular dash (-) if needed. Emdashes are an obvious AI tell. Applies to `&mdash;`, `—`, `&#8212;`, and any other form.
 - **Never use left/right (smart/curly) quotes** - use straight quotes (`"` and `'`) instead. They render reliably everywhere. Applies to `&ldquo;`, `&rdquo;`, `&lsquo;`, `&rsquo;`, `"`, `"`, `'`, `'`, `&#8220;`-`&#8221;`, `&#8216;`-`&#8217;`, and any other form.
 
