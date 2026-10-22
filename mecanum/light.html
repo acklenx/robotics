@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to Use the Light Bot 0.1.13 - Maker Lab Kids</title>
+<title>How to Use the Light Bot 0.1.14 - Maker Lab Kids</title>
 <meta name="description" content="How to use the Light Bot: follow the light (moth mode) or run from it (cockroach mode), started from the IR remote or by flashing a flashlight.">
 <link rel="stylesheet" href="../css/site.css">
 <style>
@@ -15,14 +15,14 @@
   .doc-head { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 8px; }
   .doc-head h1 { margin: 0; }
   .doc-head .eyebrow { margin: 4px 0 0; }
-  .qr-box { margin: 0 0 0 auto; text-align: center; font-size: 11px; color: var(--ink-dim); }
+  .qr-box { display: none; margin: 0 0 0 auto; text-align: center; font-size: 11px; color: var(--ink-dim); }   /* print only */
   .qr-box .qr { width: 96px; height: 96px; display: block; margin: 0 auto 4px; border-radius: 4px; }
   .page-lockup { height: 64px; width: auto; background: #fff; border-radius: 8px; padding: 6px 10px; }
   @media print {
     .page-lockup { background: none; padding: 0; height: 56px; }
     .key { background: #fff; color: #000; border-color: #000; }
     code { background: none; color: #000; border: 1px solid #999; }
-    .qr-box { color: #000; }
+    .qr-box { display: block; color: #000; }
     main a[href^="/"]::after { content: " (robotics.makerlabkids.com" attr(href) ")"; }
     main a[href^="http"]::after { content: " (" attr(href) ")"; }
   }
