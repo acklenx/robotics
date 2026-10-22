@@ -1,16 +1,17 @@
 {
   "name": "robots-makerlabkids",
   "version": "1.0.0",
-  "description": "robotics.makerlabkids.com: the Maker Lab Kids robot workshop (mecanum and 2WD robots): apps, lessons, firmware, tests",
+  "description": "robotics.makerlabkids.com: the Maker Lab Kids robotics class site (mecanum robot; the 2WD robot is archived): pages, firmware, tests",
   "private": true,
   "scripts": {
     "serve": "cd .. && python3 -m http.server 8191 --bind 0.0.0.0",
-    "test:site": "node test-site.js",
+    "test:site": "node site-nav.js --check && node test-site.js",
     "test:workshop": "node test-workshop.js",
     "test:mecanum": "node mecanum-sim/run-all.js",
     "check:shared": "node check-mecanum-shared.js",
     "check:blocks": "node check-mecanum-blocks.js",
-    "check:contrast": "node check-contrast.js"
+    "check:contrast": "node check-contrast.js",
+    "check:nav": "node site-nav.js --check"
   },
   "devDependencies": {
     "jsdom": "^28.1.0",

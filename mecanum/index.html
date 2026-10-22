@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex">
 <link rel="icon" href="data:,">
-<title>Mecanum Workshop 0.6.35 - Maker Lab Kids</title>
+<title>Mecanum Workshop 0.6.36 - Maker Lab Kids</title>
 <style>
   :root {
     --bg: #15181c;
@@ -386,19 +386,14 @@
   button.flash-ok { background: var(--green) !important; color: var(--bg) !important; border-color: var(--green) !important; }
   button.flash-err { background: var(--red-button) !important; color: #fff !important; border-color: var(--red-button) !important; }
 </style>
+<link rel="stylesheet" href="/css/nav.css">
 </head>
 <body>
+<!-- mlk-nav: written by scripts/site-nav.js, do not edit here -->
+<nav class="mlk-nav" aria-label="Robotics pages"><a class="mlk-nav-logo" href="https://makerlabkids.com/"><img src="/img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a><a href="/">Home</a><a href="/mecanum/remote-guide">Remote guide</a><a href="/mecanum/ir">Programming</a><a href="/mecanum/challenges">Challenges</a><a href="/mecanum/light">Light bot</a><a href="/mecanum/wiring">Wiring</a><a href="/mecanum/blocks">Blocks</a><a href="/mecanum/lessons/">Lessons</a></nav>
+<nav class="mlk-subnav" aria-label="Set aside for now"><span>Set aside for now:</span><a href="/mecanum/" class="active" aria-current="page">Workshop app</a><a href="/mecanum/sticks">Sticks</a><a href="/mecanum/calibration">Calibrate</a><a href="/mecanum/rename">Rename</a><a href="/mecanum/holonomic">Holonomic notes</a><a href="/archive/">Archive</a></nav>
+<!-- /mlk-nav -->
 <div class="app">
-
-  <nav class="version-nav">
-    <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
-    <a href="https://makerlabkids.com/" title="everything for the mecanum robot">Robot home</a>
-    <a href="/mecanum/" class="current" title="our sketch (mecanum_holonomic)">Mecanum Workshop</a>
-    <a href="/mecanum/sticks.html">Sticks</a>
-    <a href="/mecanum/calibration.html" title="measure, tune and save the robot's numbers">Calibrate / Tune</a>
-    <a href="/mecanum/lessons/">Lessons</a>
-    <a href="/2wd.html" title="the 2WD club robot">2WD robot</a>
-  </nav>
 
   <header>
     <div class="wordmark">Mecanum Workshop <span style="color:var(--orange)" id="appVersionLabel">v0.6.35</span><small>Maker Lab Kids &middot; 4WD holonomic &middot; firmware <span id="firmwareCompatLabel">0.10.20</span></small></div>
@@ -999,7 +994,7 @@
 <script>
 "use strict";
 
-var APP_VERSION = "0.6.35";
+var APP_VERSION = "0.6.36";
 var FIRMWARE_COMPAT = "0.10.20";
 // The header and title follow these, so they can never show an old number.
 document.getElementById("appVersionLabel").textContent = "v" + APP_VERSION;
@@ -5772,5 +5767,8 @@ applySpeedLevel();
   }
 })();
 </script>
+<!-- mlk-foot -->
+<footer class="mlk-foot"><a href="/">Maker Lab Kids Robotics</a><span class="sep">&middot;</span><a href="https://makerlabkids.com/">makerlabkids.com</a><span class="sep">&middot;</span><a href="/archive/">Archive</a></footer>
+<!-- /mlk-foot -->
 </body>
 </html>

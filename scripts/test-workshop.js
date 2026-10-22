@@ -26,7 +26,7 @@ function checkTrue(label, condition, detail) {
   }
 }
 
-const html = fs.readFileSync(path.join(siteRoot, "workshop.html"), "utf8");
+const html = fs.readFileSync(path.join(siteRoot, "archive", "2wd", "workshop.html"), "utf8");
 const scriptOrder = [
   "app-state.js", "console-log.js", "link.js", "telemetry.js", "battery.js",
   "runner.js", "program.js", "blocks.js", "blockly-editor.js", "drive.js",
@@ -37,7 +37,7 @@ const scriptOrder = [
 // order, no Web Bluetooth (which is also the "offline laptop" case).
 const errors = [];
 const dom = new JSDOM(html, {
-  url: "file://" + siteRoot + "/workshop.html",
+  url: "file://" + siteRoot + "/archive/2wd/workshop.html",
   runScripts: "dangerously",
   resources: "usable",
   pretendToBeVisual: true
@@ -152,7 +152,7 @@ checkTrue("the vendored Blockly bundle is actually in the folder",
   fs.existsSync(path.join(siteRoot, "vendor", "blockly.min.js")));
 checkTrue("Blockly's icons and sounds are vendored too",
   fs.existsSync(path.join(siteRoot, "vendor", "blockly-media", "click.mp3")) &&
-  fs.readFileSync(path.join(siteRoot, "js", "blockly-editor.js"), "utf8")
+  fs.readFileSync(path.join(siteRoot, "archive", "2wd", "js", "blockly-editor.js"), "utf8")
     .indexOf('media: "./vendor/blockly-media/"') >= 0);
 checkTrue("no external script tags at all", html.indexOf("http") === -1 || html.indexOf("src=\"http") === -1);
 

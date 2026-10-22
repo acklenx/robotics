@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#ffffff">
-<title>Robot Wiring 0.1.5 - Maker Lab Kids</title>
+<title>Robot Wiring 0.1.6 - Maker Lab Kids</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -52,14 +52,17 @@
     .back { display: none; }
   }
 </style>
+<link rel="stylesheet" href="/css/nav.css">
 </head>
 <body>
+<!-- mlk-nav: written by scripts/site-nav.js, do not edit here -->
+<nav class="mlk-nav" aria-label="Robotics pages"><a class="mlk-nav-logo" href="https://makerlabkids.com/"><img src="/img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a><a href="/">Home</a><a href="/mecanum/remote-guide">Remote guide</a><a href="/mecanum/ir">Programming</a><a href="/mecanum/challenges">Challenges</a><a href="/mecanum/light">Light bot</a><a href="/mecanum/wiring" class="active" aria-current="page">Wiring</a><a href="/mecanum/blocks">Blocks</a><a href="/mecanum/lessons/">Lessons</a></nav>
+<!-- /mlk-nav -->
 <div class="sheet">
 
   <div class="top">
-    <img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
+    <img class="mlk-print-logo" src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
     <div><h1>Wiring the mecanum robot</h1><div class="sub">Every wire on the 4WD robot, and how to add two light sensors (LDRs).</div></div>
-    <a class="back" href="../index.html">Robot home &rarr;</a>
   </div>
 
   <h2>The whole robot</h2>
@@ -144,7 +147,7 @@
     <tr><td><b>Gyro</b> (MPU-6050, optional)</td><td>VCC GND SCL SDA</td><td>VCC to 5V, GND to GND, <b>SDA to A4</b>, <b>SCL to A5</b>. Found by itself at power-on. Shares A4/A5 with the LDRs: one or the other.</td></tr>
   </table>
 
-  <h2>Two light sensors (LDRs): follow the light, or run from it</h2>
+  <h2>Light sensors (LDRs): the light bot</h2>
 
   <div class="box warn">
     <b>Before you start:</b>
@@ -247,12 +250,12 @@
   <h3>With the remote (ir.ino)</h3>
   <ol>
     <li>Flash <a href="../ir/ir.ino" download>ir.ino</a> 0.10.78 or newer. The calibration is kept, because it is stored in the robot's memory.</li>
-    <li><b>Check</b> (optional, with the <a href="ir.html#instructor">Remote page</a> or a USB cable): type <code>b</code>. It answers <code>B,&lt;direction&gt;,&lt;brightest&gt;,&lt;left&gt;,&lt;right&gt;</code> (and <code>,&lt;back&gt;</code> with a back LDR). Cover the left LDR and the third number should drop. Shine a torch on it and the number should jump.</li>
-    <li><b># # 1</b>: <b>follow the light</b>. The robot nods, then waits. Shine a phone torch at its nose and walk away: it turns toward the brighter side and comes after you. It stops when the light goes. Nothing stops it short of you (the sonar is off), so keep walking or turn the torch off.</li>
-    <li><b># # 2</b>: <b>run from the light</b> (cockroach mode). Shine the torch at it and it backs away, turning to keep watching the torch.</li>
+    <li><b>Check</b> (optional, with the <a href="ir.html#instructor">Programming page</a> or a USB cable): type <code>b</code>. It answers <code>B,&lt;direction&gt;,&lt;brightest&gt;,&lt;left&gt;,&lt;right&gt;</code> (and <code>,&lt;back&gt;</code> with a back LDR). Cover the left LDR and the third number should drop. Shine a torch on it and the number should jump.</li>
+    <li><b># # 1</b>: <b>moth mode</b>, follow the light. The robot nods, then waits. Shine a phone torch at its nose and walk away: it turns toward the brighter side and comes after you. It stops when the light goes. Nothing stops it short of you (the sonar is off), so keep walking or turn the torch off.</li>
+    <li><b># # 2</b>: <b>cockroach mode</b>, run from the light. Shine the torch at it and it backs away, turning to keep watching the torch.</li>
     <li><b>With the back LDR</b>: a light behind makes # # 1 back straight toward it and # # 2 run forward away from it. If the torch also lights one front LDR a little, it turns as it goes, swinging its tail toward the light.</li>
     <li><b>Any key</b> stops it.</li>
-    <li><b>No remote?</b> With the robot sitting idle, flash the torch on the left LDR, then the right, the left, the right, all within 3 seconds (a moment on each). It nods and follows, the same as # # 1. Version 0.10.78 or newer.</li>
+    <li><b>No remote?</b> With the robot sitting idle, flash the torch on the left LDR, then the right, the left, the right, all within 3 seconds (a moment on each). It nods and goes into moth mode, the same as # # 1. Version 0.10.78 or newer.</li>
   </ol>
   <p class="dim">The robot measures the room's own light when it starts and keeps learning it while it sees no torch. So start it with the torch off, and two LDRs that read a bit differently do not matter.</p>
 
@@ -268,10 +271,9 @@
     </ul>
   </div>
 
-  <h3>With the app (mecanum_holonomic.ino)</h3>
-  <p>mecanum_holonomic.ino can do it too, set up from the <a href="./">Mecanum Workshop app</a>. On the Sensors tab, pick the preset <b>2 front corners on A4 A5</b>, then tap <b>Save to robot</b>. Run Calibrate (<code>bc</code>), then Seek (<code>bf</code>), or press # on the remote. Its IR receiver must be on <b>D2</b>, and A4/A5 must be free (no gyro). To make it run from the light, set "In brighter light the reading goes" to <b>DOWN</b> (<code>kbh=0;</code>). Set it back to UP to follow again.</p>
-
-  <p class="dim">For the firmware details, see the CONFIG section at the top of <a href="../mecanum_holonomic/mecanum_holonomic.ino" download>mecanum_holonomic.ino</a>. On mecanum_holonomic.ino you can also use 4 LDRs (A2-A5) so the robot slides toward the light from any side. That needs the sonar and the gyro unplugged.</p>
 </div>
+<!-- mlk-foot -->
+<footer class="mlk-foot"><a href="/">Maker Lab Kids Robotics</a><span class="sep">&middot;</span><a href="https://makerlabkids.com/">makerlabkids.com</a><span class="sep">&middot;</span><a href="/archive/">Archive</a></footer>
+<!-- /mlk-foot -->
 </body>
 </html>

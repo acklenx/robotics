@@ -17,6 +17,25 @@ Content-Security-Policy without unsafe-eval: never add eval or new Function to a
 `.assetsignore` lists the repo files the site does not serve (this file, READMEs,
 scripts/, the git folder). Retired pages and files go in `archive/`, not the bin.
 
+## What the site shows (2026-10-22)
+
+The live site is for the ONE current class, at where it is now: nothing that reads
+like a schedule. Three tiers:
+
+- **Live (in the nav):** Home, Remote guide, Programming (ir.html), Challenges, Light bot
+  (moth mode `# # 1`, cockroach mode `# # 2`), Wiring, Blocks (a tease, not taught yet),
+  Lessons (talking points: no numbers, no order, no "next week").
+- **Set aside (comes back later):** the Workshop app (mecanum/index.html), Sticks,
+  Calibrate, Rename, Holonomic notes. They stay where they are, out of the nav, with a
+  "Set aside for now" subnav and a row on /archive/.
+- **Retired:** the 2WD robot in archive/2wd/, its flyers in archive/flyers/. `_redirects`
+  sends the old URLs there. Retire by moving into archive/, never by deleting.
+
+Every page gets the same nav bar and footer from `scripts/site-nav.js` (markup copied
+between marker comments, styled by css/nav.css). Change the nav there and run
+`node scripts/site-nav.js`; `npm run test:site` fails if a page's copy drifts. A new
+page needs an entry in its PAGES list. Nav links use clean URLs (/mecanum/ir).
+
 ## Mecanum calibration sketch
 
 `calibration/calibration.ino` is a small sketch for calibrating BY HAND,

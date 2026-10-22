@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#ffffff">
-<title>Remote Challenges 0.1.0 - Maker Lab Kids</title>
+<title>Remote Challenges 0.1.1 - Maker Lab Kids</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -88,8 +88,12 @@
     .card .pic, .card .pic svg { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
+<link rel="stylesheet" href="/css/nav.css">
 </head>
 <body>
+<!-- mlk-nav: written by scripts/site-nav.js, do not edit here -->
+<nav class="mlk-nav" aria-label="Robotics pages"><a class="mlk-nav-logo" href="https://makerlabkids.com/"><img src="/img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a><a href="/">Home</a><a href="/mecanum/remote-guide">Remote guide</a><a href="/mecanum/ir">Programming</a><a href="/mecanum/challenges" class="active" aria-current="page">Challenges</a><a href="/mecanum/light">Light bot</a><a href="/mecanum/wiring">Wiring</a><a href="/mecanum/blocks">Blocks</a><a href="/mecanum/lessons/">Lessons</a></nav>
+<!-- /mlk-nav -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <marker id="ah-o" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0.5 L8,4 L0,7.5 z" fill="#e65100"/></marker>
@@ -99,9 +103,8 @@
 </svg>
 <div class="sheet">
   <div class="top">
-    <img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
+    <img class="mlk-print-logo" src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
     <div><h1>Remote challenges: can you program it?</h1><div class="sub">Program each shape from the remote, save it in a slot, run it. Does the robot draw the picture?</div></div>
-    <a class="back" href="remote-guide.html">The remote guide &rarr;</a>
   </div>
 
   <div class="legend" id="legend"></div>
@@ -110,7 +113,7 @@
 
   <div class="page2">
     <div class="top small">
-      <img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
+      <img class="mlk-print-logo" src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
       <div><h1>Remote challenges, page 2</h1><div class="sub">The last ones slide sideways. Watch the nose: it keeps pointing the same way.</div></div>
     </div>
     <div class="grid" id="page2"></div>
@@ -329,5 +332,8 @@ L.innerHTML =
   '<div class="how"><b>Program it:</b> ' + KEY.star + KEY.star + KEY.star + ' <span class="say">wiggle</span>, then for each step ' + KEY.star + ' a move key and the number, ' + KEY.star + KEY.star + KEY.star + ' <span class="say">wiggle</span>, a slot ' + digits(1) + '..' + digits(9) + ' and ' + KEY.star + KEY.star + ' <span class="say">nod</span>. Run it: ' + KEY.star + ' slot. ' +
   'Moves: ' + KEY.f + KEY.b + KEY.l + KEY.r + ' cm, ' + KEY.tl + KEY.tr + ' turn degrees, ' + KEY.q + KEY.e + ' diagonal cm, ' + KEY.p + ' pause seconds, ' + KEY.c + ' circle cm across, ' + KEY.n + ' do it all again, times in all.</div>';
 </script>
+<!-- mlk-foot -->
+<footer class="mlk-foot"><a href="/">Maker Lab Kids Robotics</a><span class="sep">&middot;</span><a href="https://makerlabkids.com/">makerlabkids.com</a><span class="sep">&middot;</span><a href="/archive/">Archive</a></footer>
+<!-- /mlk-foot -->
 </body>
 </html>

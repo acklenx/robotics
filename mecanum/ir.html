@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#15181c">
-<title>Remote Robot 0.1.14 - Maker Lab Kids</title>
+<title>Programming Guide 0.1.15 - Maker Lab Kids</title>
 <style>
   :root {
     --bg: #15181c;
@@ -195,17 +195,19 @@
     h2 { font-size: 18px; margin: 16px 0 6px; }
   }
 </style>
+<link rel="stylesheet" href="/css/nav.css">
 </head>
 <body>
+<!-- mlk-nav: written by scripts/site-nav.js, do not edit here -->
+<nav class="mlk-nav" aria-label="Robotics pages"><a class="mlk-nav-logo" href="https://makerlabkids.com/"><img src="/img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a><a href="/">Home</a><a href="/mecanum/remote-guide">Remote guide</a><a href="/mecanum/ir" class="active" aria-current="page">Programming</a><a href="/mecanum/challenges">Challenges</a><a href="/mecanum/light">Light bot</a><a href="/mecanum/wiring">Wiring</a><a href="/mecanum/blocks">Blocks</a><a href="/mecanum/lessons/">Lessons</a></nav>
+<!-- /mlk-nav -->
 <header>
-  <a class="mlk-lockup" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a>
-  <div class="title">Remote Robot <span id="versionLabel"></span></div>
+  <div class="title">Programming guide <span id="versionLabel"></span></div>
   <div class="status"><div class="dot" id="statusDot"></div><span id="statusText">Not connected</span></div>
   <div class="spacer"></div>
 </header>
 
 <div class="wrap">
-  <nav class="pages no-print"><a href="../">Robot hub</a> <a href="./">Workshop</a> <a href="calibration.html">Calibrate / Tune</a> <a href="rename.html">Rename</a> <a href="remote-guide.html"><b>Printable guide</b></a> <a href="challenges.html"><b>Challenges</b></a> <a href="blocks.html">Blocks editor</a> <a href="#instructor">Instructor</a></nav>
   <h1>Drive and program the robot with the remote</h1>
 
   <div class="card kid">
@@ -248,7 +250,6 @@
     <span class="key arrow">&#9660;</span> back, <span class="key arrow">&#9664;</span> <span class="key arrow">&#9654;</span> slide sideways (mecanum wheels!).</p>
     <p><b>Hold <span class="key">1</span> or <span class="key">3</span></b> to turn left or right on the spot.</p>
     <p><span class="key">0</span>, <span class="key ok">OK</span> or <span class="key pound">#</span> stop it.</p>
-    <p>With the sonar switched on: if something is closer than <b>25 cm</b> in front, the robot will not drive forward. Back up, slide or turn instead.</p>
   </div>
 
   <h2>2. Make a program</h2>
@@ -294,13 +295,13 @@
     <p><b>Out of the box the slots hold nine demos:</b> 1 square, 2 crab box (slides only), 3 out and back, 4 triangle, 5 stairs, 6 spiral, 7 look around, 8 figure 8, 9 dance. Saving your own program in a slot replaces its demo.</p>
   </div>
 
-  <h2>4. Follow the light (or run from it)</h2>
+  <h2>4. The light bot: moth and cockroach</h2>
   <div class="card">
-    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">1</span> <span class="then">follow the light: shine a torch at its nose and walk away. It turns toward the bright side and comes after you.</span></p>
+    <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">1</span> <span class="then">moth mode: shine a torch at its nose and walk away. It turns toward the bright side and comes after you.</span></p>
     <p class="seq"><span class="key pound">#</span><span class="key pound">#</span><span class="key">2</span> <span class="then">cockroach mode: run from the light. Shine the torch at it and it backs away, still watching the torch.</span></p>
     <p>With a third light sensor on its back, a light <b>behind</b> it works too: # # 1 backs straight toward it, # # 2 runs forward away from it. Aim the torch so a little light also reaches one front sensor and it turns as it goes.</p>
-    <p><b>No remote? Use the torch:</b> flash it on the left sensor, the right, the left, the right, all within 3 seconds. The robot <span class="answer">nods</span> and follows, just like # # 1.</p>
-    <p>It <span class="answer">nods</span> when it starts. With no torch it just waits. <b>Any key stops it.</b> Needs the two light sensors (<a href="wiring.html">wiring</a>).</p>
+    <p><b>No remote? Use the torch:</b> flash it on the left sensor, the right, the left, the right, all within 3 seconds. The robot <span class="answer">nods</span> and goes into moth mode, just like # # 1.</p>
+    <p>It <span class="answer">nods</span> when it starts. With no torch it just waits. <b>Any key stops it.</b> Needs the two light sensors. More on the <a href="light.html">Light bot</a> page.</p>
   </div>
 
   <div class="card warn">
@@ -314,7 +315,7 @@
     <div><b>Wiggle</b> (quick left-right)<br>"I am listening" / "which slot?"</div>
     <div><b>Nod</b> (forward-back)<br>"Got it": step kept, program saved</div>
     <div><b>Slow head shake</b><br>"No": cancelled, empty slot, program full</div>
-    <div><b>Stops dead</b><br>A key was pressed, or (sonar on) something is in front of it</div>
+    <div><b>Stops dead</b><br>A key was pressed</div>
   </div>
 
   <h2>Try this: a square</h2>
@@ -331,7 +332,7 @@
       <span class="key star">*</span><span class="key star">*</span><span class="key star">*</span>
       <span class="key">1</span><span class="key star">*</span><span class="key star">*</span></p>
     <p class="lead">Forward 30 cm and turn right, four times, saved in slot 1. Run it with <span class="key star">*</span><span class="key">1</span>.
-    Does it end where it started? If not, the robot needs <a href="calibration.html">calibrating</a>.</p>
+    Does it end where it started? If not, the robot needs calibrating from the remote: <a href="remote-guide.html#calibrate">how</a>.</p>
     <div class="example">
       <div class="example-title">Or try this shortcut to also make a square</div>
       <div class="line"><span class="keys"><span class="key star">*</span><span class="key star">*</span><span class="key star">*</span></span><span class="what"><span class="answer">wiggle</span> = listening</span></div>
@@ -399,7 +400,7 @@
           <tr><td><code>u</code></td><td>one sonar reading, <code>U,&lt;mm&gt;</code> (-1 = nothing within 4 m, or the sonar is off)</td></tr>
           <tr><td><code>v40,0,0;</code></td><td>keep driving forward / right / clockwise at -100..100 % (the Blocks page's keep-driving blocks and the Sticks page); stops unless repeated within half a second; the sonar zeroes the forward part near a wall</td></tr>
           <tr><td><code>b</code></td><td>one light reading, <code>B,&lt;direction&gt;,&lt;brightest&gt;,&lt;left&gt;,&lt;right&gt;[,&lt;back&gt;]</code> (readings 0-1000, brighter = higher; direction in degrees from the nose). The same layout as mecanum_holonomic, so the Blocks page's light blocks work here too.</td></tr>
-          <tr><td><code>x</code></td><td>stop (also ends follow / run from the light)</td></tr>
+          <tr><td><code>x</code></td><td>stop (also ends moth / cockroach mode)</td></tr>
           <tr><td><code>m0,500,0;</code>  <code>k?;</code></td><td>a move and the motion numbers, as in calibration.ino</td></tr>
         </table>
         <div class="tools"><input id="commandInput" placeholder="type a command, Enter sends" style="flex:1 1 200px;font:inherit;font-size:15px;background:#11151a;color:var(--ink);border:1px solid #3a434e;border-radius:8px;padding:8px 10px"><button id="sendButton" disabled>Send</button></div>
@@ -423,7 +424,7 @@
 <script>
 "use strict";
 
-var APP_VERSION = "0.1.11";
+var APP_VERSION = "0.1.15";
 var SERIAL_BAUD = 9600;
 var BLE_SERVICE_UUID = 0xFFE0;
 var BLE_NUS_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -798,5 +799,8 @@ setConnectedState();
   }
 })();
 </script>
+<!-- mlk-foot -->
+<footer class="mlk-foot"><a href="/">Maker Lab Kids Robotics</a><span class="sep">&middot;</span><a href="https://makerlabkids.com/">makerlabkids.com</a><span class="sep">&middot;</span><a href="/archive/">Archive</a></footer>
+<!-- /mlk-foot -->
 </body>
 </html>

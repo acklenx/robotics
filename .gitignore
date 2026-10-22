@@ -7,3 +7,4 @@ temp/
 *.pdf
 mecanum/lafvin/
 mecanum/.cache/
+!resources/*.pdf

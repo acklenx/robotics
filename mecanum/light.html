@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Light Bot 0.1.0 - Maker Lab Kids</title>
+<meta name="description" content="The light follower bot: moth mode chases a torch, cockroach mode runs from it. Two light sensors on the front, an optional one on the back, all from the IR remote.">
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  .key { display: inline-block; min-width: 26px; padding: 2px 7px; margin: 0 2px; border-radius: 6px; background: #2b323b; border: 1px solid #3a434e; color: #fff; font-weight: 700; font-family: var(--mono); text-align: center; }
+  .mode { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0; }
+  .mode .card { margin: 0; }
+  .mode h2 { margin-top: 0; }
+  .big-keys { font-size: 20px; margin: 6px 0 10px; }
+  table.pins { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.pins th { text-align: left; font-size: 12px; color: var(--ink-dim); font-weight: 600; padding: 4px 8px 6px 0; border-bottom: 1px solid var(--panel-edge); }
+  table.pins td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--panel-edge); vertical-align: top; }
+  table.pins tr:last-child td { border-bottom: none; }
+</style>
+<link rel="stylesheet" href="/css/nav.css">
+</head>
+<body>
+<!-- mlk-nav: written by scripts/site-nav.js, do not edit here -->
+<nav class="mlk-nav" aria-label="Robotics pages"><a class="mlk-nav-logo" href="https://makerlabkids.com/"><img src="/img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a><a href="/">Home</a><a href="/mecanum/remote-guide">Remote guide</a><a href="/mecanum/ir">Programming</a><a href="/mecanum/challenges">Challenges</a><a href="/mecanum/light" class="active" aria-current="page">Light bot</a><a href="/mecanum/wiring">Wiring</a><a href="/mecanum/blocks">Blocks</a><a href="/mecanum/lessons/">Lessons</a></nav>
+<!-- /mlk-nav -->
+<main class="page">
+  <p class="eyebrow">ir.ino 0.10.79 or newer</p>
+  <h1>The light bot</h1>
+  <p class="subtitle">Two light sensors on the robot's front corners let it see a torch.
+  It can chase the light like a moth, or run from it like a cockroach.
+  Everything starts from the remote.</p>
+
+  <div class="mode">
+    <section class="card">
+      <h2>Moth mode</h2>
+      <p class="big-keys"><span class="key">#</span><span class="key">#</span><span class="key">1</span></p>
+      <p>The robot nods, then waits. Shine a torch at its nose and walk away: it turns
+      toward the brighter side and comes after you. Take the light away and it stops.</p>
+      <p><b>No remote?</b> Flash the torch on the left sensor, the right, the left, the
+      right, all within 3 seconds. It nods and goes into moth mode.</p>
+    </section>
+    <section class="card">
+      <h2>Cockroach mode</h2>
+      <p class="big-keys"><span class="key">#</span><span class="key">#</span><span class="key">2</span></p>
+      <p>Shine the torch at it and it backs away, turning so it keeps watching the
+      light. Take the light away and it stops.</p>
+      <p><b>Any key stops either mode.</b></p>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>A light sensor on the back</h2>
+    <p>Add a third sensor in the middle of the back, looking straight back, and light from
+    <b>behind</b> works too:</p>
+    <ul>
+      <li><b>Moth mode</b> backs straight toward the light.</li>
+      <li><b>Cockroach mode</b> runs forward, away from it.</li>
+      <li>Aim the torch so a little light also reaches one front sensor, and it turns
+      its tail toward the light as it goes.</li>
+    </ul>
+    <p>The robot checks for the back sensor every time a light mode starts. Without one
+    it works just as before.</p>
+  </section>
+
+  <section class="card">
+    <h2>Wiring the sensors</h2>
+    <p>Each sensor is a light-dependent resistor (LDR) plus a fixed resistor:
+    <b>+5V to LDR to the pin</b>, and <b>the resistor from the pin to Gnd</b>. More light
+    makes the reading go up.</p>
+    <table class="pins">
+      <tr><th>Sensor</th><th>Pin</th><th>Where</th></tr>
+      <tr><td>Left</td><td>A4</td><td>Left front corner, looking 45 degrees out</td></tr>
+      <tr><td>Right</td><td>A5</td><td>Right front corner, looking 45 degrees out</td></tr>
+      <tr><td>Back (optional)</td><td>A3</td><td>Middle of the back, looking straight back. Unplug the sonar's Trig wire from A3 first.</td></tr>
+    </table>
+    <p>Use the analog header's <b>A0-5</b> row for the signal. The +5V and Gnd rows beside
+    it are only power. Our class kit: GL5537 LDRs with 4.7k resistors. The diagram and
+    the resistor for other LDRs are on the <a href="wiring.html">Wiring</a> page.</p>
+  </section>
+
+  <section class="card">
+    <h2>If it does not work</h2>
+    <table class="pins">
+      <tr><th>It does this</th><th>Try this</th></tr>
+      <tr><td>Nods, then ignores the torch</td><td>Check the sensors with <code>b</code> from the
+      <a href="ir.html#instructor">Programming</a> page's console. All zeros
+      (<code>B,0,0,0,0</code>) means a sensor's top leg is on Gnd instead of +5V, or its wire
+      is in the wrong row.</td></tr>
+      <tr><td>Goes the wrong way</td><td>Left and right are swapped: swap the A4 and A5 wires.</td></tr>
+      <tr><td>Needs a brighter and brighter torch</td><td>Torches dim as they warm up and their batteries
+      run down. A room full of torches also raises what the robot thinks of as room light.
+      Turn the other torches away, or start the mode again.</td></tr>
+      <tr><td>Runs into you</td><td>Nothing stops it but you: turn the torch off, or press any key.</td></tr>
+    </table>
+  </section>
+</main>
+<!-- mlk-foot -->
+<footer class="mlk-foot"><a href="/">Maker Lab Kids Robotics</a><span class="sep">&middot;</span><a href="https://makerlabkids.com/">makerlabkids.com</a><span class="sep">&middot;</span><a href="/archive/">Archive</a></footer>
+<!-- /mlk-foot -->
+</body>
+</html>

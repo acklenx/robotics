@@ -1,0 +1,64 @@
+/* The one nav bar and footer every robotics page shares. The markup is copied
+   into each page (no build step); scripts/check-nav.js fails if a page's copy
+   drifts. Colours are fixed here so the bar looks the same on the dark app
+   pages and the white printable sheets. */
+.mlk-nav, .mlk-subnav, .mlk-foot {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
+}
+.mlk-nav {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px;
+  padding: 8px 16px; background: #15181c; border-bottom: 1px solid #2b323b;
+}
+.mlk-nav a {
+  color: #c4ccd4; text-decoration: none; font-size: 14px; font-weight: 600;
+  padding: 6px 10px; border-radius: 999px; border: 1px solid transparent; line-height: 1.2;
+}
+.mlk-nav a:hover { color: #fff; border-color: #2b323b; }
+.mlk-nav a.active { color: #15181c; background: #ff7a1a; }
+.mlk-nav a.mlk-nav-logo { padding: 0; margin-right: 8px; border: none; background: #fff; border-radius: 6px; }
+.mlk-nav a.mlk-nav-logo img { display: block; height: 34px; width: auto; padding: 3px 6px; }
+.mlk-nav a.mlk-nav-back { display: none; }
+
+/* A section's own pages, under the bar. */
+.mlk-subnav {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px;
+  padding: 6px 16px; background: #1e2329; border-bottom: 1px solid #2b323b; font-size: 13px;
+}
+.mlk-subnav span { color: #a7b0b9; margin-right: 4px; }
+.mlk-subnav a { color: #ffa45c; text-decoration: none; padding: 3px 8px; border-radius: 999px; }
+.mlk-subnav a:hover { text-decoration: underline; }
+.mlk-subnav a.active { color: #15181c; background: #ffa45c; }
+
+/* The footer: the Archive link is there to be found, not followed. */
+.mlk-foot {
+  padding: 18px 16px 24px; background: #15181c; border-top: 1px solid #2b323b;
+  color: #a7b0b9; font-size: 13px; text-align: center; clear: both;
+}
+.mlk-foot a { color: #a7b0b9; text-decoration: none; }
+.mlk-foot a:hover { color: #e8ecef; text-decoration: underline; }
+.mlk-foot .sep { margin: 0 8px; }
+
+/* Phones: one row that scrolls sideways instead of three wrapped rows. */
+@media (max-width: 640px) {
+  .mlk-nav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 6px 10px; }
+  .mlk-nav::-webkit-scrollbar { display: none; }
+  .mlk-nav a { white-space: nowrap; flex: none; }
+  .mlk-nav a.mlk-nav-logo img { height: 30px; }
+}
+
+/* Full-screen tools (Sticks, Calibrate): on narrow screens only a way back. */
+@media (max-width: 899px) {
+  .mlk-nav-tool a { display: none; }
+  .mlk-nav-tool a.mlk-nav-back { display: inline-block; }
+  .mlk-nav-tool { padding: 4px 10px; }
+  .mlk-nav-tool + .mlk-subnav { display: none; }
+}
+
+/* The page's own lockup is for paper; on screen the bar carries it. */
+@media screen {
+  .mlk-print-logo { display: none !important; }
+}
+@media print {
+  .mlk-nav, .mlk-subnav, .mlk-foot { display: none !important; }
+}

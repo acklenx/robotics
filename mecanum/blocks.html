@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="robots" content="noindex">
-<title>Mecanum Blocks 0.1.7 - Maker Lab Kids</title>
+<title>Mecanum Blocks 0.1.8 - Maker Lab Kids</title>
 <style>
 :root {
   --bench: #e8ecef;
@@ -34,7 +34,7 @@ body {
   line-height: 1.35;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);   /* the shared nav bar, then the page */
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
@@ -346,22 +346,16 @@ code { font-family: var(--mono-font); font-size: 0.92em; }
   button:active, button.is-pressed { transform: none; }
 }
 </style>
+<link rel="stylesheet" href="/css/nav.css">
 </head>
 <body>
+<!-- mlk-nav: written by scripts/site-nav.js, do not edit here -->
+<nav class="mlk-nav" aria-label="Robotics pages"><a class="mlk-nav-logo" href="https://makerlabkids.com/"><img src="/img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a><a href="/">Home</a><a href="/mecanum/remote-guide">Remote guide</a><a href="/mecanum/ir">Programming</a><a href="/mecanum/challenges">Challenges</a><a href="/mecanum/light">Light bot</a><a href="/mecanum/wiring">Wiring</a><a href="/mecanum/blocks" class="active" aria-current="page">Blocks</a><a href="/mecanum/lessons/">Lessons</a></nav>
+<!-- /mlk-nav -->
 
 <header class="site-bar">
-  <a class="site-logo" href="https://makerlabkids.com/"><img src="../img/lockup.png" alt="Maker Lab Kids"></a>
   <h1 class="page-name">Mecanum Blocks <span class="page-version" id="pageVersion"></span></h1>
   <span class="page-compat" id="pageCompat"></span>
-  <nav class="site-nav" aria-label="Robot pages">
-    <a href="../" title="everything for the mecanum robot">Robot home</a>
-    <a href="index.html" title="drive, demos, sensors">Mecanum Workshop</a>
-    <a href="blocks.html" class="is-here" aria-current="page">Blocks</a>
-    <a href="sticks.html">Sticks</a>
-    <a href="ir.html" title="remote-only robot, program slots">Remote</a>
-    <a href="calibration.html">Calibrate / Tune</a>
-    <a href="lessons/">Lessons</a>
-  </nav>
 </header>
 
 <div class="program-bar">
@@ -544,7 +538,7 @@ code { font-family: var(--mono-font); font-size: 0.92em; }
 
 /* ============================ CONFIG ============================ */
 
-var EDITOR_VERSION = '0.1.7';
+var EDITOR_VERSION = '0.1.8';
 var EDITOR_COMPATIBILITY_NOTE = 'for mecanum_holonomic 0.10.12+ and ir.ino';
 var BLOCKLY_MEDIA_PATH = 'vendor/blockly/media/';
 var PUBLISHED_PAGE_ADDRESS = 'https://robotics.makerlabkids.com/mecanum/blocks.html';

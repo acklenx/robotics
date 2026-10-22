@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#ffffff">
-<title>Remote Guide 0.1.15 - Maker Lab Kids</title>
+<title>Remote Guide 0.1.16 - Maker Lab Kids</title>
 <style>
   :root {
     --ink: #1c1f24;
@@ -130,13 +130,16 @@
     .note { margin: 6px 0; padding: 4px 8px; }
   }
 </style>
+<link rel="stylesheet" href="/css/nav.css">
 </head>
 <body>
+<!-- mlk-nav: written by scripts/site-nav.js, do not edit here -->
+<nav class="mlk-nav" aria-label="Robotics pages"><a class="mlk-nav-logo" href="https://makerlabkids.com/"><img src="/img/lockup.png" alt="Maker Lab Kids" width="300" height="99"></a><a href="/">Home</a><a href="/mecanum/remote-guide" class="active" aria-current="page">Remote guide</a><a href="/mecanum/ir">Programming</a><a href="/mecanum/challenges">Challenges</a><a href="/mecanum/light">Light bot</a><a href="/mecanum/wiring">Wiring</a><a href="/mecanum/blocks">Blocks</a><a href="/mecanum/lessons/">Lessons</a></nav>
+<!-- /mlk-nav -->
 <div class="sheet">
   <div class="top">
-    <img src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
+    <img class="mlk-print-logo" src="../img/lockup.png" alt="Maker Lab Kids" width="300" height="99">
     <div><h1>Robot remote: drive it, program it</h1><div class="sub">Everything the robot can do from the remote. No phone needed.</div></div>
-    <a class="back" href="ir.html">Full page &amp; instructor tools &rarr;</a>
   </div>
 
   <div class="cols">
@@ -176,7 +179,6 @@
         <p>Hold <span class="key arrow">&#9650;</span> <span class="key arrow">&#9660;</span> <span class="key arrow">&#9664;</span> <span class="key arrow">&#9654;</span> to go, let go to stop.
         Hold <span class="key turn">1</span> or <span class="key turn">3</span> to spin on the spot.
         <span class="key">0</span> <span class="key ok">OK</span> <span class="key pound">#</span> stop.</p>
-        <p class="dim">Sonar on? Closer than 25 cm to something in front, it refuses to go forward. Back up or slide.</p>
       </div>
 
       <div class="box" style="margin-top:10px">
@@ -233,9 +235,9 @@
         <p class="dim"><span class="key star">*</span><span class="key">0</span> is always a circle 1 m across, facing in. A slot nobody has saved to runs a built-in demo: 1 square, 2 crab box, 3 out and back, 4 triangle, 5 stairs, 6 spiral, 7 look around, 8 figure 8, 9 dance.</p>
       </div>
       <div class="box" style="margin-top:10px">
-        <h2>Follow the light</h2>
-        <p class="rule"><span class="key pound">#</span><span class="key pound">#</span><span class="key">1</span> follows a torch. <span class="key pound">#</span><span class="key pound">#</span><span class="key">2</span> runs from it (cockroach). Any key stops it.</p>
-        <p class="dim">Shine the torch at its nose. With no light it waits. No remote? Flash the torch left, right, left, right on its two light sensors within 3 seconds and it follows. A sensor on its back? Light from behind works too.</p>
+        <h2>Light bot: moth and cockroach</h2>
+        <p class="rule"><span class="key pound">#</span><span class="key pound">#</span><span class="key">1</span> moth mode: follows a torch. <span class="key pound">#</span><span class="key pound">#</span><span class="key">2</span> cockroach mode: runs from it. Any key stops it.</p>
+        <p class="dim">Shine the torch at its nose. With no light it waits. No remote? Flash the torch left, right, left, right on its two light sensors within 3 seconds for moth mode. A sensor on its back? Light from behind works too.</p>
       </div>
       <div class="box" style="margin-top:10px">
         <h2>What the robot says back</h2>
@@ -288,7 +290,7 @@
         </div>
       </div>
       <div class="box" style="margin-top:10px">
-        <h2>Fix the distances: calibrate from the remote</h2>
+        <h2 id="calibrate">Fix the distances: calibrate from the remote</h2>
         <p class="dim">Every motor is a little different, and so is every floor (carpet, tile, wood). Calibrating makes the moves predictable.</p>
         <table class="prog">
           <tr><td class="keys"><span class="key pound">#</span><span class="key pound">#</span><span class="key pound">#</span></td><td class="what"><span class="say">wiggle</span>, then a short forward push <span class="dim">= calibrating</span></td></tr>
@@ -305,5 +307,8 @@
       </div>
     </div>
   </div>
+<!-- mlk-foot -->
+<footer class="mlk-foot"><a href="/">Maker Lab Kids Robotics</a><span class="sep">&middot;</span><a href="https://makerlabkids.com/">makerlabkids.com</a><span class="sep">&middot;</span><a href="/archive/">Archive</a></footer>
+<!-- /mlk-foot -->
 </body>
 </html>

@@ -63,7 +63,7 @@ for (const page of pages) {
   });
 
   for (const [kind, reference] of references) {
-    if (kind === "link" && reference.indexOf("https://makerlabkids.com/") === 0) { continue; }   // back to the main site: allowed
+    if (kind === "link" && reference.indexOf("https://") === 0) { continue; }   // a link out (main site, Google Slides) is not a dependency
     if (reference.indexOf("http://") === 0 || reference.indexOf("https://") === 0 ||
         reference.indexOf("//") === 0) {
       // Anything absolute is off-site by definition. vendor/ files are
@@ -77,6 +77,7 @@ for (const page of pages) {
     const bare = reference.split("#")[0];
     let target = bare.indexOf("/") === 0 ? path.join(root, bare) : path.resolve(path.dirname(page), bare);
     if (fs.existsSync(target) && fs.statSync(target).isDirectory()) { target = path.join(target, "index.html"); }
+    if (!fs.existsSync(target) && fs.existsSync(target + ".html")) { target = target + ".html"; }   // pretty URLs: /mecanum/ir serves ir.html
     if (!fs.existsSync(target)) {
       fail(relative + " links to a missing file: " + reference);
       brokenLinks++;
@@ -89,11 +90,11 @@ if (externalReferences === 0) { pass("no page depends on anything outside the fo
 if (emptyPages === 0) { pass("every page has a title and real content"); }
 
 // Every lesson page must carry the things that make it usable in a session.
-const lessonFiles = fs.readdirSync(path.join(root, "lessons"))
+const lessonFiles = fs.readdirSync(path.join(root, "archive", "2wd", "lessons"))
   .filter(function (name) { return name.match(/^\d\d-/); });
 let lessonProblems = 0;
 for (const name of lessonFiles) {
-  const source = fs.readFileSync(path.join(root, "lessons", name), "utf8");
+  const source = fs.readFileSync(path.join(root, "archive", "2wd", "lessons", name), "utf8");
   const document = new JSDOM(source).window.document;
   const headings = [];
   document.querySelectorAll("h2").forEach(function (h) { headings.push(h.textContent.trim()); });
@@ -119,7 +120,7 @@ if (lessonProblems === 0) {
 }
 
 // Sample programs must be valid robot language, checked with the real parser.
-const programSource = fs.readFileSync(path.join(root, "js", "program.js"), "utf8");
+const programSource = fs.readFileSync(path.join(root, "archive", "2wd", "js", "program.js"), "utf8");
 const sandbox = new JSDOM("<div id='programText'></div>", { runScripts: "outside-only" }).window;
 sandbox.eval("var activeCalibration = null;");
 sandbox.eval(programSource.replace(/^"use strict";/, "")
@@ -130,7 +131,7 @@ sandbox.eval(programSource.replace(/^"use strict";/, "")
 const validOperations = "FBLRWVEPQIZX";
 let programProblems = 0;
 for (const name of lessonFiles) {
-  const source = fs.readFileSync(path.join(root, "lessons", name), "utf8");
+  const source = fs.readFileSync(path.join(root, "archive", "2wd", "lessons", name), "utf8");
   const document = new JSDOM(source).window.document;
   const block = document.querySelector("pre.program");
   if (!block) { continue; }
@@ -174,8 +175,8 @@ if (programProblems === 0) {
 
 // The cheat sheet is the page kids trust when the robot misbehaves, so every
 // command printed on it must actually exist in the firmware.
-const kernelSource = fs.readFileSync(path.join(root, "robot_kernel", "robot_kernel.ino"), "utf8");
-const cheatDocument = new JSDOM(fs.readFileSync(path.join(root, "cheatsheet.html"), "utf8")).window.document;
+const kernelSource = fs.readFileSync(path.join(root, "archive", "2wd", "robot_kernel", "robot_kernel.ino"), "utf8");
+const cheatDocument = new JSDOM(fs.readFileSync(path.join(root, "archive", "2wd", "cheatsheet.html"), "utf8")).window.document;
 const printedCommands = [];
 cheatDocument.querySelectorAll("table.watch td:first-child").forEach(function (cell) {
   printedCommands.push(cell.textContent.trim());

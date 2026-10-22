@@ -1,0 +1,37 @@
+# Retired 2WD robot pages moved to /archive/2wd/ (2026-10-22)
+/2wd /archive/2wd/2wd 301
+/2wd.html /archive/2wd/2wd 301
+/workshop /archive/2wd/workshop 301
+/workshop.html /archive/2wd/workshop 301
+/MazeLab /archive/2wd/MazeLab 301
+/MazeLab.html /archive/2wd/MazeLab 301
+/cheatsheet /archive/2wd/cheatsheet 301
+/cheatsheet.html /archive/2wd/cheatsheet 301
+/setup /archive/2wd/setup 301
+/setup.html /archive/2wd/setup 301
+/lessons/* /archive/2wd/lessons/:splat 301
+/robot_kernel/* /archive/2wd/robot_kernel/:splat 301
+/robot_kernel.ino /archive/robot_kernel-0.1.13.ino 301
+/flyers/* /archive/flyers/:splat 301
+
+# Mecanum lessons lost their numbers (2026-10-22)
+/mecanum/lessons/01-robot-or-not /mecanum/lessons/robot-or-not 301
+/mecanum/lessons/01-robot-or-not.html /mecanum/lessons/robot-or-not 301
+/mecanum/lessons/02-sensing /mecanum/lessons/sensing 301
+/mecanum/lessons/02-sensing.html /mecanum/lessons/sensing 301
+/mecanum/lessons/03-open-and-closed-loop /mecanum/lessons/open-and-closed-loop 301
+/mecanum/lessons/03-open-and-closed-loop.html /mecanum/lessons/open-and-closed-loop 301
+/mecanum/lessons/04-calibration /mecanum/lessons/calibration 301
+/mecanum/lessons/04-calibration.html /mecanum/lessons/calibration 301
+/mecanum/lessons/05-moving-in-new-ways /mecanum/lessons/moving-in-new-ways 301
+/mecanum/lessons/05-moving-in-new-ways.html /mecanum/lessons/moving-in-new-ways 301
+/mecanum/lessons/06-feedback-tuning /mecanum/lessons/feedback-tuning 301
+/mecanum/lessons/06-feedback-tuning.html /mecanum/lessons/feedback-tuning 301
+/mecanum/lessons/07-buses-and-addresses /mecanum/lessons/buses-and-addresses 301
+/mecanum/lessons/07-buses-and-addresses.html /mecanum/lessons/buses-and-addresses 301
+/mecanum/lessons/08-failing-safely /mecanum/lessons/failing-safely 301
+/mecanum/lessons/08-failing-safely.html /mecanum/lessons/failing-safely 301
+/mecanum/lessons/09-robots-go-wrong /mecanum/lessons/robots-go-wrong 301
+/mecanum/lessons/09-robots-go-wrong.html /mecanum/lessons/robots-go-wrong 301
+/mecanum/lessons/10-trade-offs /mecanum/lessons/trade-offs 301
+/mecanum/lessons/10-trade-offs.html /mecanum/lessons/trade-offs 301
