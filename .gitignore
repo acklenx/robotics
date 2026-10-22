@@ -8,3 +8,4 @@ temp/
 mecanum/lafvin/
 mecanum/.cache/
 !resources/*.pdf
+__pycache__/
