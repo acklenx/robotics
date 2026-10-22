@@ -1,0 +1,14 @@
+# Files in the repository that the site does not serve (Cloudflare Workers
+# static assets reads this list; the syntax is .gitignore's).
+.git
+.githooks
+.gitignore
+.assetsignore
+.wrangler
+node_modules
+temp
+CLAUDE.md
+README.md
+build-site.py
+flyers/build-flyers.py
+scripts

@@ -932,7 +932,7 @@ def setup_page():
 
   <section class="card">
     <h2>1. Give it a name</h2>
-    <p>Open <code>kernel/robot_kernel.ino</code> in the Arduino IDE and change one line
+    <p>Open <a href="robot_kernel/robot_kernel.ino" download><code>robot_kernel.ino</code></a> in the Arduino IDE and change one line
     near the top:</p>
     <pre class="program">#define ROBOT_BLUETOOTH_NAME "Aqua Kitten"</pre>
     <p>Every robot needs a different name, or twelve identical entries appear in the

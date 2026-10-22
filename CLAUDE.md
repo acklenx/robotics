@@ -11,9 +11,11 @@ Large local-only files (the assembly video, the kit PDFs, mecanum/lafvin/) sit i
 folder but are gitignored. `mecanum/wiring.html` is the wiring page (robot + LDRs):
 keep it in step with the pin plan in the sketches.
 
-Static site, no build. Cloudflare Pages deploys main from the GitHub repository
+Static site, no build. A Cloudflare Worker (static assets) deploys main from the GitHub repository
 acklenx/robotics to https://robotics.makerlabkids.com. `_headers` sets a
 Content-Security-Policy without unsafe-eval: never add eval or new Function to a page.
+`.assetsignore` lists the repo files the site does not serve (this file, READMEs,
+scripts/, the git folder). Retired pages and files go in `archive/`, not the bin.
 
 ## Mecanum calibration sketch
 

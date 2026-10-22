@@ -7,7 +7,7 @@ app and lessons, the maze simulator, and the robots' firmware (ir.ino,
 mecanum_holonomic.ino, calibration.ino, rename.ino).
 
 It is a static site with no build step. The source lives in this GitHub
-repository (acklenx/robotics); Cloudflare Pages pulls every push to main and
+repository (acklenx/robotics); a Cloudflare Worker (static assets) deploys every push to main and
 serves it at https://robotics.makerlabkids.com (build command: none; output
 directory: /). `_headers` carries the Content-Security-Policy, which has no
 unsafe-eval: the Blocks page runs its programs in an interpreter for that reason.
@@ -18,7 +18,7 @@ or on localhost. `npm run serve` serves the site on port 8191.
 ## Tests
 
 The tooling lives in `scripts/` (its package.json is there on purpose: one at
-the root would make Cloudflare Pages try to install dependencies for a site
+the root would make the Cloudflare build try to install dependencies for a site
 that needs none).
 
 ```
@@ -62,7 +62,7 @@ cheatsheet.html       every command on one printable page
 css/                  two stylesheets
 js/                   the app, split into readable pieces
 vendor/               Blockly, self-hosted (bundle + its media)
-kernel/               robot_kernel.ino — the firmware
+robot_kernel/         robot_kernel.ino - the 2WD firmware
 build-site.py         regenerates the lesson pages from data
 test-workshop.js      headless test of the app and block editor
 test-site.js          headless test of every page and link
@@ -185,7 +185,7 @@ fails the build rather than confusing a kid.
 
 ## The robot end
 
-`kernel/robot_kernel.ino` is the firmware. Before flashing a robot, change the
+`robot_kernel/robot_kernel.ino` is the 2WD firmware. Before flashing a robot, change the
 name at the top:
 
 ```cpp

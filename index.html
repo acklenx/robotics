@@ -46,13 +46,19 @@
     <a class="tile" href="mecanum/ir.html">
       <span class="tile-title">Remote only</span>
       <span class="tile-note">With ir.ino on the robot: drive with the arrows, type a program of steps
-      on the remote, save it in a slot, run it. No phone needed. The sonar stops it before a wall. With a <a href="mecanum/remote-guide.html">one-page printable guide</a>.</span>
+      on the remote, save it in a slot, run it, follow a torch or run from it. No phone needed.</span>
       <span class="tile-go">How &rarr;</span>
+    </a>
+    <a class="tile" href="mecanum/remote-guide.html">
+      <span class="tile-title">Remote guide</span>
+      <span class="tile-note">The printable guide for ir.ino: every key, programs,
+      light modes. One copy per table.</span>
+      <span class="tile-go">Print &rarr;</span>
     </a>
     <a class="tile" href="mecanum/wiring.html">
       <span class="tile-title">Wiring</span>
-      <span class="tile-note">Every wire on the robot: motors, battery, Bluetooth, sonar, IR receiver, gyro.
-      Plus two light sensors (LDRs) to follow the light or run from it.</span>
+      <span class="tile-note">Every wire for ir.ino: motors, battery, Bluetooth, IR receiver,
+      and the light sensors (LDRs) to follow a torch or run from it.</span>
       <span class="tile-go">Wire it &rarr;</span>
     </a>
     <a class="tile" href="mecanum/rename.html">
@@ -85,12 +91,6 @@
       do. Argue with it, add your own.</span>
       <span class="tile-go">Decide &rarr;</span>
     </a>
-    <a class="tile" href="mecanum_holonomic/mecanum_holonomic.ino" download>
-      <span class="tile-title">The sketch</span>
-      <span class="tile-note">mecanum_holonomic <span class="version">v0.10.8</span>
-      for the Arduino Uno. Open the .ino in the Arduino IDE and upload.</span>
-      <span class="tile-go">Download &rarr;</span>
-    </a>
     <a class="tile" href="2wd.html">
       <span class="tile-title">2WD robot</span>
       <span class="tile-note">The club's first robot: its Workshop app, 15 lessons,
@@ -98,6 +98,21 @@
       <span class="tile-go">Open &rarr;</span>
     </a>
   </div>
+
+  <section class="card">
+    <h2>The sketches</h2>
+    <p>One program at a time goes on the robot's Arduino Uno. Download the .ino,
+    open it in the Arduino IDE and upload.</p>
+    <div class="table-scroll">
+    <table class="pins">
+      <tr><th>Sketch</th><th>Version</th><th>Use it for</th></tr>
+      <tr><td><a href="ir/ir.ino" download>ir.ino</a></td><td><span class="version">0.10.79</span></td><td>The remote only: driving, programs in slots, light follow and run away. Works with the <a href="mecanum/ir.html">Remote</a> and <a href="mecanum/blocks.html">Blocks</a> pages too.</td></tr>
+      <tr><td><a href="mecanum_holonomic/mecanum_holonomic.ino" download>mecanum_holonomic.ino</a></td><td><span class="version">0.10.79</span></td><td>The <a href="mecanum/">Workshop app</a>, <a href="mecanum/sticks.html">Sticks</a> and Blocks over Bluetooth or USB, with the sensor boards below.</td></tr>
+      <tr><td><a href="calibration/calibration.ino" download>calibration.ino</a></td><td><span class="version">0.10.79</span></td><td>The <a href="mecanum/calibration.html">Calibrate</a> page.</td></tr>
+      <tr><td><a href="rename/rename.ino" download>rename.ino</a></td><td><span class="version">0.2.3</span></td><td>The <a href="mecanum/rename.html">Name a robot</a> page.</td></tr>
+    </table>
+    </div>
+  </section>
 
   <section class="card">
     <h2>The ten lessons</h2>
@@ -116,7 +131,10 @@
   </section>
 
   <section class="card">
-    <h2>Wiring at a glance</h2>
+    <h2>mecanum_holonomic: wiring at a glance</h2>
+    <p>This is the pin plan for mecanum_holonomic.ino and its sensor boards. ir.ino
+    uses a simpler one (IR receiver on D10, light sensors on A3 / A4 / A5): see
+    <a href="mecanum/wiring.html">Wiring</a>.</p>
     <p>The L293D motor shield sits on the Uno and owns pins 3, 4, 5, 6, 7, 8, 11
     and 12. Everything else plugs in here. The robot finds the optional parts by
     itself at start-up.</p>
@@ -134,7 +152,7 @@
   </section>
 
   <section class="card">
-    <h2>On the I2C bus (A4 / A5)</h2>
+    <h2>mecanum_holonomic: the I2C bus (A4 / A5)</h2>
     <p>Give every board 5V into its VIN. The 3.3V boards (IMU, laser) go through a
     BSS138 level shifter: HV 5V, LV 3.3V, SDA and SCL on two of its channels.</p>
     <div class="table-scroll">
@@ -149,7 +167,9 @@
   </section>
 
   <section class="card">
-    <h2>The IR remote</h2>
+    <h2>mecanum_holonomic: the IR remote</h2>
+    <p>The remote keys on the app sketch. ir.ino has its own, with programs and
+    light modes: see the <a href="mecanum/remote-guide.html">Remote guide</a>.</p>
     <div class="table-scroll">
     <table class="pins">
       <tr><td>arrows</td><td>Hold to drive forward / back / slide left / slide right. Let go and it stops.</td></tr>
@@ -163,8 +183,8 @@
   </section>
 
   <section class="card">
-    <h2>Fitting it all in</h2>
-    <p>The Uno has 32 KB for the sketch, and the default build uses about 32.2 KB.
+    <h2>mecanum_holonomic: fitting it all in</h2>
+    <p>The Uno has 32,256 bytes for the sketch, and the default build uses 32,126 of them.
     Calibration runs live in a separate program, <code>calibration.ino</code>,
     which saves its numbers in the robot's EEPROM for this one to read.
     Every optional part is a <code>USE_...</code> line at the top of the sketch:

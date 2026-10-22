@@ -174,7 +174,7 @@ if (programProblems === 0) {
 
 // The cheat sheet is the page kids trust when the robot misbehaves, so every
 // command printed on it must actually exist in the firmware.
-const kernelSource = fs.readFileSync(path.join(root, "robot_kernel.ino"), "utf8");
+const kernelSource = fs.readFileSync(path.join(root, "robot_kernel", "robot_kernel.ino"), "utf8");
 const cheatDocument = new JSDOM(fs.readFileSync(path.join(root, "cheatsheet.html"), "utf8")).window.document;
 const printedCommands = [];
 cheatDocument.querySelectorAll("table.watch td:first-child").forEach(function (cell) {
