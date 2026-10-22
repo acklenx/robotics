@@ -393,7 +393,7 @@ def figure(state):
 
 
 html = f'''<!-- ldr-steps: drawn by scripts/ldr-figs.py -->
-  <section class="card build-steps">
+  <section class="build-steps">
     <h2>Step by step: the right sensor (A5)</h2>
     <p>Three 20 cm female-female dupont wires. Any colors will do: what matters is where each
     one goes. In the pictures, wire <b>1 is +5V</b>, wire <b>2 is Gnd</b> and wire <b>3 is A5</b>.</p>

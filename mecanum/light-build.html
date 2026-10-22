@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to Build a Light Sensor 0.1.0 - Maker Lab Kids</title>
+<title>How to Build a Light Sensor 0.1.1 - Maker Lab Kids</title>
 <meta name="description" content="How to build a light sensor for the light bot: an LDR voltage divider circuit on three dupont wires, step by step, and where it plugs into the robot.">
 <link rel="stylesheet" href="../css/site.css">
 <style>
@@ -15,15 +15,17 @@
   table.pins th { text-align: left; font-size: 12px; color: var(--ink-dim); font-weight: 600; padding: 4px 8px 6px 0; border-bottom: 1px solid var(--panel-edge); }
   table.pins td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--panel-edge); vertical-align: top; }
   table.pins tr:last-child td { border-bottom: none; }
-  .steps { display: flex; flex-wrap: wrap; gap: 16px; }
-  .steps figure { margin: 0; flex: 1 1 260px; max-width: 360px; }
+  .build-steps h2 { margin-top: 28px; }
+  /* one box per step; grid-auto-rows: 1fr makes every box the same size */
+  .steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); grid-auto-rows: 1fr; gap: 14px; }
+  .steps figure { margin: 0; padding: 10px; border: 1px solid var(--panel-edge); border-radius: 10px; background: var(--panel);
+                  display: flex; flex-direction: column; }
   .steps svg { width: 100%; height: auto; display: block; }
   .steps figcaption { margin-top: 8px; font-size: 14px; }
   @media print {
     .page-lockup { background: none; padding: 0; height: 56px; }
-    .card.build-steps { break-inside: auto; page-break-inside: auto; }
-    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px; }
-    .steps figure { max-width: none; break-inside: avoid; page-break-inside: avoid; }
+    .steps { grid-template-columns: repeat(3, 1fr); gap: 10px 12px; }
+    .steps figure { padding: 6px; border-color: #999; background: none; break-inside: avoid; page-break-inside: avoid; }
     .steps figcaption { font-size: 12px; }
     .steps .fig-bg { fill: #fff; }
   }
@@ -58,7 +60,7 @@
   </section>
 
 <!-- ldr-steps: drawn by scripts/ldr-figs.py -->
-  <section class="card build-steps">
+  <section class="build-steps">
     <h2>Step by step: the right sensor (A5)</h2>
     <p>Three 20 cm female-female dupont wires. Any colors will do: what matters is where each
     one goes. In the pictures, wire <b>1 is +5V</b>, wire <b>2 is Gnd</b> and wire <b>3 is A5</b>.</p>
