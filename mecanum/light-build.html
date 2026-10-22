@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to Build a Light Sensor 0.1.4 - Maker Lab Kids</title>
+<title>How to Build a Light Sensor 0.1.5 - Maker Lab Kids</title>
 <meta name="description" content="How to build a light sensor for the light bot: an LDR voltage divider circuit on three dupont wires, step by step, and where it plugs into the robot.">
 <link rel="stylesheet" href="../css/site.css">
 <style>
@@ -30,6 +30,8 @@
     .steps figcaption { font-size: 12px; }
     .steps .step-title { font-size: 13px; margin-bottom: 4px; color: #000; }
     .steps .fig-bg { fill: #fff; }
+    main a[href^="/"]::after { content: " (robotics.makerlabkids.com" attr(href) ")"; }
+    main a[href^="http"]::after { content: " (" attr(href) ")"; }
   }
   /* print only: a footer at the bottom of every printed page */
   @page {
@@ -63,7 +65,7 @@
     </ul>
     <p>The circuit: <b>+5V</b> to the LDR to <b>A5</b>, and the resistor from <b>A5</b> to <b>Gnd</b>.
     More light lowers the LDR's resistance, so the reading on A5 goes up. When you are done,
-    see <a href="light.html">How to use the Light Bot</a>.</p>
+    see <a href="/mecanum/light">How to use the Light Bot</a>.</p>
   </section>
 
 <!-- ldr-steps: drawn by scripts/ldr-figs.py -->
