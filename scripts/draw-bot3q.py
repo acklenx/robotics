@@ -66,36 +66,39 @@ def wheel(xc, yc, roller_sign):
     zc = r
     near_x, far_x = xc - half, xc + half
     twist = roller_sign * half * 2 / r          # 45 degrees: the roller turns its own length around the tread
-    out = [poly(disc(far_x, yc, zc, r * 0.98), "#0f1013")]
-    for k in range(48):   # a dark core under the rollers, so no light shows between them
+    out = [poly(disc(far_x, yc, zc, r * 0.98), "#d9a400", "#a77f00", 1)]
+    for k in range(48):   # the yellow frame that holds the rollers
         t1, t2 = 2 * math.pi * k / 48, 2 * math.pi * (k + 1.2) / 48
         out.append(poly([P(far_x, yc + 0.97 * r * math.cos(t1), zc + 0.97 * r * math.sin(t1)), P(far_x, yc + 0.97 * r * math.cos(t2), zc + 0.97 * r * math.sin(t2)),
-                         P(near_x, yc + 0.97 * r * math.cos(t2), zc + 0.97 * r * math.sin(t2)), P(near_x, yc + 0.97 * r * math.cos(t1), zc + 0.97 * r * math.sin(t1))], "#0f1013"))
+                         P(near_x, yc + 0.97 * r * math.cos(t2), zc + 0.97 * r * math.sin(t2)), P(near_x, yc + 0.97 * r * math.cos(t1), zc + 0.97 * r * math.sin(t1))], "#e8b40c"))
     n = 14
     rollers = []
     for i in range(n):
         a1 = 2 * math.pi * i / n
-        a2 = a1 + 2 * math.pi / n * 0.74
+        a2 = a1 + 2 * math.pi / n * 0.62
         steps = 8
-        edge1 = [(far_x + (near_x - far_x) * k / steps, a1 + twist * (1 - k / steps)) for k in range(steps + 1)]
-        edge2 = [(far_x + (near_x - far_x) * k / steps, a2 + twist * (1 - k / steps)) for k in range(steps, -1, -1)]
+        mid, half_w = (a1 + a2) / 2, (a2 - a1) / 2
+        bulge = lambda k: half_w * (0.45 + 0.55 * math.sin(math.pi * k / steps))     # a barrel: thin at the ends
+        edge1 = [(far_x + (near_x - far_x) * k / steps, mid - bulge(k) + twist * (1 - k / steps)) for k in range(steps + 1)]
+        edge2 = [(far_x + (near_x - far_x) * k / steps, mid + bulge(k) + twist * (1 - k / steps)) for k in range(steps, -1, -1)]
         pts = [P(x, yc + r * math.cos(a), zc + r * math.sin(a)) for x, a in edge1 + edge2]
         am = (a1 + a2) / 2 + twist / 2
         depth = closeness(xc, yc + r * math.cos(am), zc + r * math.sin(am))
-        rollers.append((depth, poly(pts, "#1c1f24", "#08090b", 0.9)))
+        rollers.append((depth, poly(pts, "#1c1f24", "#08090b", 0.8)))
     for _depth, svg in sorted(rollers):
         out.append(svg)
-    out.append(poly(disc(near_x - 0.5, yc, zc, r * 0.78), "#f6c21c", "#a77f00", 1.2))   # the yellow side plate
-    out.append(poly(disc(near_x - 1, yc, zc, r * 0.34, 24), "#e0a800", "#8a6900", 1))
-    out.append(poly(disc(near_x - 1.5, yc, zc, r * 0.13, 16), "#2a2d33"))
+    out.append(poly(disc(near_x - 0.5, yc, zc, r * 0.86), "#f6c21c", "#a77f00", 1.2))   # the yellow side plate
+    out.append(poly(disc(near_x - 1, yc, zc, r * 0.62, 32), "#f9cf3a", "#c99a00", 0.8))     # its raised center ring
+    out.append(poly(disc(near_x - 1.5, yc, zc, r * 0.3, 24), "#17191d", "#000", 0.8))      # the black hub cap
+    out.append(poly(disc(near_x - 2, yc, zc, r * 0.1, 12), "#3a3e45"))
     return "".join(out)
 
 
 def motor(xc, yc):
-    """The yellow gear motor under the plate, from the wheel in toward the middle."""
+    """The yellow gear motor, mounted under the lower deck from the wheel in toward the middle."""
     x_in = -20 if xc < 0 else 20
     x0, x1 = (min(xc + 17, x_in), max(xc + 17, x_in)) if xc < 0 else (min(x_in, xc - 17), max(x_in, xc - 17))
-    return prism(x0, x1, yc - 11, yc + 11, 22, 42, "#f6c21c", "#e3ad12", "#c9960b")
+    return prism(x0, x1, yc - 11, yc + 11, 14, 35, "#f6c21c", "#e3ad12", "#c9960b")
 
 
 def ldr(x, y, z):
@@ -112,7 +115,9 @@ def robot(light=False):
     # far side first: the right wheels sit behind the chassis
     for y in (-base / 2, base / 2):
         parts.append(wheel(track / 2, y, -1 if y > 0 else 1))
-        parts.append(motor(track / 2, y))
+    for x in (track / 2, -track / 2):          # the motors, under the deck
+        for y in (-base / 2, base / 2):
+            parts.append(motor(x, y))
     # lower plate (z 40), with a little thickness
     lower = (-58, 58, -111, 111, 16)
     parts.append(poly(rounded_rect(*lower[:4], lower[4], 36), "#0c0d10"))
@@ -163,7 +168,6 @@ def robot(light=False):
         parts.append(ldr(50, 104, 42))     # right front corner first (behind)
     # near side last: the left wheels and their motors are closest to us
     for y in (-base / 2, base / 2):
-        parts.append(motor(-track / 2, y))
         parts.append(wheel(-track / 2, y, 1 if y > 0 else -1))
     if light:
         parts.append(ldr(-50, 104, 42))
