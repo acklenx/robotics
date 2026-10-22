@@ -36,6 +36,14 @@ between marker comments, styled by css/nav.css). Change the nav there and run
 `node scripts/site-nav.js`; `npm run test:site` fails if a page's copy drifts. A new
 page needs an entry in its PAGES list. Nav links use clean URLs (/mecanum/ir).
 
+## Robot pictures
+
+- `img/mecanumbot.png`: the kit's product photo (front quarter view), for when a photo is right.
+- `img/mecanumbot-3q.svg` and `img/mecanumbot-3q-light.svg` (with the two front light sensors):
+  a stylized front-quarter drawing for instruction pages, made by `scripts/draw-bot3q.py`.
+- From above: `bot_top()` in `scripts/ldr-figs.py` is the Blocks simulator's drawing
+  (`drawRobotPicture` in mecanum/blocks.html) as SVG. Use these, not new one-off robots.
+
 ## Mecanum calibration sketch
 
 `calibration/calibration.ino` is a small sketch for calibrating BY HAND,

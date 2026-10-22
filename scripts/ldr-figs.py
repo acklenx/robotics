@@ -1,6 +1,7 @@
 # Draws the light sensor build steps (resistor, LDR, Z fold, board, robot) and puts them
 # between the <!-- ldr-steps --> markers in mecanum/light-build.html.
 # Run: python3 scripts/ldr-figs.py
+import math
 import os
 import re
 import subprocess
@@ -389,19 +390,31 @@ def chase_view():
     the robot turns toward it (screen); print shows a QR code instead."""
     out = ['<rect y="20" width="360" height="300" rx="10" class="fig-bg" fill="#f4f1ea"/>']
     spot = (136, 92)
-    # the flashlight, bottom left, and its narrow beam to a small spot
-    fx, fy = 46, 276
-    out.append(f'<path d="M{fx + 26} {fy - 30} L{spot[0] - 9} {spot[1] + 4} L{spot[0] + 9} {spot[1] + 10} L{fx + 40} {fy - 18} Z" fill="#ffd84d" fill-opacity="0.45"/>')
-    out.append(f'<ellipse cx="{spot[0]}" cy="{spot[1]}" rx="17" ry="12" fill="#ffd84d" fill-opacity="0.7"/>')
-    out.append(f'<ellipse cx="{spot[0]}" cy="{spot[1]}" rx="8" ry="6" fill="#fff6c4"/>')
-    out.append(f'<g transform="translate({fx} {fy}) rotate(-50)"><rect x="-26" y="-11" width="40" height="22" rx="5" fill="#3b4049"/>'
+    # the flashlight, bottom left, pointing at the spot; its beam leaves the lens and
+    # widens a little, its far end curved where it meets the floor
+    fx, fy = 50, 272
+    ang = math.atan2(spot[1] - fy, spot[0] - fx)
+    ux, uy = math.cos(ang), math.sin(ang)
+    nx, ny = -uy, ux
+    lens = (fx + 26 * ux, fy + 26 * uy)
+    w0, w1 = 8, 17
+    a0 = (lens[0] + nx * w0, lens[1] + ny * w0)
+    b0 = (lens[0] - nx * w0, lens[1] - ny * w0)
+    a1 = (spot[0] + nx * w1, spot[1] + ny * w1)
+    b1 = (spot[0] - nx * w1, spot[1] - ny * w1)
+    tip = (spot[0] + ux * 14, spot[1] + uy * 14)
+    out.append(f'<path d="M{a0[0]:.1f} {a0[1]:.1f} L{a1[0]:.1f} {a1[1]:.1f} Q{tip[0] + nx * w1:.1f} {tip[1] + ny * w1:.1f} {tip[0]:.1f} {tip[1]:.1f} '
+               f'Q{tip[0] - nx * w1:.1f} {tip[1] - ny * w1:.1f} {b1[0]:.1f} {b1[1]:.1f} L{b0[0]:.1f} {b0[1]:.1f} Z" fill="url(#beamfade)"/>')
+    out.insert(1, f'<defs><linearGradient id="beamfade" gradientUnits="userSpaceOnUse" x1="{lens[0]:.1f}" y1="{lens[1]:.1f}" x2="{tip[0]:.1f}" y2="{tip[1]:.1f}">'
+                  '<stop offset="0" stop-color="#ffd84d" stop-opacity="0.85"/><stop offset="1" stop-color="#ffd84d" stop-opacity="0.35"/></linearGradient></defs>')
+    out.append(f'<g transform="translate({fx} {fy}) rotate({math.degrees(ang):.1f})"><rect x="-26" y="-11" width="40" height="22" rx="5" fill="#3b4049"/>'
                f'<path d="M14 -11 L26 -16 L26 16 L14 11 Z" fill="#555b66"/><rect x="-18" y="-15" width="9" height="5" rx="2" fill="#e65100"/></g>')
     # the robot, part way through turning left toward the spot
     out.append(bot_top(236, 186, -28, 0.56))
     out.append('<path d="M296 112 A 92 92 0 0 0 196 82" fill="none" stroke="#e65100" stroke-width="3" stroke-linecap="round"/>')
     out.append('<path d="M206 74 L194 82 L206 92" fill="none" stroke="#e65100" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>')
     out.append(text(250, 50, "turns toward the light", "middle", 13))
-    out.append(text(spot[0], spot[1] - 22, "light spot", "middle", 12, "#555"))
+    out.append(text(spot[0] - 30, spot[1] - 18, "light spot", "end", 12, "#555"))
     label = ("Step 15: our mecanum robot seen from above, with yellow wheels, a blue motor shield and a light sensor on each front corner. "
              "A flashlight makes a small spot of light on the floor ahead and to the left, and the robot turns toward it.")
     return f'<svg viewBox="0 20 360 300" role="img" aria-label="{label}">\n' + "\n".join(out) + "\n</svg>"
